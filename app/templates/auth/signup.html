@@ -5,6 +5,35 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Sign Up - EcoTrack</title>
     <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
+    <script>
+      // Function to validate password and confirm password
+      function validatePassword() {
+        const password = document.getElementById("password").value;
+        const confirmPassword =
+          document.getElementById("confirm-password").value;
+        const errorMessage = document.getElementById("password-error");
+
+        // Regex for password validation
+        const passwordRegex =
+          /^(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/;
+
+        // Check if password matches the criteria
+        if (!passwordRegex.test(password)) {
+          errorMessage.textContent =
+            "Password must be at least 8 characters long, include one uppercase letter, one number, and one special character.";
+          return false;
+        }
+
+        // Check if passwords match
+        if (password !== confirmPassword) {
+          errorMessage.textContent = "Passwords do not match.";
+          return false;
+        }
+
+        errorMessage.textContent = ""; // Clear error message
+        return true;
+      }
+    </script>
   </head>
   <body class="h-screen font-sans">
     <div class="grid grid-cols-3 h-full">
@@ -23,7 +52,12 @@
         <div class="w-full max-w-md">
           <h1 class="text-3xl font-bold mb-4">Sign Up</h1>
           <p class="text-gray-600 mb-6">Create your account to get started.</p>
-          <form action="/signup" method="POST" class="space-y-4">
+          <form
+            action="/signup"
+            method="POST"
+            class="space-y-4"
+            onsubmit="return validatePassword()"
+          >
             <div class="grid grid-cols-2 gap-4">
               <div>
                 <label for="first-name" class="block font-medium mb-1"
@@ -89,6 +123,7 @@
                 class="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-green-600"
               />
             </div>
+            <p id="password-error" class="text-red-600 text-sm"></p>
             <button
               type="submit"
               class="w-full py-2 bg-green-700 text-white rounded-md hover:bg-green-800 transition cursor-pointer"
