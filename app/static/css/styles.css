@@ -14,11 +14,11 @@
 }
 
 .input-field {
-  @apply w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-green-600;
+  @apply w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-green-600 shadow-sm;
 }
 
 .button-primary {
-  @apply w-full py-2 bg-green-800 text-white rounded-md hover:bg-green-900 transition cursor-pointer;
+  @apply w-full py-2 bg-green-800 font-semibold text-white rounded-md hover:bg-green-900 transition cursor-pointer;
 }
 
 .link {
@@ -27,4 +27,9 @@
 
 .right-section {
   @apply hidden md:flex flex-col justify-center items-center bg-green-50 p-8 text-center;
+}
+
+.highlight-text {
+  background: linear-gradient(to top, #a7f3d0 50%, transparent 50%);
+  display: inline-block;
 }
