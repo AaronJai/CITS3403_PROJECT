@@ -18,11 +18,11 @@
 }
 
 .button-primary {
-  @apply w-full py-2 bg-green-700 text-white rounded-md hover:bg-green-800 transition cursor-pointer;
+  @apply w-full py-2 bg-green-800 text-white rounded-md hover:bg-green-900 transition cursor-pointer;
 }
 
 .link {
-  @apply text-green-700 font-bold hover:underline;
+  @apply text-green-800 font-bold hover:underline;
 }
 
 .right-section {
