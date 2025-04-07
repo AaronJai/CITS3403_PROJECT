@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Log in - EcoTrack</title>
     <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
+    <link href="../../static/css/output.css" rel="stylesheet" />
   </head>
   <body class="h-screen font-sans">
     <div class="grid grid-cols-3 h-full">
@@ -18,13 +19,11 @@
             alt="EcoTrack Logo"
             class="h-10 mr-2"
           />
-          <h1 class="text-4xl font-bold">EcoTrack</h1>
+          <h1 class="title">EcoTrack</h1>
         </div>
         <div class="w-full max-w-md">
-          <h1 class="text-3xl font-bold mb-4">Log in</h1>
-          <p class="text-gray-600 mb-6">
-            Welcome back! Please enter your details.
-          </p>
+          <h1 class="subtitle">Log in</h1>
+          <p class="text-gray mb-6">Welcome back! Please enter your details.</p>
           <form action="/login" method="POST" class="space-y-4">
             <div>
               <label for="email" class="block font-medium mb-1">Email</label>
@@ -34,7 +33,7 @@
                 name="email"
                 placeholder="Enter your email"
                 required
-                class="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-green-600"
+                class="input-field"
               />
             </div>
             <div>
@@ -47,33 +46,22 @@
                 name="password"
                 placeholder="Enter your password"
                 required
-                class="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-green-600"
+                class="input-field"
               />
             </div>
-            <button
-              type="submit"
-              class="w-full py-2 bg-green-700 text-white rounded-md hover:bg-green-800 transition cursor-pointer"
-            >
-              Login
-            </button>
+            <button type="submit" class="button-primary">Login</button>
           </form>
           <div class="text-center mt-4 text-sm">
             Don't have an account?
-            <a
-              href="/app/templates/auth/signup.html"
-              class="text-green-700 font-bold hover:underline"
-              >Sign up</a
-            >
+            <a href="/app/templates/auth/signup.html" class="link">Sign up</a>
           </div>
         </div>
       </div>
 
       <!-- Right Section -->
-      <div
-        class="hidden md:flex flex-col justify-center items-center bg-green-50 p-8 text-center"
-      >
-        <h2 class="text-3xl font-bold mb-4">Track Your Footprint</h2>
-        <p class="text-gray-600 leading-relaxed">
+      <div class="right-section">
+        <h2 class="subtitle">Track Your Footprint</h2>
+        <p class="text-gray leading-relaxed">
           We've created the perfect place for you to log your daily activities
           and see how your choices affect the environment. Stay informed, reduce
           your carbon footprint, and make a difference—one step at a time!
