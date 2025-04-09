@@ -24,30 +24,28 @@
         <div class="w-full max-w-md">
           <h1 class="subtitle">Log In</h1>
           <p class="text-gray mb-6">Welcome back! Please enter your details.</p>
-          <form action="/login" method="POST" class="space-y-4">
-            <div>
-              <label for="email" class="block font-medium mb-1">Email</label>
+          <form action="/login" method="POST" class="space-y-6">
+            <div class="relative">
               <input
                 type="email"
                 id="email"
                 name="email"
-                placeholder="Enter your email"
+                placeholder=""
                 required
-                class="input-field"
+                class="input-field floating-input"
               />
+              <label for="email" class="floating-label">Email</label>
             </div>
-            <div>
-              <label for="password" class="block font-medium mb-1"
-                >Password</label
-              >
+            <div class="relative">
               <input
                 type="password"
                 id="password"
                 name="password"
-                placeholder="Enter your password"
+                placeholder=""
                 required
-                class="input-field"
+                class="input-field floating-input"
               />
+              <label for="password" class="floating-label">Password</label>
             </div>
             <button type="submit" class="button-primary">Login</button>
           </form>

@@ -14,7 +14,35 @@
 }
 
 .input-field {
-  @apply w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-green-600 shadow-sm;
+  @apply w-full px-4 py-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-green-600 shadow-sm text-lg;
+  position: relative;
+  background-color: transparent;
+}
+
+/* Existing styles for floating labels */
+.floating-label {
+  position: absolute;
+  top: 50%;
+  left: 16px;
+  transform: translateY(-50%);
+  color: #9ca3af; /* Gray-400 */
+  font-size: 1rem;
+  transition: all 0.2s ease-in-out;
+  pointer-events: none;
+}
+
+/* When the input is focused */
+.floating-input:focus + .floating-label {
+  top: 8px;
+  font-size: 0.875rem; /* Smaller font */
+  color: #059669; /* Green-600 */
+}
+
+/* When the input is not focused but contains text */
+.floating-input:not(:placeholder-shown):not(:focus) + .floating-label {
+  top: 8px;
+  font-size: 0.875rem; /* Smaller font */
+  color: #9ca3af; /* Gray-400 */
 }
 
 .button-primary {
