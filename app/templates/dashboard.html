@@ -3,9 +3,199 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Document</title>
+    <title>EcoTrack Dashboard</title>
+    <script src="https://cdn.tailwindcss.com"></script>
   </head>
-  <body>
-    dashboard
+  <body class="bg-white text-gray-800 font-sans">
+    <div class="flex flex-col min-h-screen">
+      <!-- Top Bar -->
+      <header class="bg-white p-4 flex justify-between items-center">
+        <h1 class="text-2xl font-bold flex items-center space-x-2">
+          <span
+            ><img
+              src="../static/assets/images/logo.png"
+              alt="EcoTrack Logo"
+              class="h-8 mr-2" /></span
+          >EcoTrack
+        </h1>
+        <button class="text-sm text-gray-600 hover:text-gray-800">
+          Logout
+        </button>
+      </header>
+
+      <div class="flex flex-1">
+        <!-- Sidebar -->
+        <aside class="w-64 bg-white flex flex-col justify-between">
+          <div>
+            <nav class="space-y-2 px-4">
+              <button
+                class="w-full text-left px-4 py-2 bg-green-900 text-white rounded-xl flex items-center space-x-2"
+              >
+                <img
+                  src="../static/assets/icons/dashboard.svg"
+                  alt="Dashboard Icon"
+                  class="h-5 w-5"
+                />
+                <span>Dashboard</span>
+              </button>
+              <button
+                class="w-full text-left px-4 py-2 hover:bg-gray-100 rounded-xl flex items-center space-x-2"
+              >
+                <img
+                  src="../static/assets/icons/add-data.svg"
+                  alt="Add Data Icon"
+                  class="h-5 w-5"
+                />
+                <span>Add data</span>
+              </button>
+              <button
+                class="w-full text-left px-4 py-2 hover:bg-gray-100 rounded-xl flex items-center space-x-2"
+              >
+                <img
+                  src="../static/assets/icons/view-data.svg"
+                  alt="view data icon"
+                  class="h-5 w-5"
+                />
+                <span>View data</span>
+              </button>
+              <button
+                class="w-full text-left px-4 py-2 hover:bg-gray-100 rounded-xl flex items-center space-x-2"
+              >
+                <img
+                  src="../static/assets/icons/share.svg"
+                  alt="Share Icon"
+                  class="h-5 w-5"
+                />
+                <span>Share</span>
+              </button>
+              <button
+                class="w-full text-left px-4 py-2 hover:bg-gray-100 rounded-xl flex items-center space-x-2"
+              >
+                <img
+                  src="../static/assets/icons/info.svg"
+                  alt="Facts Icon"
+                  class="h-5 w-5"
+                />
+                <span>Facts</span>
+              </button>
+            </nav>
+          </div>
+          <div class="p-4 flex flex-col items-center text-sm">
+            <img
+              src="../static/assets/images/ecofriendly.png"
+              alt="Earth"
+              class="w-16 mb-2"
+            />
+            <div class="text-center">
+              <p class="font-semibold">Matthew Daggit</p>
+              <p class="text-gray-500">test@test.com</p>
+            </div>
+          </div>
+        </aside>
+
+        <!-- Main content -->
+        <div class="flex-1">
+          <!-- New grey container -->
+          <div class="bg-gray-200 p-6 rounded-2xl">
+            <div>
+              <!-- Emission Goal -->
+              <section
+                class="bg-green-900 text-white p-6 rounded-2xl shadow-md flex items-center justify-between mb-6"
+              >
+                <div class="flex items-center space-x-6">
+                  <div class="relative w-24 h-24">
+                    <svg
+                      class="absolute w-full h-full transform -rotate-90"
+                      viewBox="0 0 100 100"
+                    >
+                      <circle
+                        cx="50"
+                        cy="50"
+                        r="45"
+                        stroke="white"
+                        stroke-width="10"
+                        fill="none"
+                        opacity="0.2"
+                      />
+                      <circle
+                        cx="50"
+                        cy="50"
+                        r="45"
+                        stroke="white"
+                        stroke-width="10"
+                        fill="none"
+                        stroke-dasharray="282.74"
+                        stroke-dashoffset="98.96"
+                        stroke-linecap="round"
+                      />
+                    </svg>
+                    <div
+                      class="absolute inset-0 flex items-center justify-center font-bold text-xl"
+                    >
+                      65%
+                    </div>
+                  </div>
+                  <div>
+                    <h2 class="text-lg font-semibold">Your Footprint</h2>
+                    <p class="text-sm">‘x’ CO2eq emitted</p>
+                    <p class="text-sm">‘y’ CO2eq saved</p>
+                  </div>
+                </div>
+              </section>
+
+              <!-- Category Cards -->
+              <section
+                class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-2 gap-6"
+              >
+                <!-- Card Template -->
+                <div class="bg-white p-6 rounded-xl shadow-md space-y-2">
+                  <h3 class="text-lg font-semibold">Travel</h3>
+                  <div class="w-full bg-gray-200 h-2 rounded-full">
+                    <div class="h-2 bg-gray-800 rounded-full w-[95%]"></div>
+                  </div>
+                  <p class="text-sm text-gray-600">95/100</p>
+                  <p class="text-sm text-gray-600">
+                    You have emitted ‘w’ CO2eq out of a possible ‘z’ CO2eq
+                  </p>
+                </div>
+
+                <div class="bg-white p-6 rounded-xl shadow-md space-y-2">
+                  <h3 class="text-lg font-semibold">Home</h3>
+                  <div class="w-full bg-gray-200 h-2 rounded-full">
+                    <div class="h-2 bg-gray-800 rounded-full w-[95%]"></div>
+                  </div>
+                  <p class="text-sm text-gray-600">95/100</p>
+                  <p class="text-sm text-gray-600">
+                    You have emitted ‘w’ CO2eq out of a possible ‘z’ CO2eq
+                  </p>
+                </div>
+
+                <div class="bg-white p-6 rounded-xl shadow-md space-y-2">
+                  <h3 class="text-lg font-semibold">Food</h3>
+                  <div class="w-full bg-gray-200 h-2 rounded-full">
+                    <div class="h-2 bg-gray-800 rounded-full w-[95%]"></div>
+                  </div>
+                  <p class="text-sm text-gray-600">95/100</p>
+                  <p class="text-sm text-gray-600">
+                    You have emitted ‘w’ CO2eq out of a possible ‘z’ CO2eq
+                  </p>
+                </div>
+
+                <div class="bg-white p-6 rounded-xl shadow-md space-y-2">
+                  <h3 class="text-lg font-semibold">Shopping</h3>
+                  <div class="w-full bg-gray-200 h-2 rounded-full">
+                    <div class="h-2 bg-gray-800 rounded-full w-[95%]"></div>
+                  </div>
+                  <p class="text-sm text-gray-600">95/100</p>
+                  <p class="text-sm text-gray-600">
+                    You have emitted ‘w’ CO2eq out of a possible ‘z’ CO2eq
+                  </p>
+                </div>
+              </section>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
   </body>
 </html>
