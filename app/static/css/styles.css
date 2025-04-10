@@ -108,7 +108,7 @@
 }
 
 .category-card {
-  @apply bg-white p-6 pb-[60px] rounded-xl shadow-md space-y-2;
+  @apply bg-white p-6 h-54 rounded-xl shadow-md space-y-2;
 }
 
 .category-heading {

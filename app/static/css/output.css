@@ -607,6 +607,7 @@
   }
 }
 .category-card {
+  height: calc(var(--spacing) * 54);
   :where(& > :not(:last-child)) {
     --tw-space-y-reverse: 0;
     margin-block-start: calc(calc(var(--spacing) * 2) * var(--tw-space-y-reverse));
@@ -615,7 +616,6 @@
   border-radius: var(--radius-xl);
   background-color: var(--color-white);
   padding: calc(var(--spacing) * 6);
-  padding-bottom: 60px;
   --tw-shadow: 0 4px 6px -1px var(--tw-shadow-color, rgb(0 0 0 / 0.1)), 0 2px 4px -2px var(--tw-shadow-color, rgb(0 0 0 / 0.1));
   box-shadow: var(--tw-inset-shadow), var(--tw-inset-ring-shadow), var(--tw-ring-offset-shadow), var(--tw-ring-shadow), var(--tw-shadow);
 }
