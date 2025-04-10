@@ -9,10 +9,6 @@
   @apply text-3xl font-bold mb-4;
 }
 
-.text-gray {
-  @apply text-gray-600;
-}
-
 .input-field {
   @apply w-full px-4 py-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-green-600 shadow-sm text-lg;
   position: relative;
@@ -60,4 +56,64 @@
 .highlight-text {
   background: linear-gradient(to top, #a7f3d0 50%, transparent 50%);
   display: inline-block;
+}
+
+.sidebar-link {
+  @apply w-full text-left px-6 py-3 hover:bg-gray-100 rounded-xl flex items-center space-x-2;
+}
+
+.sidebar-link.current-page {
+  @apply bg-green-900 text-white rounded-full;
+}
+
+.main-container {
+  @apply bg-gray-200 p-10 mr-8 rounded-2xl;
+}
+
+.emission-goal {
+  @apply bg-green-900 text-white p-10 rounded-2xl shadow-md flex items-center justify-center mb-10;
+}
+
+.emission-content {
+  @apply flex items-center space-x-8;
+}
+
+.progress-circle {
+  @apply relative w-32 h-32;
+}
+
+.progress-text {
+  @apply absolute inset-0 flex items-center justify-center font-bold text-2xl;
+}
+
+.emission-details h2 {
+  @apply text-2xl font-semibold;
+}
+
+.emission-details p {
+  @apply text-lg;
+}
+
+.category-cards {
+  @apply grid grid-cols-1 md:grid-cols-2 xl:grid-cols-2 gap-6;
+}
+
+.category-card {
+  @apply bg-white p-6 rounded-xl shadow-md space-y-2;
+}
+
+.category-heading {
+  @apply text-lg font-semibold;
+}
+
+.category-description {
+  @apply text-sm text-gray-600;
+}
+
+.progress-bar {
+  @apply w-full bg-gray-200 h-2 rounded-full;
+}
+
+.progress-bar-fill {
+  @apply h-2 bg-gray-800 rounded-full;
 }
