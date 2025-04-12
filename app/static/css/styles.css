@@ -67,16 +67,8 @@
 
 /* Home */
 
-.sidebar-link {
-  @apply w-full text-left px-6 py-3 hover:bg-gray-100 rounded-full flex items-center space-x-2;
-}
-
-.sidebar-link.current-page {
-  @apply bg-primary shadow-md text-white rounded-full;
-}
-
 .main-container {
-  @apply bg-gray-100 p-10 my-15 mr-10 ml-2 rounded-2xl;
+  @apply bg-gray-100 p-10 my-15 mx-5 rounded-2xl;
 }
 
 .emission-goal {
@@ -131,7 +123,7 @@
 
 /* Sidebar */
 .sidebar {
-  @apply hidden h-screen w-[90px] flex-col overflow-auto px-5 py-7 sm:flex lg:w-[280px] xl:w-[320px];
+  @apply hidden h-screen w-[80px] flex-col overflow-auto pl-5 py-7 sm:flex lg:w-[240px] xl:w-[300px];
 }
 .sidebar-nav {
   @apply mt-9 flex-1 gap-1 text-primary;
