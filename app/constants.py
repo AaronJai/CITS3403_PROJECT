@@ -1,3 +1,5 @@
+# for static structures, mappings, etc.
+
 nav_items = [
     {"name": "Dashboard", "endpoint": "dashboard", "icon": "dashboard.svg"},
     {"name": "Add Data", "endpoint": "add_data", "icon": "add_data.svg"},

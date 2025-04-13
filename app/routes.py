@@ -1,6 +1,6 @@
 from app import app
 from flask import redirect, render_template, request, url_for
-from app.index import nav_items
+from app.constants import nav_items
 
 @app.route('/')
 def dashboard():
