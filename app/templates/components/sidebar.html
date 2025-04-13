@@ -1,10 +1,10 @@
 <!-- Navigation bar -->
 <aside class="sidebar">
   <!-- App Title and Logo -->
-  <a href="dashboard.html">
+  <a href="{{ url_for('dashboard') }}">
     <div class="flex items-center text-2xl font-bold mt-2 text-primary">
       <img
-        src="../static/assets/images/logo.png"
+        src="{{ url_for('static', filename='assets/images/logo.png') }}"
         alt="EcoTrack Logo"
         class="h-10 ml-2 mr-3 mt-2"
       />
@@ -14,69 +14,18 @@
 
   <nav class="sidebar-nav">
     <ul class="flex flex-1 flex-col gap-5">
-      <!-- Dashboard -->
-      <li
-        class="sidebar-nav-item {% if active_page == 'dashboard' %}shad-active{% endif %}"
-      >
-        <a href="{{ url_for('dashboard') }}" class="sidebar-nav-link">
+      {% for item in nav_items %}
+      <li class="sidebar-nav-item {% if active_page == item.endpoint %}shad-active{% endif %}">
+        <a href="{{ url_for(item.endpoint) }}" class="sidebar-nav-link">
           <img
-            src="{{ url_for('static', filename='assets/icons/dashboard.svg') }}"
-            alt="Dashboard"
-            class="{% if active_page == 'dashboard' %}nav-icon-active{% else %}nav-icon{% endif %}"
+            src="{{ url_for('static', filename='assets/icons/' + item.icon) }}"
+            alt="{{ item.name }}"
+            class="{% if active_page == item.endpoint %}nav-icon-active{% else %}nav-icon{% endif %}"
           />
-          <p class="hidden lg:block">Dashboard</p>
+          <p class="hidden lg:block">{{ item.name }}</p>
         </a>
       </li>
-
-      <!-- Add Data -->
-      <li
-        class="sidebar-nav-item {% if active_page == 'add_data' %}shad-active{% endif %}"
-      >
-        <a href="{{ url_for('add_data') }}" class="sidebar-nav-link">
-          <img
-            src="{{ url_for('static', filename='assets/icons/add_data.svg') }}"
-            alt="AddData"
-            class="{% if active_page == 'add_data' %}nav-icon-active{% else %}nav-icon{% endif %}"
-          />
-          <p class="hidden lg:block">Add data</p>
-        </a>
-      </li>
-
-      <!-- View Data -->
-      <li class="sidebar-nav-item {% if active_page == 'view_data' %}shad-active{% endif %}">
-        <a href="{{ url_for('view_data') }}" class="sidebar-nav-link">
-          <img
-            src="{{ url_for('static', filename='assets/icons/view_data.svg') }}"
-            alt="ViewData"
-            class="{% if active_page == 'view_data' %}nav-icon-active{% else %}nav-icon{% endif %}"
-          />
-          <p class="hidden lg:block">View data</p>
-        </a>
-      </li>
-
-      <!-- Share -->
-      <li class="sidebar-nav-item {% if active_page == 'share' %}shad-active{% endif %}">
-        <a href="{{ url_for('share') }}" class="sidebar-nav-link">
-          <img
-            src="{{ url_for('static', filename='assets/icons/share.svg') }}"
-            alt="Share"
-            class="{% if active_page == 'share' %}nav-icon-active{% else %}nav-icon{% endif %}"
-          />
-          <p class="hidden lg:block">Share</p>
-        </a>
-      </li>
-
-      <!-- Facts -->
-      <li class="sidebar-nav-item {% if active_page == 'facts' %}shad-active{% endif %}">
-        <a href="{{ url_for('facts') }}" class="sidebar-nav-link">
-          <img
-            src="{{ url_for('static', filename='assets/icons/facts.svg') }}"
-            alt="Facts"
-            class="{% if active_page == 'facts' %}nav-icon-active{% else %}nav-icon{% endif %}"
-          />
-          <p class="hidden lg:block">Facts</p>
-        </a>
-      </li>
+      {% endfor %}
     </ul>
   </nav>
 

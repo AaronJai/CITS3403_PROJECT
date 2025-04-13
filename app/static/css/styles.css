@@ -155,8 +155,12 @@
   @apply h-6 w-6 filter invert;
 }
 
+.mobile-icon {
+  @apply h-6 w-6 filter
+}
+
 .mobile-icon-active {
-  @apply filter invert;
+  @apply h-6 w-6 filter invert;
 }
 
 .mobile-nav-item {
