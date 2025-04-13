@@ -1,0 +1,87 @@
+.gitignore# Byte-compiled / optimized / DLL files
+__pycache__/
+*.py[cod]
+*$py.class
+
+# Virtual environments
+venv/
+env/
+.venv/
+.ENV/
+ENV/
+
+# Flask instance folder (contains config, uploads, etc.)
+instance/
+
+# Flask cache and logs
+*.log
+*.pid
+
+# Jinja2 cache
+*.jinja2c
+
+# Static files (compiled assets, optional)
+static/build/
+static/dist/
+static/*.tmp
+static/*.map
+
+# Node.js dependencies (if using npm/yarn for Bootstrap/JS)
+node_modules/
+package-lock.json
+yarn.lock
+
+# Compiled CSS/JS (optional if you're building assets from SCSS/JS)
+*.min.js
+*.min.css
+
+# Coverage, test, and temp files
+htmlcov/
+.tox/
+.nox/
+.coverage
+.coverage.*
+.cache
+nosetests.xml
+coverage.xml
+*.cover
+*.py,cover
+.pytest_cache/
+.mypy_cache/
+.dmypy.json
+dmypy.json
+
+# Editor settings
+.vscode/
+.idea/
+*.sublime-project
+*.sublime-workspace
+
+# OS-specific
+.DS_Store
+Thumbs.db
+
+# Database
+*.sqlite3
+*.db
+
+# Environment variables
+.env
+.env.*
+
+# Build / dist files
+build/
+dist/
+*.egg-info/
+.eggs/
+develop-eggs/
+downloads/
+parts/
+sdist/
+*.egg
+.installed.cfg
+
+# Misc
+*.bak
+*.swp
+*.tmp

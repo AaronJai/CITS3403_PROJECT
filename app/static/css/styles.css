@@ -1,16 +1,19 @@
 @import "tailwindcss";
 
 /* Common reusable classes */
+
+@theme {
+  --color-primary: #16372c;
+}
+
+/* Auth */
+
 .title {
   @apply text-4xl font-bold;
 }
 
 .subtitle {
   @apply text-3xl font-bold mb-4;
-}
-
-.text-gray {
-  @apply text-gray-600;
 }
 
 .input-field {
@@ -46,11 +49,11 @@
 }
 
 .button-primary {
-  @apply w-full py-2 bg-green-800 font-semibold text-white rounded-md hover:bg-green-900 transition cursor-pointer;
+  @apply w-full py-2 bg-primary font-semibold text-white rounded-md hover:bg-green-900 transition cursor-pointer;
 }
 
 .link {
-  @apply text-green-800 font-bold hover:underline;
+  @apply text-primary font-bold hover:underline;
 }
 
 .right-section {
@@ -60,4 +63,113 @@
 .highlight-text {
   background: linear-gradient(to top, #a7f3d0 50%, transparent 50%);
   display: inline-block;
+}
+
+/* Home */
+
+.main-container {
+  @apply bg-gray-100 p-10 my-15 mx-5 rounded-2xl;
+}
+
+.emission-goal {
+  @apply bg-primary text-white p-10 rounded-2xl shadow-md flex items-center justify-center mb-10;
+}
+
+.emission-content {
+  @apply flex items-center space-x-8;
+}
+
+.progress-circle {
+  @apply relative w-32 h-32;
+}
+
+.progress-text {
+  @apply absolute inset-0 flex items-center justify-center font-bold text-2xl;
+}
+
+.emission-details h2 {
+  @apply text-2xl font-semibold;
+}
+
+.emission-details p {
+  @apply text-lg;
+}
+
+.category-cards {
+  @apply grid grid-cols-1 md:grid-cols-2 xl:grid-cols-2 gap-6;
+}
+
+.category-card {
+  @apply bg-white p-6 h-54 rounded-xl shadow-md space-y-2;
+}
+
+.category-heading {
+  @apply text-xl font-semibold;
+}
+
+.category-description {
+  @apply text-sm text-gray-600 my-4;
+}
+
+.progress-bar {
+  @apply w-full bg-gray-200 h-2 rounded-full;
+}
+
+.progress-bar-fill {
+  @apply h-2 bg-primary rounded-full;
+}
+
+/* __________________________________ */
+
+/* Sidebar */
+.sidebar {
+  @apply hidden h-screen w-[80px] flex-col overflow-auto pl-5 py-7 sm:flex lg:w-[240px] xl:w-[300px];
+}
+.sidebar-nav {
+  @apply mt-9 flex-1 gap-1 text-primary;
+}
+.sidebar-nav-item {
+  @apply flex font-semibold gap-4 rounded-xl lg:w-full justify-center lg:justify-start items-center lg:px-[30px] h-[52px] lg:rounded-full;
+}
+
+.sidebar-nav-link {
+  @apply lg:w-full flex items-center gap-2.5;
+}
+
+.sidebar-user-info {
+  @apply mb-10 flex items-center justify-center gap-4 rounded-full bg-gray-50 p-1 lg:justify-start lg:p-4;
+}
+.sidebar-user-avatar {
+  @apply aspect-square w-10 rounded-full object-cover;
+}
+
+.shad-active {
+  @apply bg-primary text-white shadow-md;
+}
+
+/* Sidebar & MobileNavigation */
+.nav-icon {
+  @apply h-5 w-5 filter;
+}
+.nav-icon-active {
+  @apply h-6 w-6 filter invert;
+}
+
+.mobile-icon-active {
+  @apply filter invert;
+}
+
+.mobile-nav-item {
+  @apply flex gap-3 justify-start items-center px-3 h-[45px] rounded-2xl;
+}
+
+/* Header */
+/* Bottom Header */
+.header-bottom {
+  @apply sm:hidden fixed bottom-0 right-0 left-0 bg-white shadow-md flex justify-around py-3;
+}
+
+/* Top Header */
+.header-top {
+  @apply sm:hidden fixed top-0 right-0 left-0 bg-white shadow-md flex justify-around;
 }
