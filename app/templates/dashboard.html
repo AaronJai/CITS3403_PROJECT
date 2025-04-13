@@ -1,6 +1,6 @@
-{% extends "base.html" %} 
+{% extends "base.html" %}
 
-{% block title %}Dashboard{% endblock %} 
+{% block title %}Dashboard | EcoTrack{% endblock %}
 
 
 {% block content %}
@@ -9,30 +9,10 @@
   <section class="emission-goal">
     <div class="emission-content">
       <div class="progress-circle">
-        <svg
-          class="absolute w-full h-full transform -rotate-90"
-          viewBox="0 0 100 100"
-        >
-          <circle
-            cx="50"
-            cy="50"
-            r="45"
-            stroke="white"
-            stroke-width="10"
-            fill="none"
-            opacity="0.2"
-          />
-          <circle
-            cx="50"
-            cy="50"
-            r="45"
-            stroke="white"
-            stroke-width="10"
-            fill="none"
-            stroke-dasharray="282.74"
-            stroke-dashoffset="120.27"
-            stroke-linecap="round"
-          />
+        <svg class="absolute w-full h-full transform -rotate-90" viewBox="0 0 100 100">
+          <circle cx="50" cy="50" r="45" stroke="white" stroke-width="10" fill="none" opacity="0.2" />
+          <circle cx="50" cy="50" r="45" stroke="white" stroke-width="10" fill="none" stroke-dasharray="282.74"
+            stroke-dashoffset="120.27" stroke-linecap="round" />
         </svg>
         <div class="progress-text">65%</div>
       </div>
