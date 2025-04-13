@@ -1,0 +1,64 @@
+<div class="w-full max-w-md">
+    <h1 class="subtitle">{{ 'Log In' if active_page == 'login' else 'Sign Up' }}</h1>
+    <p class="text-gray mb-6">
+        {{ 'Welcome back! Please enter your details.' if active_page == 'login' else 'Create your account to get
+        started.' }}
+    </p>
+    <form action="{{ '/login' if active_page == 'login' else '/signup' }}" method="POST" class="space-y-6" {% if
+        active_page=='signup' %} onsubmit="return validatePassword()" {% endif %}>
+
+        {% if active_page == 'signup' %}
+        <div class="grid grid-cols-2 gap-4">
+            <!-- First Name -->
+            <div class="relative">
+                <input type="text" id="first-name" name="first_name" placeholder="" required
+                    class="input-field floating-input" />
+                <label for="first-name" class="floating-label">First Name</label>
+            </div>
+
+            <!-- Last Name -->
+            <div class="relative">
+                <input type="text" id="last-name" name="last_name" placeholder="" required
+                    class="input-field floating-input" />
+                <label for="last-name" class="floating-label">Last Name</label>
+            </div>
+        </div>
+        {% endif %}
+
+        <!-- Email -->
+        <div class="relative">
+            <input type="email" id="email" name="email" placeholder="" required class="input-field floating-input" />
+            <label for="email" class="floating-label">Email</label>
+        </div>
+
+        <!-- Password -->
+        <div class="relative">
+            <input type="password" id="password" name="password" placeholder="" required
+                class="input-field floating-input" />
+            <label for="password" class="floating-label">Password</label>
+        </div>
+
+        {% if active_page == 'signup' %}
+        <!-- Confirm Password -->
+        <div class="relative">
+            <input type="password" id="confirm-password" name="confirm_password" placeholder="" required
+                class="input-field floating-input" />
+            <label for="confirm-password" class="floating-label">Confirm Password</label>
+        </div>
+        <p id="password-error" class="text-red-600 text-sm"></p>
+        {% endif %}
+
+        <!-- Submit -->
+        <button type="submit" class="button-primary">
+            {{ 'Login' if active_page == 'login' else 'Sign Up' }}
+        </button>
+    </form>
+
+    <!-- Switch Forms -->
+    <div class="text-center mt-4 text-sm">
+        {{ "Don't have an account?" if active_page == 'login' else 'Already have an account?' }}
+        <a href="{{ url_for('signup' if active_page == 'login' else 'login') }}" class="link">
+            {{ 'Sign Up' if active_page == 'login' else 'Log In' }}
+        </a>
+    </div>
+</div>

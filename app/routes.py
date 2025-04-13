@@ -25,3 +25,11 @@ def facts():
 @app.route('/profile')
 def profile():
     return render_template('profile.html', nav_items=nav_items)
+
+@app.route('/login', methods=['GET', 'POST'])
+def login():
+    return render_template('auth/login.html', active_page='login')
+
+@app.route('/signup', methods=['GET', 'POST'])
+def signup():
+    return render_template('auth/signup.html', active_page='signup')
