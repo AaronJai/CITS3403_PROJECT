@@ -3,9 +3,84 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Document</title>
+    <title>Log in - EcoTrack</title>
+    <link href="../../static/css/output.css" rel="stylesheet" />
+    <script src="../../static/js/login.js" defer></script>
   </head>
-  <body>
-    Login
+  <body class="h-screen font-sans">
+    <div class="grid grid-cols-3 h-full">
+      <!-- Left Section -->
+      <div
+        class="col-span-3 md:col-span-2 flex flex-col justify-center items-center p-8"
+      >
+        <!-- Logo -->
+        <div class="flex items-center mb-8">
+          <img
+            src="../../static/assets/images/logo.png"
+            alt="EcoTrack Logo"
+            class="h-10 mr-2"
+          />
+          <h1 class="title">EcoTrack</h1>
+        </div>
+
+        <!-- Login Form -->
+        <div class="w-full max-w-md">
+          <h1 class="subtitle">Log In</h1>
+          <p class="text-gray mb-6">Welcome back! Please enter your details.</p>
+          <form action="/login" method="POST" class="space-y-6">
+            <!-- Email -->
+            <div class="relative">
+              <input
+                type="email"
+                id="email"
+                name="email"
+                placeholder=""
+                required
+                class="input-field floating-input"
+              />
+              <label for="email" class="floating-label">Email</label>
+            </div>
+            
+            <!-- Password -->
+            <div class="relative">
+              <input
+                type="password"
+                id="password"
+                name="password"
+                placeholder=""
+                required
+                class="input-field floating-input"
+              />
+              <label for="password" class="floating-label">Password</label>
+            </div>
+
+            <!-- Submit -->
+            <button type="submit" class="button-primary">Login</button>
+          </form>
+
+          <!-- Switch to Sign Up -->
+          <div class="text-center mt-4 text-sm">
+            Don't have an account?
+            <a href="/app/templates/auth/signup.html" class="link">Sign Up</a>
+          </div>
+        </div>
+      </div>
+
+
+      <!-- Right Section -->
+      <div class="right-section">
+        <h2 class="subtitle highlight-text">Track Your Footprint</h2>
+        <p class="text-gray leading-relaxed">
+          We've created the perfect place for you to log your daily activities
+          and see how your choices affect the environment. Stay informed, reduce
+          your carbon footprint, and make a difference—one step at a time!
+        </p>
+        <img
+          src="../../static/assets/images/ecofriendly.png"
+          alt="Eco-friendly illustration"
+          class="mt-4"
+        />
+      </div>
+    </div>
   </body>
 </html>

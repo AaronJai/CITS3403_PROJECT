@@ -1,0 +1,63 @@
+@import "tailwindcss";
+
+/* Common reusable classes */
+.title {
+  @apply text-4xl font-bold;
+}
+
+.subtitle {
+  @apply text-3xl font-bold mb-4;
+}
+
+.text-gray {
+  @apply text-gray-600;
+}
+
+.input-field {
+  @apply w-full px-4 py-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-green-600 shadow-sm text-lg;
+  position: relative;
+  background-color: transparent;
+}
+
+/* Existing styles for floating labels */
+.floating-label {
+  position: absolute;
+  top: 50%;
+  left: 16px;
+  transform: translateY(-50%);
+  color: #9ca3af; /* Gray-400 */
+  font-size: 1rem;
+  transition: all 0.2s ease-in-out;
+  pointer-events: none;
+}
+
+/* When the input is focused */
+.floating-input:focus + .floating-label {
+  top: 8px;
+  font-size: 0.875rem; /* Smaller font */
+  color: #059669; /* Green-600 */
+}
+
+/* When the input is not focused but contains text */
+.floating-input:not(:placeholder-shown):not(:focus) + .floating-label {
+  top: 8px;
+  font-size: 0.875rem; /* Smaller font */
+  color: #9ca3af; /* Gray-400 */
+}
+
+.button-primary {
+  @apply w-full py-2 bg-green-800 font-semibold text-white rounded-md hover:bg-green-900 transition cursor-pointer;
+}
+
+.link {
+  @apply text-green-800 font-bold hover:underline;
+}
+
+.right-section {
+  @apply hidden md:flex flex-col justify-center items-center bg-green-50 p-8 text-center;
+}
+
+.highlight-text {
+  background: linear-gradient(to top, #a7f3d0 50%, transparent 50%);
+  display: inline-block;
+}

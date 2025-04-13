@@ -12,3 +12,14 @@ The Environmental Impact Tracker allows users to log their daily activities and 
 | 23683717 | Salman Nikakhter | [samlam691](https://github.com/samlam691)           |
 | 23074324 | Hazel Wang       | [HazelWangHuiZi](https://github.com/HazelWangHuiZi) |
 | 22884212 | Aaron Tan        | [AaronJai](https://github.com/AaronJai)             |
+
+### development notes (edit later)
+
+when writing tailwind styles and refactoring reusable classes, use:
+
+```
+npx @tailwindcss/cli -i ./app/static/css/styles.css -o ./app/static/css/output.css --watch
+```
+
+- CLI automatically rebuilds `output.css` whenever we add styles to `styles.css` (happens because of the --watch flag)
+- if you accidentally cancel or close it, just re-run it
