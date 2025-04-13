@@ -1,25 +1,20 @@
-<!DOCTYPE html>
-<html lang="en">
+{% extends 'base_auth.html' %}
 
-<head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Sign Up - EcoTrack</title>
-  <link href="../../static/css/output.css" rel="stylesheet" />
-  <script src="../../static/js/signup.js" defer></script>
-</head>
+{% block title %}Sign Up - EcoTrack{% endblock %}
 
-<body class="h-screen font-sans">
-  <div class="grid grid-cols-3 h-full">
-    <!-- Left Section -->
-    <div class="col-span-3 md:col-span-2 flex flex-col justify-center items-center p-8">
-      {% include 'components/authlogo.html' %}
-      {% include 'components/authforms.html' with context %}
-    </div>
+{% block head %}
+<script src="../../static/js/signup.js" defer></script>
+{% endblock %}
 
-    <!-- Right Section -->
-    {% include 'components/authappinfo.html' %}
+{% block content %}
+<div class="grid grid-cols-3 h-full">
+  <!-- Left Section -->
+  <div class="col-span-3 md:col-span-2 flex flex-col justify-center items-center p-8">
+    {% include 'components/auth/logo.html' %}
+    {% include 'components/auth/forms.html' with context %}
   </div>
-</body>
 
-</html>
+  <!-- Right Section -->
+  {% include 'components/auth/appinfo.html' %}
+</div>
+{% endblock %}
