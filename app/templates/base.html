@@ -3,16 +3,31 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>EcoTrack</title>
+    <title>{% block title %}{% endblock %}</title>
 
     <!-- Link to Favicon -->
-    <!-- <link
+    <link
       rel="icon"
       href="{{ url_for('static', filename='assets/images/favicon.ico') }}"
       type="image/x-icon"
-    /> -->
+    />
+    <link href="../static/css/output.css" rel="stylesheet" />
 
-    <link rel="icon" href="../static/assets/favicon.ico" type="image/x-icon" />
+    {% block head %} {% endblock %}
   </head>
-  <body></body>
+  <body>
+    <main class="flex">
+      <!-- Header -->
+      {% include 'components/header.html' %}
+
+      <!-- Sidebar -->
+      {% include 'components/sidebar.html' %}
+
+      <!-- Main content -->
+      <div class="flex-1">
+        <!-- New grey container -->
+        <div class="main-container">{% block content %} {% endblock %}</div>
+      </div>
+    </main>
+  </body>
 </html>
