@@ -1,66 +1,123 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Eco Facts | EcoTrack</title>
-  <link rel="stylesheet" href="../static/css/style.css" /> <!-- Update path as needed -->
-  <script src="https://cdn.tailwindcss.com"></script>
-</head>
-<body class="bg-gray-100 font-sans">
-  <div class="flex h-screen">
-    <!-- Sidebar -->
-    <aside class="w-64 bg-white border-r border-gray-200 flex flex-col justify-between py-6 px-4">
-      <div>
-        <h2 class="text-2xl font-bold text-green-900 mb-10">EcoTrack</h2>
-        <nav class="space-y-4">
-          <a href="/dashboard" class="flex items-center text-gray-700 hover:text-green-600">
-            <span class="ml-2">Dashboard</span>
-          </a>
-          <a href="/add_data" class="flex items-center text-gray-700 hover:text-green-600">
-            <span class="ml-2">Add data</span>
-          </a>
-          <a href="/view_data" class="flex items-center text-gray-700 hover:text-green-600">
-            <span class="ml-2">View data</span>
-          </a>
-          <a href="/share" class="flex items-center text-gray-700 hover:text-green-600">
-            <span class="ml-2">Share</span>
-          </a>
-          <a href="/facts" class="flex items-center font-semibold text-green-900">
-            <span class="ml-2">Facts</span>
-          </a>
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>EcoTrack Facts</title>
+    <link href="../static/css/output.css" rel="stylesheet" />
+    <script>
+      // Fetch live environmental news
+      document.addEventListener("DOMContentLoaded", function () {
+        fetch("https://api.rss2json.com/v1/api.json?rss_url=https://news.un.org/feed/subscribe/en/news/topic/climate-change/feed/rss.xml")
+          .then((res) => res.json())
+          .then((data) => {
+            const news = data.items.slice(0, 4).map((item) => `
+              <div class="bg-white p-4 rounded-lg shadow mb-4">
+                <a href="${item.link}" target="_blank" class="text-lg font-semibold text-green-800 hover:underline">
+                  ${item.title}
+                </a>
+                <p class="text-sm text-gray-600 mt-1">${new Date(item.pubDate).toLocaleDateString()}</p>
+                <p class="text-gray-700 mt-2">${item.description.split(" ").slice(0, 20).join(" ")}...</p>
+              </div>
+            `).join("");
+
+            document.getElementById("news-feed").innerHTML = news;
+          });
+      });
+    </script>
+  </head>
+  <body>
+    <main class="flex">
+      <!-- Navigation bar -->
+      <aside class="sidebar">
+        <a href="dashboard.html">
+          <div class="flex items-center text-2xl font-bold mt-2 text-primary">
+            <img src="../static/assets/images/logo.png" alt="EcoTrack Logo" class="h-10 ml-2 mr-3 mt-2" />
+            <p class="hidden lg:block">EcoTrack</p>
+          </div>
+        </a>
+
+        <nav class="sidebar-nav">
+          <ul class="flex flex-1 flex-col gap-5">
+            <li class="sidebar-nav-item">
+              <a href="dashboard.html" class="sidebar-nav-link">
+                <img src="../static/assets/icons/dashboard.svg" alt="Dashboard" class="nav-icon" />
+                <p class="hidden lg:block">Dashboard</p>
+              </a>
+            </li>
+            <li class="sidebar-nav-item">
+              <a href="add_data.html" class="sidebar-nav-link">
+                <img src="../static/assets/icons/add-data.svg" alt="AddData" class="nav-icon" />
+                <p class="hidden lg:block">Add data</p>
+              </a>
+            </li>
+            <li class="sidebar-nav-item">
+              <a href="view_data.html" class="sidebar-nav-link">
+                <img src="../static/assets/icons/view-data.svg" alt="ViewData" class="nav-icon" />
+                <p class="hidden lg:block">View data</p>
+              </a>
+            </li>
+            <li class="sidebar-nav-item">
+              <a href="share.html" class="sidebar-nav-link">
+                <img src="../static/assets/icons/share.svg" alt="Share" class="nav-icon" />
+                <p class="hidden lg:block">Share</p>
+              </a>
+            </li>
+            <li class="sidebar-nav-item shad-active">
+              <a href="more_facts.html" class="sidebar-nav-link">
+                <img src="../static/assets/icons/info.svg" alt="Facts" class="nav-icon-active" />
+                <p class="hidden lg:block">Facts</p>
+              </a>
+            </li>
+          </ul>
         </nav>
-      </div>
-      <div class="text-center">
-        <img src="../static/assets/images/ecofriendly.png" alt="Earth" class="w-full">
-    </aside>
 
-    <!-- Main Content -->
-    <main class="flex-1 overflow-y-auto p-10">
-      <h1 class="text-4xl font-bold text-green-900 mb-8">Environmental Facts</h1>
+        <img src="../static/assets/images/ecofriendly.png" alt="Earth" class="w-full" />
 
-      <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-        <div class="bg-white rounded-2xl shadow-md p-6">
-          <h2 class="text-xl font-semibold text-green-800 mb-2">🌿 Trees absorb CO₂</h2>
-          <p class="text-gray-700">One mature tree can absorb up to 22kg of CO₂ per year. Planting trees is one of the simplest ways to offset carbon emissions.</p>
-        </div>
+        <a href="profile.html" class="hover:underline">
+          <div class="sidebar-user-info">
+            <image src="../static/assets/images/avatar.png" alt="avatar" class="sidebar-user-avatar" />
+            <div class="hidden lg:block">
+              <p class="font-semibold">Matthew Daggit</p>
+              <p class="text-gray-500">test@test.com</p>
+            </div>
+          </div>
+        </a>
+      </aside>
 
-        <div class="bg-white rounded-2xl shadow-md p-6">
-          <h2 class="text-xl font-semibold text-green-800 mb-2">🚗 Transport Emissions</h2>
-          <p class="text-gray-700">Transportation accounts for about 25% of global CO₂ emissions. Walking, biking, or taking public transport helps reduce your footprint.</p>
-        </div>
+      <!-- Main content -->
+      <div class="flex-1">
+        <div class="main-container space-y-10">
+          <!-- Static Environmental Facts -->
+          <section>
+            <h2 class="text-3xl font-bold text-green-900 mb-4">Environmental Facts</h2>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+              <div class="bg-white rounded-xl shadow p-6">
+                <h3 class="text-xl font-semibold text-green-800 mb-2">🌿 Trees absorb CO₂</h3>
+                <p>One mature tree can absorb up to 22kg of CO₂ per year.</p>
+              </div>
+              <div class="bg-white rounded-xl shadow p-6">
+                <h3 class="text-xl font-semibold text-green-800 mb-2">🚗 Transport Emissions</h3>
+                <p>Transport accounts for ~25% of global CO₂ emissions.</p>
+              </div>
+              <div class="bg-white rounded-xl shadow p-6">
+                <h3 class="text-xl font-semibold text-green-800 mb-2">🍔 Food Footprint</h3>
+                <p>Producing 1kg of beef emits over 27kg of CO₂.</p>
+              </div>
+              <div class="bg-white rounded-xl shadow p-6">
+                <h3 class="text-xl font-semibold text-green-800 mb-2">💡 Energy Use</h3>
+                <p>Switching to LEDs can cut home energy use by up to 40%.</p>
+              </div>
+            </div>
+          </section>
 
-        <div class="bg-white rounded-2xl shadow-md p-6">
-          <h2 class="text-xl font-semibold text-green-800 mb-2">🍔 Food Footprint</h2>
-          <p class="text-gray-700">Producing 1kg of beef emits over 27kg of CO₂ — that’s more than driving 100km! Eating more plant-based meals can make a huge impact.</p>
-        </div>
-
-        <div class="bg-white rounded-2xl shadow-md p-6">
-          <h2 class="text-xl font-semibold text-green-800 mb-2">💡 Energy Usage</h2>
-          <p class="text-gray-700">Turning off unused lights and switching to LEDs can cut your home’s energy use by up to 40%.</p>
+          <!-- Live News Feed -->
+          <section>
+            <h2 class="text-3xl font-bold text-green-900 mb-4">Latest Environmental News</h2>
+            <div id="news-feed"></div>
+          </section>
         </div>
       </div>
     </main>
-  </div>
-</body>
+  </body>
 </html>
