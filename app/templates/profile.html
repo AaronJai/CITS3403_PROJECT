@@ -1,35 +1,46 @@
 
 <!DOCTYPE html>
 <html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Document</title>
-  </head>
-  <body class="bg-gray-100 min-h-screen flex items-center justify-center">
+<head>
+    <meta charset="UTF-8">
+    <title>User Profile</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-gray-100 min-h-screen flex items-center justify-center">
     <div class="bg-white p-8 rounded-xl shadow-md max-w-3xl w-full flex gap-8 items-center">
         <!-- Avatar -->
         <div>
             <img src="{{ url_for('static', filename='assets/images/avatar.png') }}"
-                 alt="Profile Picture"
-                 class="w-32 h-32 rounded-full object-cover shadow-sm border border-gray-300">
+                alt="User Avatar"
+                class="w-32 h-32 rounded-full object-cover shadow border">
         </div>
 
         <!-- Profile Info -->
-        <div class="flex-1">
-            <h2 class="text-2xl font-bold text-gray-800">Matthew Daggit</h2>
-            <p class="text-gray-600"><span class="font-semibold">Email:</span>Matthew@example.com</p>
-            <div class="mt-6 space-y-3">
-                <a href="/change-password"
-                   class="block w-full text-center bg-yellow-100 text-yellow-700 font-semibold py-2 rounded hover:bg-yellow-200">
-                    Change Password
-                </a>
-                <a href="/delete-account"
-                   class="block w-full text-center bg-red-100 text-red-700 font-semibold py-2 rounded hover:bg-red-200">
-                    Delete Account
+        <div class="flex-1 space-y-4">
+            <!-- Info + Logout -->
+            <div class="flex justify-between items-start">
+                <div>
+                    <h2 class="text-2xl font-bold text-gray-800">Matthew Daggit</h2>
+                    <p class="text-gray-600"><span class="font-semibold">Email:</span> Matthew@example.com</p>
+                </div>
+                <a href="/login"
+                   class="px-4 py-2 bg-[#16372c] text-white font-semibold rounded hover:bg-[#059669] transition">
+                   Logout
                 </a>
             </div>
+
+            <!-- Buttons -->
+            <a href="/change-password"
+               class="block w-full text-center bg-yellow-100 text-yellow-700 font-semibold py-2 rounded hover:bg-yellow-200">
+                Change Password
+            </a> 
+            <form action="/delete-account" method="POST" onsubmit="return confirm('Are you sure you want to delete your account?');">
+                <button type="submit"
+                    class="w-full text-center bg-red-100 text-red-700 font-semibold py-2 rounded hover:bg-red-200">
+                    Delete Account
+                </button>
+            </form>            
         </div>
     </div>
 </body>
-</html>
+</html
