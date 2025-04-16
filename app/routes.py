@@ -69,7 +69,7 @@ def facts():
                           last_name=user.last_name,
                           email=user.email)
 
-@app.route('/profile')
+@app.route('/profile/')
 def profile():
     if 'user_id' not in session:
         return redirect(url_for('login'))
