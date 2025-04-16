@@ -3,14 +3,92 @@
 {% block title %}Profile | EcoTrack{% endblock %}
 
 {% block content %}
-User Profile
 
+<body class="font-sans antialiased text-gray-900 leading-normal tracking-wider bg-gray-100 min-h-screen">
 
-<!-- Logout Button -->
-<div class="mt-4">
-    <a href="{{ url_for('logout') }}" class="sidebar-nav-link">
-        <img src="{{ url_for('static', filename='assets/icons/logout.svg') }}" alt="Logout" class="nav-icon" />
-        <p class="hidden lg:block">Logout</p>
-    </a>
-</div>
+    <div class="w-full flex items-center h-auto flex-wrap mx-auto my-32 lg:my-0">
+        <div id="profile"
+            class="w-4/5 mx-auto mt-20 bg-white bg-opacity-90 shadow-2xl rounded-lg flex flex-wrap items-start p-8">
+
+            <!-- User info -->
+            <div class="p-4 md:p-12 text-left w-full">
+                <div class="mb-4">
+                    <img src="{{ url_for('static', filename='assets/images/avatar.png') }}" alt="User Avatar"
+                        class="w-32 h-32 rounded-full object-cover shadow border mx-auto lg:mx-0">
+                </div>
+
+                <h1 class="text-3xl font-bold pt-4">Matthew Daggit</h1>
+                <div class="w-4/5 pt-3 border-b-2 border-green-500 opacity-25"></div>
+
+                <p class="pt-4 text-base font-bold">
+                    Email: <span class="font-normal">Matthew@example.com</span>
+                </p>
+
+                <div class="pt-12 pb-8">
+                    <button class="bg-green-700 hover:bg-green-900 text-white font-bold py-2 px-4 rounded-full">
+                        Logout
+                    </button>
+                </div>
+            </div>
+
+            <!-- Dividing Line -->
+            <div class="w-full border-t border-gray-300 my-8"></div>
+
+            <!-- Change Password -->
+            <div class="w-full grid grid-cols-1 lg:grid-cols-2 gap-8 items-start px-4 lg:px-12 pb-8">
+                <div>
+                    <h2 class="text-xl font-semibold mb-2">Change password</h2>
+                    <p class="text-gray-600">Update your password associated with your account.</p>
+                </div>
+
+                <form class="space-y-6 w-full">
+                    <div>
+                        <label for="current_password" class="block font-medium mb-1">Current password</label>
+                        <input type="password" id="current_password" name="current_password"
+                            class="w-full px-4 py-2 rounded-md bg-gray-100 text-gray-800 border border-gray-300 focus:outline-none focus:ring focus:ring-green-400">
+                    </div>
+
+                    <div>
+                        <label for="new_password" class="block font-medium mb-1">New password</label>
+                        <input type="password" id="new_password" name="new_password"
+                            class="w-full px-4 py-2 rounded-md bg-gray-100 text-gray-800 border border-gray-300 focus:outline-none focus:ring focus:ring-green-400">
+                    </div>
+
+                    <div>
+                        <label for="confirm_password" class="block font-medium mb-1">Confirm password</label>
+                        <input type="password" id="confirm_password" name="confirm_password"
+                            class="w-full px-4 py-2 rounded-md bg-gray-100 text-gray-800 border border-gray-300 focus:outline-none focus:ring focus:ring-green-400">
+                    </div>
+
+                    <div>
+                        <button type="submit"
+                            class="bg-green-700 hover:bg-green-900 text-white font-bold py-2 px-4 rounded-md">
+                            Save
+                        </button>
+                    </div>
+                </form>
+            </div>
+
+            <!-- Dividing Line -->
+            <div class="w-full border-t border-gray-300 my-8"></div>
+
+            <!-- Delete Account -->
+            <div class="w-full grid grid-cols-1 lg:grid-cols-2 gap-8 items-start px-4 lg:px-12 pb-4">
+                <div>
+                    <h2 class="text-xl font-semibold mb-2">Delete account</h2>
+                    <p class="text-gray-600">
+                        No longer want to use our service? You can delete your account here. This action is not
+                        reversible. All information related to this account will be deleted permanently.
+                    </p>
+                </div>
+                <div class="flex items-start justify-start">
+                    <button class="bg-red-600 hover:bg-red-700 text-white font-semibold px-4 py-2 rounded-md">
+                        Yes, delete my account
+                    </button>
+                </div>
+            </div>
+
+        </div>
+    </div>
+</body>
 {% endblock %}
