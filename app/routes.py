@@ -1,5 +1,6 @@
 from app import app, db
-from flask import redirect, render_template, request, url_for, flash, session
+from flask import redirect, render_template, request, url_for, flash, session, flash
+import re
 from app.constants import nav_items
 from app.forms import LoginForm, SignupForm
 from app.models import User
@@ -141,3 +142,32 @@ def logout():
     session.pop('user_id', None)
     flash('Logged out successfully!', 'success')
     return redirect(url_for('login'))
+
+@app.route('/change-password', methods=['POST'])
+def change_password():
+    new_password = request.form.get('new_password')
+    confirm_password = request.form.get('confirm_password')
+
+    # check password
+    if new_password != confirm_password:
+        flash("Passwords do not match.", "error")
+        return redirect(url_for('profile'))
+
+    # check password strength
+    errors = []
+    if len(new_password) < 8:
+        errors.append("at least 8 characters")
+    if not re.search(r"[A-Z]", new_password):
+        errors.append("one uppercase letter")
+    if not re.search(r"\d", new_password):
+        errors.append("one number")
+    if not re.search(r"[@$!%*?&]", new_password):
+        errors.append("one special character")
+
+    if errors:
+        flash("Password must include: " + ", ".join(errors), "error")
+        return redirect(url_for('profile'))
+
+    
+    flash("Password updated successfully! (Not saved to database yet)", "success")
+    return redirect(url_for('profile'))

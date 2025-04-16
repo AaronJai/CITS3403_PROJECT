@@ -43,32 +43,33 @@
                     <p class="text-gray-600">Update your password associated with your account.</p>
                 </div>
 
-                <form class="space-y-6 w-full">
+                <form action="{{ url_for('change_password') }}" method="POST" id="change-password-form" class="space-y-6 w-full">
                     <div>
-                        <label for="current_password" class="block font-medium mb-1">Current password</label>
-                        <input type="password" id="current_password" name="current_password"
-                            class="w-full px-4 py-2 rounded-md bg-gray-100 text-gray-800 border border-gray-300 focus:outline-none focus:ring focus:ring-green-400">
+                      <label for="current_password" class="block font-medium mb-1">Current password</label>
+                      <input type="password" id="current_password" name="current_password"
+                        class="w-full px-4 py-2 rounded-md bg-gray-100 text-gray-800 border border-gray-300 focus:outline-none focus:ring focus:ring-green-400">
                     </div>
-
+                  
                     <div>
-                        <label for="new_password" class="block font-medium mb-1">New password</label>
-                        <input type="password" id="new_password" name="new_password"
-                            class="w-full px-4 py-2 rounded-md bg-gray-100 text-gray-800 border border-gray-300 focus:outline-none focus:ring focus:ring-green-400">
+                      <label for="new-password" class="block font-medium mb-1">New password</label>
+                      <input type="password" id="new-password" name="new_password"
+                        class="w-full px-4 py-2 rounded-md bg-gray-100 text-gray-800 border border-gray-300 focus:outline-none focus:ring focus:ring-green-400">
                     </div>
-
+                  
                     <div>
-                        <label for="confirm_password" class="block font-medium mb-1">Confirm password</label>
-                        <input type="password" id="confirm_password" name="confirm_password"
-                            class="w-full px-4 py-2 rounded-md bg-gray-100 text-gray-800 border border-gray-300 focus:outline-none focus:ring focus:ring-green-400">
+                      <label for="confirm-password" class="block font-medium mb-1">Confirm password</label>
+                      <input type="password" id="confirm-password" name="confirm_password"
+                        class="w-full px-4 py-2 rounded-md bg-gray-100 text-gray-800 border border-gray-300 focus:outline-none focus:ring focus:ring-green-400">
                     </div>
-
+                  
+                    <p id="password-error" class="text-red-600 text-sm hidden"></p>
+                  
                     <div>
-                        <button type="submit"
-                            class="bg-green-700 hover:bg-green-900 text-white font-bold py-2 px-4 rounded-md">
-                            Save
-                        </button>
+                      <button type="submit" class="bg-green-700 hover:bg-green-900 text-white font-bold py-2 px-4 rounded-md">
+                        Save
+                      </button>
                     </div>
-                </form>
+                  </form>
             </div>
 
             <!-- Dividing Line -->
@@ -84,13 +85,60 @@
                     </p>
                 </div>
                 <div class="flex items-start justify-start">
-                    <button class="bg-red-600 hover:bg-red-700 text-white font-semibold px-4 py-2 rounded-md">
-                        Yes, delete my account
-                    </button>
+                    <button type="submit" class="bg-red-600 hover:bg-red-700 text-white font-semibold px-4 py-2 rounded-md">
+                      Delete my account
+                    </button>                  
                 </div>
             </div>
 
         </div>
     </div>
 </body>
+<script>
+    function validateNewPassword() {
+      const password = document.getElementById("new-password").value;
+      const confirmPassword = document.getElementById("confirm-password").value;
+      const errorMessage = document.getElementById("password-error");
+  
+      const errors = [];
+  
+      if (password.length < 8) errors.push("at least 8 characters");
+      if (!/[A-Z]/.test(password)) errors.push("one uppercase letter");
+      if (!/\d/.test(password)) errors.push("one number");
+      if (!/[@$!%*?&]/.test(password)) errors.push("one special character");
+  
+      if (errors.length > 0) {
+        errorMessage.textContent = "Password must include: " + errors.join(", ");
+        errorMessage.style.display = "block";
+        return false;
+      }
+  
+      if (password !== confirmPassword) {
+        errorMessage.textContent = "Passwords do not match.";
+        errorMessage.style.display = "block";
+        return false;
+      }
+  
+      errorMessage.textContent = "";
+      errorMessage.style.display = "none";
+      return true;
+    }
+  
+    document.addEventListener("DOMContentLoaded", () => {
+      const form = document.getElementById("change-password-form");
+      const newPassword = document.getElementById("new-password");
+      const confirmPassword = document.getElementById("confirm-password");
+  
+      if (form) {
+        form.addEventListener("submit", (event) => {
+          if (!validateNewPassword()) {
+            event.preventDefault(); // Prevent form submission if validation fails
+          }
+        });
+      }
+  
+      newPassword.addEventListener("input", validateNewPassword);
+      confirmPassword.addEventListener("input", validateNewPassword);
+    });
+  </script>
 {% endblock %}
