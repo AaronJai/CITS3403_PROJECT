@@ -143,7 +143,7 @@ def logout():
     flash('Logged out successfully!', 'success')
     return redirect(url_for('login'))
 
-@app.route('/change-password', methods=['POST'])
+@app.route('/change_password', methods=['POST'])
 def change_password():
     new_password = request.form.get('new_password')
     confirm_password = request.form.get('confirm_password')
@@ -171,3 +171,9 @@ def change_password():
     
     flash("Password updated successfully! (Not saved to database yet)", "success")
     return redirect(url_for('profile'))
+
+@app.route('/delete_account', methods=['POST'])
+def delete_account():
+    print("Deleting user account")
+    flash('Your account has been deleted.', 'success')
+    return redirect(url_for('login'))
