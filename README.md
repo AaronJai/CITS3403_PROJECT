@@ -55,7 +55,7 @@ python3 -m venv .venv
 
 #### Install Dependencies
 
-currently required: Flask, Flask-WTF, SQLAlchemy
+currently required: Flask, Flask-WTF, SQLAlchemy (plus flask-sqlalchemy), flask-migrate
 
 ```bash
 pip install -r requirements.txt
