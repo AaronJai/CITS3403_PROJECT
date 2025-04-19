@@ -3,5 +3,209 @@
 {% block title %}Facts | EcoTrack{% endblock %}
 
 {% block content %}
-Facts page
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>EcoTrack Facts</title>
+    <link href="../static/css/output.css" rel="stylesheet" />
+    <script>
+      // Fetch live environmental news
+      document.addEventListener("DOMContentLoaded", function () {
+        fetch("https://api.rss2json.com/v1/api.json?rss_url=https://news.un.org/feed/subscribe/en/news/topic/climate-change/feed/rss.xml")
+          .then((res) => res.json())
+          .then((data) => {
+            const news = data.items.slice(0, 4).map((item) => `
+              <div class="bg-white p-4 rounded-lg shadow mb-4">
+                <a href="${item.link}" target="_blank" class="text-lg font-semibold text-green-800 hover:underline">
+                  ${item.title}
+                </a>
+                <p class="text-sm text-gray-600 mt-1">${new Date(item.pubDate).toLocaleDateString()}</p>
+                <p class="text-gray-700 mt-2">${item.description.split(" ").slice(0, 20).join(" ")}...</p>
+              </div>
+            `).join("");
+
+            document.getElementById("news-feed").innerHTML = news;
+          });
+      });
+    </script>
+  </head>
+  <body>
+    <main class="flex">
+      <!-- Navigation bar -->
+      <aside class="sidebar">
+        <a href="dashboard.html">
+          <div class="flex items-center text-2xl font-bold mt-2 text-primary">
+            <img src="../static/assets/images/logo.png" alt="EcoTrack Logo" class="h-10 ml-2 mr-3 mt-2" />
+            <p class="hidden lg:block">EcoTrack</p>
+          </div>
+        </a>
+
+        <nav class="sidebar-nav">
+          <ul class="flex flex-1 flex-col gap-5">
+            <li class="sidebar-nav-item">
+              <a href="dashboard.html" class="sidebar-nav-link">
+                <img src="../static/assets/icons/dashboard.svg" alt="Dashboard" class="nav-icon" />
+                <p class="hidden lg:block">Dashboard</p>
+              </a>
+            </li>
+            <li class="sidebar-nav-item">
+              <a href="add_data.html" class="sidebar-nav-link">
+                <img src="../static/assets/icons/add-data.svg" alt="AddData" class="nav-icon" />
+                <p class="hidden lg:block">Add data</p>
+              </a>
+            </li>
+            <li class="sidebar-nav-item">
+              <a href="view_data.html" class="sidebar-nav-link">
+                <img src="../static/assets/icons/view-data.svg" alt="ViewData" class="nav-icon" />
+                <p class="hidden lg:block">View data</p>
+              </a>
+            </li>
+            <li class="sidebar-nav-item">
+              <a href="share.html" class="sidebar-nav-link">
+                <img src="../static/assets/icons/share.svg" alt="Share" class="nav-icon" />
+                <p class="hidden lg:block">Share</p>
+              </a>
+            </li>
+            <li class="sidebar-nav-item shad-active">
+              <a href="more_facts.html" class="sidebar-nav-link">
+                <img src="../static/assets/icons/info.svg" alt="Facts" class="nav-icon-active" />
+                <p class="hidden lg:block">Information</p>
+              </a>
+            </li>
+          </ul>
+        </nav>
+
+        <img src="../static/assets/images/ecofriendly.png" alt="Earth" class="w-full" />
+
+        <a href="profile.html" class="hover:underline">
+          <div class="sidebar-user-info">
+            <image src="../static/assets/images/avatar.png" alt="avatar" class="sidebar-user-avatar" />
+            <div class="hidden lg:block">
+              <p class="font-semibold">Matthew Daggit</p>
+              <p class="text-gray-500">test@test.com</p>
+            </div>
+          </div>
+        </a>
+      </aside>
+
+      <!-- Mobile Navigation Bar -->
+      <header class="">
+        <div class="header-top">
+          <a href="dashboard.html" class="py-3">
+            <img
+              src="../static/assets/images/logo.png"
+              alt="EcoTrack Logo"
+              class="h-8"
+            />
+          </a>
+        </div>
+
+        <div class="header-bottom">
+          <a href="dashboard.html" class="mobile-nav-item">
+            <img
+              src="../static/assets/icons/dashboard.svg"
+              alt="Dashboard"
+              class="h-6 w-6"
+            />
+          </a>
+          <a href="add_data.html" class="mobile-nav-item">
+            <img
+              src="../static/assets/icons/add-data.svg"
+              alt="Add Data"
+              class="h-6 w-6"
+            />
+          </a>
+          <a href="view_data.html" class="mobile-nav-item shad-active">
+            <img
+              src="../static/assets/icons/view-data.svg"
+              alt="View Data"
+              class="mobile-icon-active h-6 w-6"
+            />
+          </a>
+          <a href="share.html" class="mobile-nav-item">
+            <img
+              src="../static/assets/icons/share.svg"
+              alt="Share"
+              class="h-6 w-6"
+            />
+          </a>
+          <a href="facts.html" class="mobile-nav-item">
+            <img
+              src="../static/assets/icons/info.svg"
+              alt="Facts"
+              class="h-6 w-6"
+            />
+          </a>
+          <a href="profile.html" class="">
+            <image
+              src="../static/assets/images/avatar.png"
+              alt="avatar"
+              class="sidebar-user-avatar"
+            />
+          </a>
+        </div>
+      </header>
+
+      <div class="flex-1">
+        <div class="main-container">
+          <!-- Live News Feed -->
+          <section class = "bg-white rounded-2xl shadow p-8">
+            <h2 class="text-2xl font-bold text-green-900 mb-6">Latest Environmental News</h2>
+            <div id="news-feed" class = "space-y-4"></div>
+          </section>
+
+            <!-- Static Environmental Facts -->
+            <!-- Category Cards -->
+            <section class="category-cards">
+              <!-- Trees -->
+              <div class="category-card">
+                <h3 class="category-heading">🌿 Trees absorb CO₂</h3>
+                <p class="category-description">
+                  One mature tree can absorb up to 22kg of CO₂ per year, thats roughly 1 ton over 40 years.
+                </p>
+                <p class="category-description">
+                  The Amazon Rainforest alone stores over 76 billion tonnes of carbon — acting as a global climate buffer.
+                </p>
+              </div>
+
+              <!-- Transport -->
+              <div class="category-card">
+                <h3 class="category-heading">🚗 Transport Emmissions</h3>
+                <p class="category-description">
+                  Transport accounts for ~25% of global CO₂ emissions.
+                </p>
+                <p class="category-description">
+                  Switching from car to bike just once a day can reduce a person's transport emissions by 67%.
+                </p>
+              </div>
+
+              <!-- Energy Use -->
+              <div class="category-card">
+                <h3 class="category-heading">💡 Energy Use</h3>
+                <p class="category-description">
+                  LED light bulbs use up to 85% less energy and last 25x longer than traditional incandescent bulbs.
+                </p>
+                <p class="category-description">
+                  Around 80% of global energy still comes from fossil fuels — coal, oil, and gas — despite the rise of renewables.
+                </p>
+              </div>
+
+              <!-- Food Footprint -->
+              <div class="category-card">
+                <h3 class="category-heading">🍔Food Footprint</h3>
+                <p class="category-description">
+                  Producing 1kg of beef emits over 27kg of CO₂, more than driving a petrol car for over 100Km.
+                </p>
+                <p class="category-description">
+                  A vegan diet can reduce an individual's carbon footprint by up to 50% compared to a meat-based diet.
+                </p>
+              </div>
+            </section>
+          </div>
+      </div>
+    </main>
+  </body>
+</html>
 {% endblock %}
