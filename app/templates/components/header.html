@@ -1,0 +1,31 @@
+<!-- Mobile Navigation Bar -->
+<header class="">
+  <div class="header-top">
+    <a href="{{ url_for('dashboard') }}" class="py-3">
+      <img
+        src="{{ url_for('static', filename='assets/images/logo.png') }}"
+        alt="EcoTrack Logo"
+        class="h-8"
+      />
+    </a>
+  </div>
+
+  <div class="header-bottom">
+    {% for item in nav_items %}
+    <a href="{{ url_for(item.endpoint) }}" class="mobile-nav-item {% if active_page == item.endpoint %}shad-active{% endif %}">
+      <img
+        src="{{ url_for('static', filename='assets/icons/' + item.icon) }}"
+        alt="{{ item.name }}"
+        class="{% if active_page == item.endpoint %}mobile-icon-active{% else %}mobile-icon{% endif %}"
+      />
+    </a>
+    {% endfor %}
+    <a href="{{ url_for('profile') }}" class="">
+      <image
+        src="{{ url_for('static', filename='assets/images/avatar.png') }}"
+        alt="avatar"
+        class="sidebar-user-avatar"
+      />
+    </a>
+  </div>
+</header>

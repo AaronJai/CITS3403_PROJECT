@@ -1,0 +1,52 @@
+<!-- Navigation bar -->
+<aside class="sidebar">
+  <!-- App Title and Logo -->
+  <a href="{{ url_for('dashboard') }}">
+    <div class="flex items-center text-2xl font-bold mt-2 text-primary">
+      <img
+        src="{{ url_for('static', filename='assets/images/logo.png') }}"
+        alt="EcoTrack Logo"
+        class="h-10 ml-2 mr-3 mt-2"
+      />
+      <p class="hidden lg:block">EcoTrack</p>
+    </div>
+  </a>
+
+  <nav class="sidebar-nav">
+    <ul class="flex flex-1 flex-col gap-5">
+      {% for item in nav_items %}
+      <li class="sidebar-nav-item {% if active_page == item.endpoint %}shad-active{% endif %}">
+        <a href="{{ url_for(item.endpoint) }}" class="sidebar-nav-link">
+          <img
+            src="{{ url_for('static', filename='assets/icons/' + item.icon) }}"
+            alt="{{ item.name }}"
+            class="{% if active_page == item.endpoint %}nav-icon-active{% else %}nav-icon{% endif %}"
+          />
+          <p class="hidden lg:block">{{ item.name }}</p>
+        </a>
+      </li>
+      {% endfor %}
+    </ul>
+  </nav>
+
+  <img
+    src="{{ url_for('static', filename='assets/images/ecofriendly.png') }}"
+    alt="Earth"
+    class="w-full"
+  />
+
+  <!-- User -->
+  <a href="{{ url_for('profile') }}" class="hover:underline">
+    <div class="sidebar-user-info">
+      <image
+        src="{{ url_for('static', filename='assets/images/avatar.png') }}"
+        alt="avatar"
+        class="sidebar-user-avatar"
+      />
+      <div class="hidden lg:block">
+        <p class="font-semibold">Matthew Daggit</p>
+        <p class="text-gray-500">test@test.com</p>
+      </div>
+    </div>
+  </a>
+</aside>
