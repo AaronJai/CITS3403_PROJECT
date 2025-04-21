@@ -13,11 +13,77 @@ The Environmental Impact Tracker allows users to log their daily activities and 
 | 23074324 | Hazel Wang       | [useri4l](https://github.com/useri4l)         |
 | 22884212 | Aaron Tan        | [AaronJai](https://github.com/AaronJai)       |
 
-## USAGE
+## Setup Instructions
+
+Follow these steps to set up the EcoTrack application:
+
+1. **Clone the repository:**
+   ```
+   git clone <repository-url>
+   cd CITS3403_PROJECT
+   ```
+
+2. **Create and activate a virtual environment:**
+   ```
+   # Windows
+   python -m venv .venv
+   .venv\Scripts\activate
+   
+   # Mac/Linux
+   python -m venv .venv
+   source .venv/bin/activate
+   ```
+
+3. **Install dependencies:**
+   ```
+   pip install -r requirements.txt
+   ```
+
+4. **Initialize the database:**
+   ```
+   flask db upgrade
+   ```
+
+5. **Run the application:**
+   ```
+   flask run
+   ```
+
+6. **Access the application:**
+   Open a web browser and go to `http://127.0.0.1:5000/`
+
+## Database Management
+
+If you need to make changes to the database models:
+
+1. Update the models in `app/models.py`
+2. Run migrations:
+   ```
+   flask db migrate -m "Description of changes"
+   flask db upgrade
+   ```
+
+To check database version history:
+```
+flask db history
+```
+
+To downgrade to a previous version:
+```
+flask db downgrade
+```
+
+## Styling
 
 ### Using TailwindCSS
 
-when writing tailwind styles and refactoring reusable classes, use:
+Install Tailwind CSS
+
+```bash
+npm install tailwindcss @tailwindcss/cli
+```
+
+Run the CLI tool to scan your source files for classes and build your CSS.
 
 ```bash
 npx @tailwindcss/cli -i ./app/static/css/styles.css -o ./app/static/css/output.css --watch
@@ -33,41 +99,14 @@ In case you get Permission denied on Mac, run:
 chmod +x ./node_modules/.bin/tailwindcss
 ```
 
----
-
-### Backend (Flask) Setup
-
-#### Virtual Environment
-
-**Windows:**
-
-```bash
-py -3 -m venv .venv
-.venv\Scripts\activate
-```
-
-**Mac/Linux:**
-
-```bash
-python3 -m venv .venv
-. .venv/bin/activate
-```
-
-#### Install Dependencies
-
-currently required: Flask, Flask-WTF, SQLAlchemy (plus flask-sqlalchemy), flask-migrate
-
-```bash
-pip install -r requirements.txt
-```
-
-#### Run the Application (in root directory)
-
-```bash
-flask run
-```
-
 **Note:** For development, it is recommended to have two terminals open:
 
 1. One for running the Flask server.
 2. One for running the Tailwind CLI.
+
+
+## Development
+
+- The application uses SQLite for development
+- Database file is stored in `app/app.db`
+- Use `flask shell` to interact directly with the database
