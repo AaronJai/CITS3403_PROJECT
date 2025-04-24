@@ -78,6 +78,8 @@ document.addEventListener('DOMContentLoaded', function () {
         nextBtn.style.display = currentIndex < totalSteps ? 'flex' : 'none';
         finishBtn.style.display = currentIndex === totalSteps ? 'flex' : 'none';
     }
+    addVehicle();
+    addVehicle();
 });
 
 // Vehicle Template (hidden)
@@ -138,6 +140,36 @@ function deleteVehicle(el) {
     const locatingVehicleItem = el
     locatingVehicleItem.remove()
 }
+
+//Public Transport and Air Travel Form Toggle
+const simpleForm = document.getElementById('simple-form');
+const advancedForm = document.getElementById('advanced-form');
+const showSimpleBtn = document.getElementById('show-simple');
+const showAdvancedBtn = document.getElementById('show-advanced');
+
+function setActiveButton(activeBtn, inactiveBtn) {
+    // Active: green text, transparent background
+    activeBtn.classList.remove('bg-primary', 'text-white', 'hover:bg-primary/90');
+    activeBtn.classList.add('bg-transparent', 'text-primary', 'hover:bg-primary/10');
+
+    // Inactive: white text, filled green background
+    inactiveBtn.classList.remove('bg-transparent', 'text-primary', 'hover:bg-primary/10');
+    inactiveBtn.classList.add('bg-primary', 'text-white', 'hover:bg-primary/90');
+}
+
+showSimpleBtn.addEventListener('click', () => {
+    simpleForm.classList.remove('hidden');
+    advancedForm.classList.add('hidden');
+    setActiveButton(showSimpleBtn, showAdvancedBtn);
+});
+
+showAdvancedBtn.addEventListener('click', () => {
+    advancedForm.classList.remove('hidden');
+    simpleForm.classList.add('hidden');
+    setActiveButton(showAdvancedBtn, showSimpleBtn);
+});
+
+
 
 //Shopping Form Toggle
 document.addEventListener('DOMContentLoaded', function () {

@@ -32,10 +32,7 @@
     --color-blue-100: oklch(93.2% 0.032 255.585);
     --color-blue-200: oklch(88.2% 0.059 254.128);
     --color-blue-500: oklch(62.3% 0.214 259.815);
-    --color-blue-600: oklch(54.6% 0.245 262.881);
     --color-blue-800: oklch(42.4% 0.199 265.638);
-    --color-indigo-600: oklch(51.1% 0.262 276.966);
-    --color-indigo-700: oklch(45.7% 0.24 277.023);
     --color-gray-50: oklch(98.5% 0.002 247.839);
     --color-gray-100: oklch(96.7% 0.003 264.542);
     --color-gray-200: oklch(92.8% 0.006 264.531);
@@ -311,6 +308,9 @@
   .mb-2 {
     margin-bottom: calc(var(--spacing) * 2);
   }
+  .mb-4 {
+    margin-bottom: calc(var(--spacing) * 4);
+  }
   .mb-6 {
     margin-bottom: calc(var(--spacing) * 6);
   }
@@ -559,6 +559,9 @@
   .bg-green-50 {
     background-color: var(--color-green-50);
   }
+  .bg-green-600 {
+    background-color: var(--color-green-600);
+  }
   .bg-primary {
     background-color: var(--color-primary);
   }
@@ -567,6 +570,12 @@
   }
   .bg-red-700 {
     background-color: var(--color-red-700);
+  }
+  .bg-transparent {
+    background-color: transparent;
+  }
+  .bg-white {
+    background-color: var(--color-white);
   }
   .bg-yellow-50 {
     background-color: var(--color-yellow-50);
@@ -664,6 +673,9 @@
   .text-green-500 {
     color: var(--color-green-500);
   }
+  .text-green-600 {
+    color: var(--color-green-600);
+  }
   .text-green-800 {
     color: var(--color-green-800);
   }
@@ -757,6 +769,16 @@
     &:hover {
       @media (hover: hover) {
         background-color: var(--color-primary);
+      }
+    }
+  }
+  .hover\:bg-primary\/10 {
+    &:hover {
+      @media (hover: hover) {
+        background-color: color-mix(in srgb, #16372c 10%, transparent);
+        @supports (color: color-mix(in lab, red, red)) {
+          background-color: color-mix(in oklab, var(--color-primary) 10%, transparent);
+        }
       }
     }
   }

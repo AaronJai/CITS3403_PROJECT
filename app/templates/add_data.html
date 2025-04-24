@@ -3,8 +3,7 @@
 {% block title %}Add Data | EcoTrack{% endblock %}
 
 {% block head %}
-<script src="{{ url_for('static', filename='js/add-data.js') }}"></script>
-
+<script src="{{ url_for('static', filename='js/add-data.js') }}" defer></script>
 {% endblock %}
 
 {% block content %}
@@ -88,98 +87,138 @@
       </div>
 
       <!-- Public Transit Section -->
-      <div class="panel panel-default">
-        <div class="panel-heading">Public Transit</div>
-        <div class="panel-body space-y-4">
-          <div class="form-control">
-            <label class="label">
-              <span class="label-text">Bus</span>
-            </label>
-            <div class="input-group">
-              <input type="number" class="input input-bordered w-full" placeholder="130" id="bus-miles" min="0">
-              <span class="input-group-addon">kms/yr</span>
-            </div>
-          </div>
+      <div class="flex justify-center gap-4 mb-4">
+        <button type="button" id="show-simple"
+          class="flex items-center gap-2 border border-primary rounded-full px-4 py-2 transition cursor-pointer text-primary bg-transparent hover:bg-primary/10">
+          Simple
+        </button>
 
-          <div class="form-control">
-            <label class="label">
-              <span class="label-text">Transit Rail (light & heavy)</span>
-            </label>
-            <div class="input-group">
-              <input type="number" class="input input-bordered w-full" placeholder="97" id="transit-rail-miles" min="0">
-              <span class="input-group-addon">kms/yr</span>
-            </div>
-          </div>
+        <button type="button" id="show-advanced"
+          class="flex items-center gap-2 border border-primary rounded-full px-4 py-2 transition cursor-pointer text-white bg-primary hover:bg-primary/90">
+          Advanced
+        </button>
+      </div>
 
-          <div class="form-control">
-            <label class="label">
-              <span class="label-text">Commuter Rail</span>
-            </label>
+      <form id="simple-form" class="space-y-4">
+        <!-- Public Transit -->
+        <div class="panel panel-default">
+          <div class="panel-heading">Public Transit</div>
+          <div class="panel-body">
             <div class="input-group">
-              <input type="number" class="input input-bordered w-full" placeholder="65" id="commuter-rail-miles"
-                min="0">
-              <span class="input-group-addon">kms/yr</span>
-            </div>
-          </div>
-
-          <div class="form-control">
-            <label class="label">
-              <span class="label-text">Inter-city Rail (Amtrak)</span>
-            </label>
-            <div class="input-group">
-              <input type="number" class="input input-bordered w-full" placeholder="32" id="intercity-rail-miles"
-                min="0">
+              <input type="number" class="form-control w-full" placeholder="368" min="0">
               <span class="input-group-addon">kms/yr</span>
             </div>
           </div>
         </div>
-      </div>
 
-      <!-- Air Travel Section -->
-      <div class="panel panel-default">
-        <div class="panel-heading">Air Travel</div>
-        <div class="panel-body space-y-4">
-          <div class="form-control">
-            <label class="label">
-              <span class="label-text">Short (&lt; 400 kms/yr)</span>
-            </label>
+        <!-- Air Travel -->
+        <div class="panel panel-default">
+          <div class="panel-heading">Air Travel</div>
+          <div class="panel-body">
             <div class="input-group">
-              <input type="number" class="input input-bordered w-full" placeholder="3" id="short-flights" min="0">
-              <span class="input-group-addon">flights/year</span>
-            </div>
-          </div>
-
-          <div class="form-control">
-            <label class="label">
-              <span class="label-text">Medium (400 - 1500 kms/yr)</span>
-            </label>
-            <div class="input-group">
-              <input type="number" class="input input-bordered w-full" placeholder="2" id="medium-flights" min="0">
-              <span class="input-group-addon">flights/year</span>
-            </div>
-          </div>
-
-          <div class="form-control">
-            <label class="label">
-              <span class="label-text">Long (1500 - 3000 kms/yr)</span>
-            </label>
-            <div class="input-group">
-              <input type="number" class="input input-bordered w-full" placeholder="0" id="long-flights" min="0">
-              <span class="input-group-addon">flights/year</span>
-            </div>
-          </div>
-
-          <div class="form-control">
-            <label class="label">
-              <span class="label-text">Extended (&gt; 3000 kms/yr)</span>
-            </label>
-            <div class="input-group">
-              <input type="number" class="input input-bordered w-full" placeholder="0" id="extended-flights" min="0">
-              <span class="input-group-addon">flights/year</span>
+              <input type="number" class="form-control w-full" placeholder="3300" min="0">
+              <span class="input-group-addon">kms/yr</span>
             </div>
           </div>
         </div>
-      </div>
+      </form>
+
+      <!-- Advanced Form -->
+      <form id="advanced-form" class="space-y-4 hidden">
+        <div class="panel panel-default">
+          <div class="panel-heading">Public Transit</div>
+          <div class="panel-body space-y-4">
+            <div class="form-control">
+              <label class="label">
+                <span class="label-text">Bus</span>
+              </label>
+              <div class="input-group">
+                <input type="number" class="input input-bordered w-full" placeholder="130" id="bus-miles" min="0">
+                <span class="input-group-addon">kms/yr</span>
+              </div>
+            </div>
+
+            <div class="form-control">
+              <label class="label">
+                <span class="label-text">Transit Rail (light & heavy)</span>
+              </label>
+              <div class="input-group">
+                <input type="number" class="input input-bordered w-full" placeholder="97" id="transit-rail-miles"
+                  min="0">
+                <span class="input-group-addon">kms/yr</span>
+              </div>
+            </div>
+
+            <div class="form-control">
+              <label class="label">
+                <span class="label-text">Commuter Rail</span>
+              </label>
+              <div class="input-group">
+                <input type="number" class="input input-bordered w-full" placeholder="65" id="commuter-rail-miles"
+                  min="0">
+                <span class="input-group-addon">kms/yr</span>
+              </div>
+            </div>
+
+            <div class="form-control">
+              <label class="label">
+                <span class="label-text">Inter-city Rail (Amtrak)</span>
+              </label>
+              <div class="input-group">
+                <input type="number" class="input input-bordered w-full" placeholder="32" id="intercity-rail-miles"
+                  min="0">
+                <span class="input-group-addon">kms/yr</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Air Travel Section -->
+        <div class="panel panel-default">
+          <div class="panel-heading">Air Travel</div>
+          <div class="panel-body space-y-4">
+            <div class="form-control">
+              <label class="label">
+                <span class="label-text">Short (&lt; 400 kms/yr)</span>
+              </label>
+              <div class="input-group">
+                <input type="number" class="input input-bordered w-full" placeholder="3" id="short-flights" min="0">
+                <span class="input-group-addon">flights/year</span>
+              </div>
+            </div>
+
+            <div class="form-control">
+              <label class="label">
+                <span class="label-text">Medium (400 - 1500 kms/yr)</span>
+              </label>
+              <div class="input-group">
+                <input type="number" class="input input-bordered w-full" placeholder="2" id="medium-flights" min="0">
+                <span class="input-group-addon">flights/year</span>
+              </div>
+            </div>
+
+            <div class="form-control">
+              <label class="label">
+                <span class="label-text">Long (1500 - 3000 kms/yr)</span>
+              </label>
+              <div class="input-group">
+                <input type="number" class="input input-bordered w-full" placeholder="0" id="long-flights" min="0">
+                <span class="input-group-addon">flights/year</span>
+              </div>
+            </div>
+
+            <div class="form-control">
+              <label class="label">
+                <span class="label-text">Extended (&gt; 3000 kms/yr)</span>
+              </label>
+              <div class="input-group">
+                <input type="number" class="input input-bordered w-full" placeholder="0" id="extended-flights" min="0">
+                <span class="input-group-addon">flights/year</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </form>
     </div>
   </div>
 
@@ -506,8 +545,8 @@
     <form id="shoppingAdvanced" class="hidden">
       <div class="shopping-advanced-container min-h-screen bg-gray-100 grid gap-6">
         <!-- Goods Section -->
-        <div class="panel panel-default bg-grey shadow-lg rounded-lg">
-          <div class="panel-heading flex justify-between items-center bg-gray-200 p-4 text-xl font-semibold">
+        <div class="panel panel-default bg-grey shadow-lg">
+          <div class="panel-heading flex justify-between items-center bg-gray-200 p-4 font-semibold">
             Goods
             <div class="btn-group">
               <button id="btnToSimple" type="button"
@@ -519,7 +558,7 @@
 
           <div class="panel-body p-4 space-y-4">
             <div class="space-y-2">
-              <h4 class="text-lg font-medium">Furniture & Appliances</h4>
+              <h4 class="text-sm font-medium">Furniture & Appliances</h4>
               <div class="flex items-center space-x-2">
                 <input type="number" class="w-full p-2 border border-gray-300 rounded-md"
                   id="input_input_footprint_shopping_goods_furnitureappliances" placeholder="362" min="0">
@@ -528,7 +567,7 @@
             </div>
 
             <div class="space-y-2">
-              <h4 class="text-lg font-medium">Clothing</h4>
+              <h4 class="text-sm font-medium">Clothing</h4>
               <div class="flex items-center space-x-2">
                 <input type="number" class="w-full p-2 border border-gray-300 rounded-md"
                   id="input_input_footprint_shopping_goods_clothing" placeholder="391" min="0">
@@ -537,7 +576,7 @@
             </div>
 
             <div class="space-y-2">
-              <h4 class="text-lg font-medium">Entertainment</h4>
+              <h4 class="text-sm font-medium">Entertainment</h4>
               <div class="flex items-center space-x-2">
                 <input type="number" class="w-full p-2 border border-gray-300 rounded-md"
                   id="input_input_footprint_shopping_goods_entertainment" placeholder="54" min="0">
@@ -546,7 +585,7 @@
             </div>
 
             <div class="space-y-2">
-              <h4 class="text-lg font-medium">Office Supplies</h4>
+              <h4 class="text-sm font-medium">Office Supplies</h4>
               <div class="flex items-center space-x-2">
                 <input type="number" class="w-full p-2 border border-gray-300 rounded-md"
                   id="input_input_footprint_shopping_goods_officesupplies" placeholder="37" min="0">
@@ -555,7 +594,7 @@
             </div>
 
             <div class="space-y-2">
-              <h4 class="text-lg font-medium">Personal Care</h4>
+              <h4 class="text-sm font-medium">Personal Care</h4>
               <div class="flex items-center space-x-2">
                 <input type="number" class="w-full p-2 border border-gray-300 rounded-md"
                   id="input_input_footprint_shopping_goods_personalcare" placeholder="56" min="0">
@@ -567,10 +606,10 @@
 
         <!-- Services Section -->
         <div class="panel panel-default bg-grey shadow-lg rounded-lg">
-          <div class="panel-heading bg-gray-200 p-4 text-xl font-semibold">Services</div>
+          <div class="panel-heading bg-gray-200 p-4 font-semibold">Services</div>
           <div class="panel-body p-4 space-y-4">
             <div class="space-y-2">
-              <h4 class="text-lg font-medium">Food</h4>
+              <h4 class="text-sm font-medium">Food</h4>
               <div class="flex items-center space-x-2">
                 <input type="number" class="w-full p-2 border border-gray-300 rounded-md"
                   id="input_input_footprint_shopping_services_food" placeholder="196" min="0">
@@ -578,7 +617,7 @@
               </div>
             </div>
             <div class="space-y-2">
-              <h4 class="text-lg font-medium">Education</h4>
+              <h4 class="text-sm font-medium">Education</h4>
               <div class="flex items-center space-x-2">
                 <input type="number" class="w-full p-2 border border-gray-300 rounded-md"
                   id="input_input_footprint_shopping_services_education" placeholder="22" min="0">
@@ -586,7 +625,7 @@
               </div>
             </div>
             <div class="space-y-2">
-              <h4 class="text-lg font-medium">Communication</h4>
+              <h4 class="text-sm font-medium">Communication</h4>
               <div class="flex items-center space-x-2">
                 <input type="number" class="w-full p-2 border border-gray-300 rounded-md"
                   id="input_input_footprint_shopping_services_communication" placeholder="46" min="0">
@@ -594,7 +633,7 @@
               </div>
             </div>
             <div class="space-y-2">
-              <h4 class="text-lg font-medium">Loan</h4>
+              <h4 class="text-sm font-medium">Loan</h4>
               <div class="flex items-center space-x-2">
                 <input type="number" class="w-full p-2 border border-gray-300 rounded-md"
                   id="input_input_footprint_shopping_services_loan" placeholder="82" min="0">
@@ -602,7 +641,7 @@
               </div>
             </div>
             <div class="space-y-2">
-              <h4 class="text-lg font-medium">Transport</h4>
+              <h4 class="text-sm font-medium">Transport</h4>
               <div class="flex items-center space-x-2">
                 <input type="number" class="w-full p-2 border border-gray-300 rounded-md"
                   id="input_input_footprint_shopping_services_transport" placeholder="113" min="0">
@@ -614,10 +653,6 @@
       </div>
     </form>
   </div>
-
-
-
-
 
   <div data-stepper-content-item="5" class="hidden">
     <!-- Final step content -->
