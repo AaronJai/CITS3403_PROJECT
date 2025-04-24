@@ -6,7 +6,7 @@
 <script src="https://unpkg.com/@tabler/icons@latest/icons-react/dist/index.umd.min.js"></script>
 
 <!-- Stepper -->
-<div data-stepper='{ "currentIndex": 1 }' class="w-full">
+<div data-stepper='{"currentIndex": 1}' class="w-full">
   <!-- Stepper Nav -->
   <ul class="relative flex flex-row gap-x-2 justify-center pb-2">
     <li class="group flex flex-1 shrink basis-0 items-center gap-x-2" data-stepper-nav-item='{ "index": 1 }'>
@@ -51,10 +51,11 @@
   </ul>
   <!-- End Stepper Nav -->
 
+
   <!-- Stepper Content -->
   <!-- Travel Content -->
-    <div data-stepper-content-item='{ "index": 1 }'>
-      <div class="grid grid-cols-1 gap-6">
+  <div data-stepper-content-item="1">
+    <div class="grid grid-cols-1 gap-6">
         <!-- Your Vehicles Section -->
         <div class="panel panel-default">
           <div class="panel-heading flex justify-between items-center">
@@ -133,7 +134,7 @@
                 <span class="label-text">Medium (400 - 1500 kms/yr)</span>
               </label>
               <div class="input-group">
-                <input type="number" class="input input-bordered w-full" placeholder="2" id="medium-flights" min="400">
+                <input type="number" class="input input-bordered w-full" placeholder="2" id="medium-flights" min="0">
                 <span class="input-group-addon">flights/year</span>
               </div>
             </div>
@@ -143,7 +144,7 @@
                 <span class="label-text">Long (1500 - 3000 kms/yr)</span>
               </label>
               <div class="input-group">
-                <input type="number" class="input input-bordered w-full" placeholder="0" id="long-flights" min="1500">
+                <input type="number" class="input input-bordered w-full" placeholder="0" id="long-flights" min="0">
                 <span class="input-group-addon">flights/year</span>
               </div>
             </div>
@@ -153,7 +154,7 @@
                 <span class="label-text">Extended (&gt; 3000 kms/yr)</span>
               </label>
               <div class="input-group">
-                <input type="number" class="input input-bordered w-full" placeholder="0" id="extended-flights" min="3000">
+                <input type="number" class="input input-bordered w-full" placeholder="0" id="extended-flights" min="0">
                 <span class="input-group-addon">flights/year</span>
               </div>
             </div>
@@ -163,7 +164,7 @@
     </div>
     
     <!-- Home Content -->
-    <div data-stepper-content-item='{ "index": 2 }' style="display: none;">
+    <div data-stepper-content-item="2" class="hidden">
       <div class="grid grid-cols-1 gap-6">
         <!-- Electricity Section -->
         <div class="form-control">
@@ -282,7 +283,7 @@
     </div>
     
     <!-- Food Content -->
-    <div data-stepper-content-item='{ "index": 3 }' style="display: none;">
+    <div data-stepper-content-item="3" class="hidden">
       <div class="grid grid-cols-1 gap-6">
         <div class="panel panel-default">
           <div class="panel-heading flex justify-between items-center">
@@ -416,7 +417,7 @@
     </div>
     
     <!-- Shopping Content -->
-    <div data-stepper-content-item='{ "index": 4 }' style="display: none;">
+    <div data-stepper-content-item="4" class="hidden">
       <div class="grid grid-cols-1 gap-6">
         <div class="panel panel-default">
           <!-- <div class="panel-heading flex justify-between items-center">
@@ -479,15 +480,15 @@
       </div>
     </div>
     
-    <!-- Final Content -->
-    <div data-stepper-content-item='{ "isFinal": true }' style="display: none;">
+    <div data-stepper-content-item="5" class="hidden">
+      <!-- Final step content -->
       <div class="border-base-content/40 bg-base-200/50 flex h-48 items-center justify-center rounded-xl border border-dashed p-4">
         <h3 class="text-base-content/50 text-2xl">Your Carbon Footprint Calculation is Complete!</h3>
       </div>
     </div>
     
     <!-- Button Group -->
-      <div class="mt-5 flex items-center justify-between gap-x-4">
+    <div class="mt-5 flex items-center justify-between gap-x-4">
         <button
           type="button"
           class="flex items-center gap-2 border border-primary text-primary rounded-full px-4 py-2 hover:bg-primary hover:text-white transition"
@@ -497,23 +498,23 @@
             stroke="currentColor">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
               d="M15 19l-7-7 7-7" />
-          </svg>
-          Back
-        </button>
-
+        </svg>
+        Back
+      </button>
+  
         <button
           type="button"
           class="flex items-center gap-2 border border-primary bg-primary text-white rounded-full px-4 py-2 hover:bg-primary/90 transition"
           data-stepper-next-btn=""
         >
-          Next
+        Next
           <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24"
             stroke="currentColor">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
               d="M9 5l7 7-7 7" />
-          </svg>
-        </button>
-
+        </svg>
+      </button>
+  
         <button
           type="button"
           class="hidden flex items-center gap-2 border border-success bg-success text-green rounded-full px-4 py-2 hover:bg-success/90 transition"
@@ -523,10 +524,10 @@
             stroke="currentColor">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
               d="M5 13l4 4L19 7" />
-          </svg>
-          Calculate Footprint
-        </button>
-      </div>
+        </svg>
+        Calculate Footprint
+      </button>
+    </div>
 
 
   </div>
@@ -554,9 +555,13 @@
     prevBtn.addEventListener('click', goToPrevStep);
     nextBtn.addEventListener('click', goToNextStep);
     finishBtn.addEventListener('click', finishStepper);
+    navItems.forEach((item) => {
+      const data = JSON.parse(item.getAttribute('data-stepper-nav-item'));
+      item.addEventListener('click', () => goToStep(data.index));
+    });
 
     function goToStep(index) {
-    currentIndex = index;
+      currentIndex = index;
       updateStepper();
     }
 
@@ -611,7 +616,7 @@
       nextBtn.style.display = currentIndex < totalSteps ? 'flex' : 'none';
       finishBtn.style.display = currentIndex === totalSteps ? 'flex' : 'none';
     }
-  });
+    });
 
   // Vehicle Template (hidden)
   const vehicleTemplate = document.createElement('template');
