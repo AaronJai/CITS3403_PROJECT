@@ -1,7 +1,7 @@
 from app import app, db
 from flask import redirect, render_template, request, url_for, flash, session
 from app.constants import nav_items
-from app.forms import LoginForm, SignupForm
+from app.forms import LoginForm, SignupForm, ShareForm
 from app.models import User
 
 @app.route('/')
@@ -43,18 +43,43 @@ def view_data():
                           last_name=user.last_name,
                           email=user.email)
 
-@app.route('/share')
+@app.route('/share', methods=['GET', 'POST'])
 def share():
     if 'user_id' not in session:
         return redirect(url_for('login'))
     
     user = User.query.get(session['user_id'])
+    form = ShareForm()
+    search_results = None
+    
+    if form.validate_on_submit():
+        search_email = form.search_email.data
+        search_results = User.query.filter_by(email=search_email).first()
+        if not search_results:
+            flash('No user found with that email address.', 'warning')
+    
+    # Placeholder data for shared with me and currently sharing with
+    # This would be replaced with actual database queries in the full implementation
+    shared_with_me = [
+        {'name': 'Jane Doe', 'email': 'jane@example.com', 'carbon_footprint': '120 CO2eq'},
+        {'name': 'John Smith', 'email': 'john@example.com', 'carbon_footprint': '95 CO2eq'},
+    ]
+    
+    sharing_with = [
+        {'name': 'Mike Johnson', 'email': 'mike@example.com', 'shared_date': 'April 22, 2025'},
+        {'name': 'Sarah Williams', 'email': 'sarah@example.com', 'shared_date': 'April 20, 2025'},
+    ]
+    
     return render_template('share.html', 
                           active_page='share', 
                           nav_items=nav_items,
                           first_name=user.first_name,
                           last_name=user.last_name,
-                          email=user.email)
+                          email=user.email,
+                          form=form,
+                          search_results=search_results,
+                          shared_with_me=shared_with_me,
+                          sharing_with=sharing_with)
 
 @app.route('/facts')
 def facts():
