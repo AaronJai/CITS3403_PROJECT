@@ -39,19 +39,20 @@
                         class="w-32 h-32 rounded-full object-cover shadow border mx-auto lg:mx-0">
                 </div>
 
-                <h1 class="text-3xl font-bold pt-4">Matthew Daggit</h1>
+                <h1 class="text-3xl font-bold pt-4">{{ first_name }} {{ last_name }}</h1>
                 <div class="w-4/5 pt-3 border-b-2 border-green-500 opacity-25"></div>
 
                 <p class="pt-4 text-base font-bold">
-                    Email: <span class="font-normal">Matthew@example.com</span>
+                    Email: <span class="font-normal">{{ email }}</span>
                 </p>
 
                 <!-- Logout Button -->
                 <div class="mt-4">
-                    <a href="{{ url_for('logout') }}" class="sidebar-nav-link">
+                    <a href="{{ url_for('logout') }}"
+                        class="inline-flex items-center px-4 py-2 bg-primary hover:bg-green-900 text-white font-semibold rounded-md transition">
                         <img src="{{ url_for('static', filename='assets/icons/logout.svg') }}" alt="Logout"
-                            class="nav-icon" />
-                        <p class="hidden lg:block">Logout</p>
+                            class="h-5 w-5 mr-2 filter invert" />
+                        <span>Logout</span>
                     </a>
                 </div>
             </div>
@@ -109,7 +110,7 @@
                     <form method="POST" action="/delete_account"
                         onsubmit="return confirm('Confirm account deletion. This cannot be undone.');">
                         <button type="submit"
-                            class="bg-red-600 hover:bg-red-800 text-white font-bold py-2 px-4 rounded-md">
+                            class="bg-red-600 hover:bg-red-800 text-white font-bold py-2 px-4 rounded-md cursor-pointer">
                             Delete Account
                         </button>
                     </form>
