@@ -15,6 +15,15 @@
     {% endfor %}
 </ul>
 {% endif %}
+{% if messages %}
+<ul class="my-4">
+    {% for category, message in messages %}
+    <li class="text-{{ 'green' if category == 'success' else 'red' }}-600">
+        {{ message }}
+    </li>
+    {% endfor %}
+</ul>
+{% endif %}
 {% endwith %}
 
 <div class="font-sans antialiased text-gray-900 leading-normal tracking-wider bg-gray-100 min-h-screen">
@@ -37,12 +46,13 @@
                     Email: <span class="font-normal">Matthew@example.com</span>
                 </p>
 
-                <div class="pt-12 pb-8">
-                    <form action="{{ url_for('logout') }}" method="POST">
-                        <button type="submit" class="button-sm">
-                            Logout
-                        </button>
-                    </form>
+                <!-- Logout Button -->
+                <div class="mt-4">
+                    <a href="{{ url_for('logout') }}" class="sidebar-nav-link">
+                        <img src="{{ url_for('static', filename='assets/icons/logout.svg') }}" alt="Logout"
+                            class="nav-icon" />
+                        <p class="hidden lg:block">Logout</p>
+                    </a>
                 </div>
             </div>
 
