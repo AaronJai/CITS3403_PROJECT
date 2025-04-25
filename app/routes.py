@@ -2,7 +2,7 @@ from app import app, db
 from flask import redirect, render_template, request, url_for, flash, session, flash
 import re
 from app.constants import nav_items
-from app.forms import LoginForm, SignupForm
+from app.forms import LoginForm, SignupForm, ChangePasswordForm
 from app.models import User
 
 @app.route('/')
@@ -76,11 +76,14 @@ def profile():
         return redirect(url_for('login'))
     
     user = User.query.get(session['user_id'])
+    form = ChangePasswordForm()
+    
     return render_template('profile.html', 
                           nav_items=nav_items,
                           first_name=user.first_name,
                           last_name=user.last_name,
-                          email=user.email)
+                          email=user.email,
+                          form=form)
 
 @app.route('/login', methods=['GET', 'POST'])
 def login():
@@ -145,32 +148,32 @@ def logout():
 
 @app.route('/change_password', methods=['POST'])
 def change_password():
-    new_password = request.form.get('new_password')
-    confirm_password = request.form.get('confirm_password')
-
-    # check password
-    if new_password != confirm_password:
-        flash("Passwords do not match.", "error")
-        return redirect(url_for('profile'))
-
-    # check password strength
-    errors = []
-    if len(new_password) < 8:
-        errors.append("at least 8 characters")
-    if not re.search(r"[A-Z]", new_password):
-        errors.append("one uppercase letter")
-    if not re.search(r"\d", new_password):
-        errors.append("one number")
-    if not re.search(r"[@$!%*?&]", new_password):
-        errors.append("one special character")
-
-    if errors:
-        flash("Password must include: " + ", ".join(errors), "error")
-        return redirect(url_for('profile'))
-
+    if 'user_id' not in session:
+        flash("Please log in first.", "error")
+        return redirect(url_for('login'))
     
-    flash("Password updated successfully! (Not saved to database yet)", "success")
-    return redirect(url_for('profile'))
+    form = ChangePasswordForm()
+    user = User.query.get(session['user_id'])
+    
+    if form.validate_on_submit():
+        # Check if current password is correct
+        if not user.check_password(form.current_password.data):
+            flash("Current password is incorrect.", "error")
+            return redirect(url_for('profile'))
+        
+        # Set new password and save to database
+        user.set_password(form.new_password.data)
+        db.session.commit()
+        
+        flash("Password updated successfully!", "success")
+        return redirect(url_for('profile'))
+    else:
+        # Form validation failed
+        for field, errors in form.errors.items():
+            for error in errors:
+                flash(f"{form[field].label.text}: {error}", "error")
+        
+        return redirect(url_for('profile'))
 
 @app.route('/delete_account', methods=['POST'])
 def delete_account():

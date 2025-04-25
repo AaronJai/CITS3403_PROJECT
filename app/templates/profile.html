@@ -3,29 +3,6 @@
 {% block title %}Profile | EcoTrack{% endblock %}
 
 {% block content %}
-
-<!-- Delete Account Confirmation -->
-{% with messages = get_flashed_messages(with_categories=true) %}
-{% if messages %}
-<ul class="my-4">
-    {% for category, message in messages %}
-    <li class="text-{{ 'green' if category == 'success' else 'red' }}-600">
-        {{ message }}
-    </li>
-    {% endfor %}
-</ul>
-{% endif %}
-{% if messages %}
-<ul class="my-4">
-    {% for category, message in messages %}
-    <li class="text-{{ 'green' if category == 'success' else 'red' }}-600">
-        {{ message }}
-    </li>
-    {% endfor %}
-</ul>
-{% endif %}
-{% endwith %}
-
 <div class="font-sans antialiased text-gray-900 leading-normal tracking-wider bg-gray-100 min-h-screen">
 
     <div class="w-full flex items-center h-auto flex-wrap mx-auto my-32 lg:my-0">
@@ -67,29 +44,50 @@
                     <p class="text-gray-600">Update your password associated with your account.</p>
                 </div>
 
-                <form action="{{ url_for('change_password') }}" method="POST" id="change-password-form"
-                    class="space-y-6 w-full">
+                <form action="{{ url_for('change_password') }}" method="POST" class="space-y-6 w-full">
+                    {{ form.hidden_tag() }}
+
+                    <!-- Current password -->
                     <div>
-                        <label for="current_password" class="block font-medium mb-1">Current password</label>
-                        <input type="password" id="current_password" name="current_password" class="input-field">
+                        {{ form.current_password.label(class="block font-medium mb-1") }}
+                        {{ form.current_password(class="input-field") }}
+                        {% if form.current_password.errors %}
+                        <div class="text-red-600 text-sm mt-1">
+                            {% for error in form.current_password.errors %}
+                            <span>{{ error }}</span>
+                            {% endfor %}
+                        </div>
+                        {% endif %}
+                    </div>
+
+                    <!-- New password -->
+                    <div>
+                        {{ form.new_password.label(class="block font-medium mb-1") }}
+                        {{ form.new_password(class="input-field") }}
+                        {% if form.new_password.errors %}
+                        <div class="text-red-600 text-sm mt-1">
+                            {% for error in form.new_password.errors %}
+                            <span>{{ error }}</span>
+                            {% endfor %}
+                        </div>
+                        {% endif %}
+                    </div>
+
+                    <!-- Confirm new password -->
+                    <div>
+                        {{ form.confirm_password.label(class="block font-medium mb-1") }}
+                        {{ form.confirm_password(class="input-field") }}
+                        {% if form.confirm_password.errors %}
+                        <div class="text-red-600 text-sm mt-1">
+                            {% for error in form.confirm_password.errors %}
+                            <span>{{ error }}</span>
+                            {% endfor %}
+                        </div>
+                        {% endif %}
                     </div>
 
                     <div>
-                        <label for="new-password" class="block font-medium mb-1">New password</label>
-                        <input type="password" id="new-password" name="new_password" class="input-field">
-                    </div>
-
-                    <div>
-                        <label for="confirm-password" class="block font-medium mb-1">Confirm password</label>
-                        <input type="password" id="confirm-password" name="confirm_password" class="input-field">
-                    </div>
-
-                    <p id="password-error" class="text-red-600 text-sm hidden"></p>
-
-                    <div>
-                        <button type="submit" class="button-sm">
-                            Save
-                        </button>
+                        {{ form.submit(class="button-sm") }}
                     </div>
                 </form>
             </div>
@@ -121,50 +119,24 @@
     </div>
 </div>
 <script>
-    function validateNewPassword() {
-        const password = document.getElementById("new-password").value;
-        const confirmPassword = document.getElementById("confirm-password").value;
-        const errorMessage = document.getElementById("password-error");
-
-        const errors = [];
-
-        if (password.length < 8) errors.push("at least 8 characters");
-        if (!/[A-Z]/.test(password)) errors.push("one uppercase letter");
-        if (!/\d/.test(password)) errors.push("one number");
-        if (!/[@$!%*?&]/.test(password)) errors.push("one special character");
-
-        if (errors.length > 0) {
-            errorMessage.textContent = "Password must include: " + errors.join(", ");
-            errorMessage.style.display = "block";
-            return false;
-        }
-
-        if (password !== confirmPassword) {
-            errorMessage.textContent = "Passwords do not match.";
-            errorMessage.style.display = "block";
-            return false;
-        }
-
-        errorMessage.textContent = "";
-        errorMessage.style.display = "none";
-        return true;
-    }
-
     document.addEventListener("DOMContentLoaded", () => {
-        const form = document.getElementById("change-password-form");
-        const newPassword = document.getElementById("new-password");
-        const confirmPassword = document.getElementById("confirm-password");
+        // Updating to use the proper WTForms field IDs
+        const form = document.querySelector("form");
+        const newPassword = document.getElementById("new_password");
+        const confirmPassword = document.getElementById("confirm_password");
 
-        if (form) {
-            form.addEventListener("submit", (event) => {
-                if (!validateNewPassword()) {
-                    event.preventDefault(); // Prevent form submission if validation fails
-                }
-            });
+        // Set up real-time validation if needed for better UX
+        if (newPassword && confirmPassword) {
+            const validatePassword = () => {
+                if (!newPassword.value) return; // Don't validate empty fields
+
+                // The server-side validation will handle the actual validation and error messages
+                // This is just for a better user experience
+            };
+
+            newPassword.addEventListener("input", validatePassword);
+            confirmPassword.addEventListener("input", validatePassword);
         }
-
-        newPassword.addEventListener("input", validateNewPassword);
-        confirmPassword.addEventListener("input", validateNewPassword);
     });
 </script>
 {% endblock %}
