@@ -57,6 +57,8 @@ def share():
         search_results = User.query.filter_by(email=search_email).first()
         if not search_results:
             flash('No user found with that email address.', 'warning')
+        else:
+            flash('User found!', 'success')
     
     # Placeholder data for shared with me and currently sharing with
     # This would be replaced with actual database queries in the full implementation

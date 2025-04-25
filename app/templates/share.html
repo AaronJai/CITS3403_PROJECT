@@ -40,7 +40,8 @@
                         <p><strong>{{ search_results.first_name }} {{ search_results.last_name }}</strong></p>
                         <p class="text-gray-500 hidden md:block">{{ search_results.email }}</p>
                     </div>
-                    <button class="px-4 py-2 bg-primary text-white rounded-md hover:bg-green-700 transition">
+                    <button
+                        class="px-4 py-2 cursor-pointer bg-primary font-semibold text-white rounded-md hover:bg-green-900 transition">
                         Share with {{ search_results.first_name }}
                     </button>
                 </div>
