@@ -236,18 +236,20 @@
 
 .panel {
   border: 1px solid #e5e7eb;
-  border-radius: 0.5rem;
+  background-color: white;
+  border-radius: 0.75rem;
 }
 
 .panel-heading {
   padding: 0.75rem 1rem;
   border-bottom: 1px solid #e5e7eb;
   font-weight: 600;
-  background-color: #f9fafb;
 }
 
 .panel-body {
   padding: 1rem;
+  background-color: white;
+  border-radius: 0.75rem;
 }
 
 .input-group {
@@ -330,4 +332,9 @@ ul[class*="flex flex-row gap-x-2"] {
 
 .group .bg-neutral\/20.h-px {
   margin-top: 1rem;
+}
+
+#show-simple:not(.bg-primary):hover,
+#show-advanced:not(.bg-primary):hover {
+  background-color: transparent !important;
 }

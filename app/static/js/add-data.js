@@ -85,7 +85,7 @@ document.addEventListener('DOMContentLoaded', function () {
 // Vehicle Template (hidden)
 const vehicleTemplate = document.createElement('template');
 vehicleTemplate.innerHTML = `
-<div class="vehicle-mpg-container vehicle-item space-y-2">
+<div class="vehicle-mpg-container vehicle-item space-y-2 pb-4 border-b border-gray-300 last:border-b-0">
     <div class="flex gap-2">
     <select class="select select-bordered flex-1 vehicle-fuel-type">
         <option value="gasoline">Gasoline</option>
