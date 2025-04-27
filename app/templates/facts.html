@@ -3,6 +3,17 @@
 {% block title %}Facts | EcoTrack{% endblock %}
 
 {% block head %}
+
+<style>
+  /* Zoom effect for news cards */
+  .zoom {
+    transition: transform 0.2s;
+  }
+  .zoom:hover {
+    transform: scale(1.05);
+  }
+</style>
+
 <script defer>
   // Fetch live environmental news
   document.addEventListener("DOMContentLoaded", function () {
@@ -10,12 +21,12 @@
       .then((res) => res.json())
       .then((data) => {
         const news = data.items.slice(0, 4).map((item) => `
-          <div class="bg-white p-4 rounded-lg shadow mb-4">
-            <a href="${item.link}" target="_blank" class="text-lg font-semibold text-green-800 hover:underline">
-              ${item.title}
+          <div class="bg-white p-4 rounded-lg shadow mb-4 space-y-2 zoom">
+            <a href="${item.link}" target="_blank" class="text-xl font-bold text-green-900 hover:underline flex items-center gap-2">
+             ${item.title}
             </a>
             <p class="text-sm text-gray-600 mt-1">${new Date(item.pubDate).toLocaleDateString()}</p>
-            <p class="text-gray-700 mt-2">${item.description.split(" ").slice(0, 20).join(" ")}...</p>
+            <p class="text-gray-700 mt-2 leading-relaxed">${item.description.split(" ").slice(0, 20).join(" ")}...</p>
           </div>
         `).join("");
 
@@ -30,7 +41,7 @@
 
   <!-- About Us -->
   <section class="bg-white rounded-2xl shadow p-8">
-    <h2 class="text-2xl font-bold text-green-900 mb-6">About EcoTrack</h2>
+    <h2 class="text-2xl font-bold text-green-900 mb-6">🌎 About EcoTrack</h2>
     <p class="text-gray-700 leading-relaxed">
       <strong>EcoTrack</strong> is a personal sustainability companion designed to help individuals
       understand, measure, and reduce their environmental impact. Whether you're tracking your
@@ -45,7 +56,7 @@
 
   <!-- Live News Feed -->
   <section class="bg-white rounded-2xl shadow p-8">
-    <h2 class="text-2xl font-bold text-green-900 mb-6">Latest Environmental News</h2>
+    <h2 class="text-2xl font-bold text-green-900 mb-6">📰 Latest Environmental News</h2>
     <div id="news-feed" class="space-y-4"></div>
   </section>
 
