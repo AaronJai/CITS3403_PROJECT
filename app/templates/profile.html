@@ -3,14 +3,140 @@
 {% block title %}Profile | EcoTrack{% endblock %}
 
 {% block content %}
-User Profile
+<div class="font-sans antialiased text-gray-900 leading-normal tracking-wider bg-gray-100 min-h-screen">
 
+    <div class="w-full flex items-center h-auto flex-wrap mx-auto my-32 lg:my-0">
+        <div id="profile"
+            class="w-4/5 mx-auto mt-20 bg-white bg-opacity-90 shadow-2xl rounded-lg flex flex-wrap items-start p-8">
 
-<!-- Logout Button -->
-<div class="mt-4">
-    <a href="{{ url_for('logout') }}" class="sidebar-nav-link">
-        <img src="{{ url_for('static', filename='assets/icons/logout.svg') }}" alt="Logout" class="nav-icon" />
-        <p class="hidden lg:block">Logout</p>
-    </a>
+            <!-- User info -->
+            <div class="p-4 md:p-12 text-left w-full">
+                <div class="mb-4">
+                    <img src="{{ url_for('static', filename='assets/images/avatar.png') }}" alt="User Avatar"
+                        class="w-32 h-32 rounded-full object-cover shadow border mx-auto lg:mx-0">
+                </div>
+
+                <h1 class="text-3xl font-bold pt-4">{{ first_name }} {{ last_name }}</h1>
+                <div class="w-4/5 pt-3 border-b-2 border-green-500 opacity-25"></div>
+
+                <p class="pt-4 text-base font-bold">
+                    Email: <span class="font-normal">{{ email }}</span>
+                </p>
+
+                <!-- Logout Button -->
+                <div class="mt-4">
+                    <a href="{{ url_for('logout') }}"
+                        class="inline-flex items-center px-4 py-2 bg-primary hover:bg-green-900 text-white font-semibold rounded-md transition">
+                        <img src="{{ url_for('static', filename='assets/icons/logout.svg') }}" alt="Logout"
+                            class="h-5 w-5 mr-2 filter invert" />
+                        <span>Logout</span>
+                    </a>
+                </div>
+            </div>
+
+            <!-- Dividing Line -->
+            <div class="w-full border-t border-gray-300 my-8"></div>
+
+            <!-- Change Password -->
+            <div class="w-full grid grid-cols-1 lg:grid-cols-2 gap-8 items-start px-4 lg:px-12 pb-8">
+                <div>
+                    <h2 class="text-xl font-semibold mb-2">Change password</h2>
+                    <p class="text-gray-600">Update your password associated with your account.</p>
+                </div>
+
+                <form action="{{ url_for('change_password') }}" method="POST" class="space-y-6 w-full">
+                    {{ form.hidden_tag() }}
+
+                    <!-- Current password -->
+                    <div>
+                        {{ form.current_password.label(class="block font-medium mb-1") }}
+                        {{ form.current_password(class="input-field") }}
+                        {% if form.current_password.errors %}
+                        <div class="text-red-600 text-sm mt-1">
+                            {% for error in form.current_password.errors %}
+                            <span>{{ error }}</span>
+                            {% endfor %}
+                        </div>
+                        {% endif %}
+                    </div>
+
+                    <!-- New password -->
+                    <div>
+                        {{ form.new_password.label(class="block font-medium mb-1") }}
+                        {{ form.new_password(class="input-field") }}
+                        {% if form.new_password.errors %}
+                        <div class="text-red-600 text-sm mt-1">
+                            {% for error in form.new_password.errors %}
+                            <span>{{ error }}</span>
+                            {% endfor %}
+                        </div>
+                        {% endif %}
+                    </div>
+
+                    <!-- Confirm new password -->
+                    <div>
+                        {{ form.confirm_password.label(class="block font-medium mb-1") }}
+                        {{ form.confirm_password(class="input-field") }}
+                        {% if form.confirm_password.errors %}
+                        <div class="text-red-600 text-sm mt-1">
+                            {% for error in form.confirm_password.errors %}
+                            <span>{{ error }}</span>
+                            {% endfor %}
+                        </div>
+                        {% endif %}
+                    </div>
+
+                    <div>
+                        {{ form.submit(class="button-sm") }}
+                    </div>
+                </form>
+            </div>
+
+            <!-- Dividing Line -->
+            <div class="w-full border-t border-gray-300 my-8"></div>
+
+            <!-- Delete Account -->
+            <div class="w-full grid grid-cols-1 lg:grid-cols-2 gap-8 items-start px-4 lg:px-12 pb-4">
+                <div>
+                    <h2 class="text-xl font-semibold mb-2">Delete account</h2>
+                    <p class="text-gray-600">
+                        No longer want to use our service? You can delete your account here. This action is not
+                        reversible. All information related to this account will be deleted permanently.
+                    </p>
+                </div>
+                <div class="flex items-start justify-start">
+                    <form method="POST" action="/delete_account"
+                        onsubmit="return confirm('Confirm account deletion. This cannot be undone.');">
+                        <button type="submit"
+                            class="bg-red-600 hover:bg-red-800 text-white font-bold py-2 px-4 rounded-md cursor-pointer">
+                            Delete Account
+                        </button>
+                    </form>
+                </div>
+            </div>
+
+        </div>
+    </div>
 </div>
+<script>
+    document.addEventListener("DOMContentLoaded", () => {
+        // Updating to use the proper WTForms field IDs
+        const form = document.querySelector("form");
+        const newPassword = document.getElementById("new_password");
+        const confirmPassword = document.getElementById("confirm_password");
+
+        // Set up real-time validation if needed for better UX
+        if (newPassword && confirmPassword) {
+            const validatePassword = () => {
+                if (!newPassword.value) return; // Don't validate empty fields
+
+                // The server-side validation will handle the actual validation and error messages
+                // This is just for a better user experience
+            };
+
+            newPassword.addEventListener("input", validatePassword);
+            confirmPassword.addEventListener("input", validatePassword);
+        }
+    });
+</script>
 {% endblock %}

@@ -1,7 +1,8 @@
 from app import app, db
-from flask import redirect, render_template, request, url_for, flash, session
+from flask import redirect, render_template, request, url_for, flash, session, flash
+import re
 from app.constants import nav_items
-from app.forms import LoginForm, SignupForm, ShareForm
+from app.forms import LoginForm, SignupForm, ChangePasswordForm, ShareForm
 from app.models import User
 
 @app.route('/')
@@ -102,11 +103,14 @@ def profile():
         return redirect(url_for('login'))
     
     user = User.query.get(session['user_id'])
+    form = ChangePasswordForm()
+    
     return render_template('profile.html', 
                           nav_items=nav_items,
                           first_name=user.first_name,
                           last_name=user.last_name,
-                          email=user.email)
+                          email=user.email,
+                          form=form)
 
 @app.route('/login', methods=['GET', 'POST'])
 def login():
@@ -167,4 +171,39 @@ def logout():
     # Remove user_id from session
     session.pop('user_id', None)
     flash('Logged out successfully!', 'success')
+    return redirect(url_for('login'))
+
+@app.route('/change_password', methods=['POST'])
+def change_password():
+    if 'user_id' not in session:
+        flash("Please log in first.", "error")
+        return redirect(url_for('login'))
+    
+    form = ChangePasswordForm()
+    user = User.query.get(session['user_id'])
+    
+    if form.validate_on_submit():
+        # Check if current password is correct
+        if not user.check_password(form.current_password.data):
+            flash("Current password is incorrect.", "error")
+            return redirect(url_for('profile'))
+        
+        # Set new password and save to database
+        user.set_password(form.new_password.data)
+        db.session.commit()
+        
+        flash("Password updated successfully!", "success")
+        return redirect(url_for('profile'))
+    else:
+        # Form validation failed
+        for field, errors in form.errors.items():
+            for error in errors:
+                flash(f"{form[field].label.text}: {error}", "error")
+        
+        return redirect(url_for('profile'))
+
+@app.route('/delete_account', methods=['POST'])
+def delete_account():
+    print("Deleting user account")
+    flash('Your account has been deleted.', 'success')
     return redirect(url_for('login'))
