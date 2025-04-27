@@ -25,12 +25,20 @@ document.addEventListener('DOMContentLoaded', function () {
     function goToStep(index) {
         currentIndex = index;
         updateStepper();
+        window.scrollTo({
+            top: 0,
+            behavior: 'smooth' // Smooth scrolling for better UX
+        });
     }
 
     function goToPrevStep() {
         if (currentIndex > 1) {
             currentIndex--;
             updateStepper();
+            window.scrollTo({
+                top: 0,
+                behavior: 'smooth'
+            });
         }
     }
 
@@ -38,6 +46,10 @@ document.addEventListener('DOMContentLoaded', function () {
         if (currentIndex < totalSteps) {
             currentIndex++;
             updateStepper();
+            window.scrollTo({
+                top: 0,
+                behavior: 'smooth'
+            });
         }
     }
 
@@ -64,6 +76,17 @@ document.addEventListener('DOMContentLoaded', function () {
             else if (stepNumber < currentIndex) {
                 circle.classList.add('stepper-completed');
                 circle.classList.remove('bg-gray-200', 'text-gray-700');
+            }
+
+            const headerImageContainer = document.getElementById('stepper-header-image-container');
+            if (headerImageContainer) {
+                const newSrc = headerImageContainer.getAttribute(`data-step-${currentIndex}`);
+                if (newSrc) {
+                    headerImageContainer.style.backgroundImage = `url(${newSrc})`;
+                    headerImageContainer.classList.remove('animate-bg-slide-down');
+                    void headerImageContainer.offsetWidth; // Force reflow to restart animation
+                    headerImageContainer.classList.add('animate-bg-slide-down');
+                }
             }
         });
 

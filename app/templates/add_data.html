@@ -11,59 +11,69 @@
 <!-- Stepper -->
 <div data-stepper='{"currentIndex": 1}' class="w-full">
   <!-- Stepper Nav -->
-  <ul class="relative flex flex-row gap-x-2 justify-center pb-2">
-    <li class="group flex flex-1 shrink basis-0 items-center gap-x-2 cursor-pointer"
-      data-stepper-nav-item='{ "index": 1 }'>
-      <span class="min-h-7.5 min-w-7.5 inline-flex items-center align-middle text-sm">
-        <span
-          class="flex size-8 items-center justify-center rounded-full font-bold shadow-sm ring-2 ring-offset-2 ring-white bg-gray-200 text-gray-700">
-          1
+  <div class="relative overflow-hidden rounded-2xl">
+    <div id="stepper-header-image-container"
+      data-step-1="{{ url_for('static', filename='assets/images/travel-header.png') }}"
+      data-step-2="{{ url_for('static', filename='assets/images/home-header.png') }}"
+      data-step-3="{{ url_for('static', filename='assets/images/food-header.png') }}"
+      data-step-4="{{ url_for('static', filename='assets/images/shopping-header.png') }}"
+      style="background-image: url('{{ url_for('static', filename='assets/images/travel-header.png') }}');"
+      class="w-full h-[195px] header-image-container rounded-t-2xl animate-bg-slide-down">
+    </div>
+    <ul class="relative flex flex-row gap-x-2 justify-center pb-2">
+      <li class="group flex flex-1 shrink basis-0 items-center gap-x-2 cursor-pointer"
+        data-stepper-nav-item='{ "index": 1 }'>
+        <span class="min-h-7.5 min-w-7.5 inline-flex items-center align-middle text-sm">
+          <span
+            class="flex size-8 items-center justify-center rounded-full font-bold shadow-sm ring-2 ring-offset-2 ring-white bg-gray-200 text-gray-700">
+            1
+          </span>
+          <span class="ms-2 max-sm:hidden">Travel</span>
+          <div class="bg-neutral/20 ms-2 h-px w-full flex-1 group-last:hidden"></div>
         </span>
-        <span class="ms-2 max-sm:hidden">Travel</span>
-        <div class="bg-neutral/20 ms-2 h-px w-full flex-1 group-last:hidden"></div>
-      </span>
-      <div class="bg-neutral/20 h-px w-full flex-1 group-last:hidden"></div>
-    </li>
-    <li class="group flex flex-1 shrink basis-0 items-center gap-x-2 cursor-pointer"
-      data-stepper-nav-item='{ "index": 2 }'>
-      <span class="min-h-7.5 min-w-7.5 inline-flex items-center align-middle text-sm">
-        <span
-          class="stepper-active:bg-primary stepper-active:text-white stepper-completed:bg-success stepper-completed:text-white stepper-error:bg-red-500 stepper-error:text-white bg-gray-200 text-gray-700 flex size-8 items-center justify-center rounded-full font-bold shadow-sm ring-2 ring-offset-2 ring-white">
-          <span class="stepper-success:hidden stepper-completed:hidden">2</span>
-          <span class="icon-[tabler--check] stepper-success:block hidden size-4 shrink-0"></span>
+        <div class="bg-neutral/20 h-px w-full flex-1 group-last:hidden"></div>
+      </li>
+      <li class="group flex flex-1 shrink basis-0 items-center gap-x-2 cursor-pointer"
+        data-stepper-nav-item='{ "index": 2 }'>
+        <span class="min-h-7.5 min-w-7.5 inline-flex items-center align-middle text-sm">
+          <span
+            class="stepper-active:bg-primary stepper-active:text-white stepper-completed:bg-success stepper-completed:text-white stepper-error:bg-red-500 stepper-error:text-white bg-gray-200 text-gray-700 flex size-8 items-center justify-center rounded-full font-bold shadow-sm ring-2 ring-offset-2 ring-white">
+            <span class="stepper-success:hidden stepper-completed:hidden">2</span>
+            <span class="icon-[tabler--check] stepper-success:block hidden size-4 shrink-0"></span>
+          </span>
+          <span class="text-base-content ms-2 max-sm:hidden">Home</span>
         </span>
-        <span class="text-base-content ms-2 max-sm:hidden">Home</span>
-      </span>
-      <div
-        class="stepper-success:bg-primary stepper-completed:bg-success bg-neutral/20 h-px w-full flex-1 group-last:hidden">
-      </div>
-    </li>
-    <li class="group flex flex-1 shrink basis-0 items-center gap-x-2 cursor-pointer"
-      data-stepper-nav-item='{ "index": 3 }'>
-      <span class="min-h-7.5 min-w-7.5 inline-flex items-center align-middle text-sm">
-        <span
-          class="stepper-active:bg-primary stepper-active:text-white stepper-completed:bg-success stepper-completed:text-white stepper-error:bg-red-500 stepper-error:text-white bg-gray-200 text-gray-700 flex size-8 items-center justify-center rounded-full font-bold shadow-sm ring-2 ring-offset-2 ring-white">
-          <span class="stepper-success:hidden stepper-completed:hidden">3</span>
-          <span class="icon-[tabler--check] stepper-success:block hidden size-4 shrink-0"></span>
+        <div
+          class="stepper-success:bg-primary stepper-completed:bg-success bg-neutral/20 h-px w-full flex-1 group-last:hidden">
+        </div>
+      </li>
+      <li class="group flex flex-1 shrink basis-0 items-center gap-x-2 cursor-pointer"
+        data-stepper-nav-item='{ "index": 3 }'>
+        <span class="min-h-7.5 min-w-7.5 inline-flex items-center align-middle text-sm">
+          <span
+            class="stepper-active:bg-primary stepper-active:text-white stepper-completed:bg-success stepper-completed:text-white stepper-error:bg-red-500 stepper-error:text-white bg-gray-200 text-gray-700 flex size-8 items-center justify-center rounded-full font-bold shadow-sm ring-2 ring-offset-2 ring-white">
+            <span class="stepper-success:hidden stepper-completed:hidden">3</span>
+            <span class="icon-[tabler--check] stepper-success:block hidden size-4 shrink-0"></span>
+          </span>
+          <span class="text-base-content ms-2 max-sm:hidden">Food</span>
         </span>
-        <span class="text-base-content ms-2 max-sm:hidden">Food</span>
-      </span>
-      <div
-        class="stepper-success:bg-primary stepper-completed:bg-success bg-neutral/20 h-px w-full flex-1 group-last:hidden">
-      </div>
-    </li>
-    <li class="group flex flex-1 shrink basis-0 items-center gap-x-2 cursor-pointer"
-      data-stepper-nav-item='{ "index": 4 }'>
-      <span class="min-h-7.5 min-w-7.5 inline-flex items-center align-middle text-sm">
-        <span
-          class="stepper-active:bg-primary stepper-active:text-white stepper-completed:bg-success stepper-completed:text-white stepper-error:bg-red-500 stepper-error:text-white bg-gray-200 text-gray-700 flex size-8 items-center justify-center rounded-full font-bold shadow-sm ring-2 ring-offset-2 ring-white">
-          <span class="stepper-success:hidden stepper-completed:hidden">4</span>
-          <span class="icon-[tabler--check] stepper-success:block hidden size-4 shrink-0"></span>
+        <div
+          class="stepper-success:bg-primary stepper-completed:bg-success bg-neutral/20 h-px w-full flex-1 group-last:hidden">
+        </div>
+      </li>
+      <li class="group flex flex-1 shrink basis-0 items-center gap-x-2 cursor-pointer"
+        data-stepper-nav-item='{ "index": 4 }'>
+        <span class="min-h-7.5 min-w-7.5 inline-flex items-center align-middle text-sm">
+          <span
+            class="stepper-active:bg-primary stepper-active:text-white stepper-completed:bg-success stepper-completed:text-white stepper-error:bg-red-500 stepper-error:text-white bg-gray-200 text-gray-700 flex size-8 items-center justify-center rounded-full font-bold shadow-sm ring-2 ring-offset-2 ring-white">
+            <span class="stepper-success:hidden stepper-completed:hidden">4</span>
+            <span class="icon-[tabler--check] stepper-success:block hidden size-4 shrink-0"></span>
+          </span>
+          <span class="text-base-content ms-2 max-sm:hidden">Shopping</span>
         </span>
-        <span class="text-base-content ms-2 max-sm:hidden">Shopping</span>
-      </span>
-    </li>
-  </ul>
+      </li>
+    </ul>
+  </div>
   <!-- End Stepper Nav -->
 
   <!-- Stepper Content -->
@@ -86,7 +96,7 @@
       </div>
 
       <!-- Public Transit Section -->
-      <div class="flex justify-center gap-4 mb-4">
+      <div class="flex justify-center gap-3 mb-3">
         <button type="button" id="show-simple"
           class="flex items-center gap-2 border border-primary rounded-full px-4 py-2 cursor-pointer text-primary bg-transparents">
           Simple
