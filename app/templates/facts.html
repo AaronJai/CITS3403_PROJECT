@@ -3,7 +3,7 @@
 {% block title %}Facts | EcoTrack{% endblock %}
 
 {% block head %}
-<script>
+<script defer>
   // Fetch live environmental news
   document.addEventListener("DOMContentLoaded", function () {
     fetch("https://api.rss2json.com/v1/api.json?rss_url=https://news.un.org/feed/subscribe/en/news/topic/climate-change/feed/rss.xml")
