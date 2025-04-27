@@ -26,72 +26,75 @@
 {% endblock %}
 
 {% block content %}
-<!-- About Us -->
-<section class="bg-white rounded-2xl shadow p-8">
-  <h2 class="text-2xl font-bold text-green-900 mb-6">About EcoTrack</h2>
-  <p class="text-gray-700 leading-relaxed">
-    <strong>EcoTrack</strong> is a personal sustainability companion designed to help individuals
-    understand, measure, and reduce their environmental impact. Whether you're tracking your
-    transport emissions, energy usage, or food footprint, EcoTrack gives you the tools and insights
-    to make smarter, greener decisions every day.
-  </p>
-  <p class="text-gray-700 mt-4 leading-relaxed">
-    By combining live environmental news, educational facts, and interactive data, our goal is to
-    empower users to take meaningful action for the planet — one step, one choice, and one fact at a time.
-  </p>
-</section>
+<div class="space-y-7">
 
-<!-- Live News Feed -->
-<section class="bg-white rounded-2xl shadow p-8">
-  <h2 class="text-2xl font-bold text-green-900 mb-6">Latest Environmental News</h2>
-  <div id="news-feed" class="space-y-4"></div>
-</section>
+  <!-- About Us -->
+  <section class="bg-white rounded-2xl shadow p-8">
+    <h2 class="text-2xl font-bold text-green-900 mb-6">About EcoTrack</h2>
+    <p class="text-gray-700 leading-relaxed">
+      <strong>EcoTrack</strong> is a personal sustainability companion designed to help individuals
+      understand, measure, and reduce their environmental impact. Whether you're tracking your
+      transport emissions, energy usage, or food footprint, EcoTrack gives you the tools and insights
+      to make smarter, greener decisions every day.
+    </p>
+    <p class="text-gray-700 mt-4 leading-relaxed">
+      By combining live environmental news, educational facts, and interactive data, our goal is to
+      empower users to take meaningful action for the planet — one step, one choice, and one fact at a time.
+    </p>
+  </section>
 
-<!-- Static Environmental Facts -->
-<!-- Category Cards -->
-<section class="category-cards">
-  <!-- Trees -->
-  <div class="category-card">
-    <h3 class="category-heading">🌿 Trees absorb CO₂</h3>
-    <p class="category-description">
-      One mature tree can absorb up to 22kg of CO₂ per year, thats roughly 1 ton over 40 years.
-    </p>
-    <p class="category-description">
-      The Amazon Rainforest alone stores over 76 billion tonnes of carbon — acting as a global climate buffer.
-    </p>
-  </div>
+  <!-- Live News Feed -->
+  <section class="bg-white rounded-2xl shadow p-8">
+    <h2 class="text-2xl font-bold text-green-900 mb-6">Latest Environmental News</h2>
+    <div id="news-feed" class="space-y-4"></div>
+  </section>
 
-  <!-- Transport -->
-  <div class="category-card">
-    <h3 class="category-heading">🚗 Transport Emmissions</h3>
-    <p class="category-description">
-      Transport accounts for ~25% of global CO₂ emissions.
-    </p>
-    <p class="category-description">
-      Switching from car to bike just once a day can reduce a person's transport emissions by 67%.
-    </p>
-  </div>
+  <!-- Static Environmental Facts -->
+  <!-- Category Cards -->
+  <section class="category-cards">
+    <!-- Trees -->
+    <div class="category-card">
+      <h3 class="category-heading">🌿 Trees absorb CO₂</h3>
+      <p class="category-description">
+        One mature tree can absorb up to 22kg of CO₂ per year, thats roughly 1 ton over 40 years.
+      </p>
+      <p class="category-description">
+        The Amazon Rainforest alone stores over 76 billion tonnes of carbon — acting as a global climate buffer.
+      </p>
+    </div>
 
-  <!-- Energy Use -->
-  <div class="category-card">
-    <h3 class="category-heading">💡 Energy Use</h3>
-    <p class="category-description">
-      LED light bulbs use up to 85% less energy and last 25x longer than traditional incandescent bulbs.
-    </p>
-    <p class="category-description">
-      Around 80% of global energy still comes from fossil fuels — coal, oil, and gas — despite the rise of renewables.
-    </p>
-  </div>
+    <!-- Transport -->
+    <div class="category-card">
+      <h3 class="category-heading">🚗 Transport Emmissions</h3>
+      <p class="category-description">
+        Transport accounts for ~25% of global CO₂ emissions.
+      </p>
+      <p class="category-description">
+        Switching from car to bike just once a day can reduce a person's transport emissions by 67%.
+      </p>
+    </div>
 
-  <!-- Food Footprint -->
-  <div class="category-card">
-    <h3 class="category-heading">🍔Food Footprint</h3>
-    <p class="category-description">
-      Producing 1kg of beef emits over 27kg of CO₂, more than driving a petrol car for over 100Km.
-    </p>
-    <p class="category-description">
-      A vegan diet can reduce an individual's carbon footprint by up to 50% compared to a meat-based diet.
-    </p>
-  </div>
-</section>
+    <!-- Energy Use -->
+    <div class="category-card">
+      <h3 class="category-heading">💡 Energy Use</h3>
+      <p class="category-description">
+        LED light bulbs use up to 85% less energy and last 25x longer than traditional incandescent bulbs.
+      </p>
+      <p class="category-description">
+        Around 80% of global energy still comes from fossil fuels — coal, oil, and gas — despite the rise of renewables.
+      </p>
+    </div>
+
+    <!-- Food Footprint -->
+    <div class="category-card">
+      <h3 class="category-heading">🍔Food Footprint</h3>
+      <p class="category-description">
+        Producing 1kg of beef emits over 27kg of CO₂, more than driving a petrol car for over 100Km.
+      </p>
+      <p class="category-description">
+        A vegan diet can reduce an individual's carbon footprint by up to 50% compared to a meat-based diet.
+      </p>
+    </div>
+  </section>
+</div>
 {% endblock %}
