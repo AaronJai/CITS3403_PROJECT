@@ -193,6 +193,12 @@
   background-position: top center;
 }
 
+.image-design {
+  border: 1px solid #e5e7eb;
+  border-radius: 1rem 1rem 0 0;
+  border-bottom: none;
+}
+
 .animate-bg-slide-down {
   animation: bgSlideDown 4.5s ease-out forwards;
 }
@@ -245,6 +251,12 @@
   border: 1px solid #e5e7eb;
   background-color: white;
   border-radius: 0.75rem;
+}
+
+.panel-header {
+  position: relative;
+  overflow: hidden;
+  border-radius: 0 0 1rem 1rem;
 }
 
 .panel-heading {
@@ -314,6 +326,9 @@ ul[class*="flex flex-row gap-x-2"] {
   background-color: white;
   z-index: 10;
   padding: 10px;
+  border: 1px solid #e5e7eb;
+  border-radius: 0 0 1rem 1rem;
+  border-top: none;
 }
 
 [data-stepper-nav-item] {

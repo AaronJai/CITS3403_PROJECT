@@ -171,13 +171,10 @@ const showSimpleBtn = document.getElementById('show-simple');
 const showAdvancedBtn = document.getElementById('show-advanced');
 
 function setActiveButton(activeBtn, inactiveBtn) {
-    // Active: green text, transparent background
-    activeBtn.classList.remove('bg-primary', 'text-white', 'hover:bg-primary/90');
-    activeBtn.classList.add('bg-transparent', 'text-primary', 'hover:bg-primary/10');
-
-    // Inactive: white text, filled green background
-    inactiveBtn.classList.remove('bg-transparent', 'text-primary', 'hover:bg-primary/10');
-    inactiveBtn.classList.add('bg-primary', 'text-white', 'hover:bg-primary/90');
+    activeBtn.classList.remove('bg-transparent', 'text-primary', 'hover:bg-primary/10');
+    activeBtn.classList.add('bg-primary', 'text-white', 'hover:bg-primary/90');
+    inactiveBtn.classList.remove('bg-primary', 'text-white', 'hover:bg-primary/90');
+    inactiveBtn.classList.add('bg-transparent', 'text-primary', 'hover:bg-primary/10');
 }
 
 showSimpleBtn.addEventListener('click', () => {
@@ -196,10 +193,10 @@ showAdvancedBtn.addEventListener('click', () => {
 
 //Shopping Form Toggle
 document.addEventListener('DOMContentLoaded', function () {
-    const simpleForm = document.getElementById('shoppingSimple');
-    const advancedForm = document.getElementById('shoppingAdvanced');
-    const btnToAdvanced = document.getElementById('btnToAdvanced');
-    const btnToSimple = document.getElementById('btnToSimple');
+    const simpleFormShopping = document.getElementById('shoppingSimple');
+    const advancedFormShopping = document.getElementById('shoppingAdvanced');
+    const showSimpleBtnShopping = document.getElementById('show-simple-shopping');
+    const showAdvancedBtnShopping = document.getElementById('show-advanced-shopping');
 
     function syncForms(fromForm, toForm) {
         const fromInputs = fromForm.querySelectorAll('input');
@@ -210,20 +207,18 @@ document.addEventListener('DOMContentLoaded', function () {
         });
     }
 
-    btnToAdvanced.addEventListener('click', function () {
-        syncForms(simpleForm, advancedForm);
-        simpleForm.classList.add('hidden');
-        advancedForm.classList.remove('hidden');
-        btnToAdvanced.classList.add('hidden');
-        btnToSimple.classList.remove('hidden');
+    showSimpleBtnShopping.addEventListener('click', () => {
+        syncForms(advancedFormShopping, simpleFormShopping);
+        simpleFormShopping.classList.remove('hidden');
+        advancedFormShopping.classList.add('hidden');
+        setActiveButton(showSimpleBtnShopping, showAdvancedBtnShopping);
     });
 
-    btnToSimple.addEventListener('click', function () {
-        syncForms(advancedForm, simpleForm);
-        advancedForm.classList.add('hidden');
-        simpleForm.classList.remove('hidden');
-        btnToSimple.classList.add('hidden');
-        btnToAdvanced.classList.remove('hidden');
+    showAdvancedBtnShopping.addEventListener('click', () => {
+        syncForms(simpleFormShopping, advancedFormShopping);
+        advancedFormShopping.classList.remove('hidden');
+        simpleFormShopping.classList.add('hidden');
+        setActiveButton(showAdvancedBtnShopping, showSimpleBtnShopping);
     });
 });
 

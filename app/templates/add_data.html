@@ -11,16 +11,16 @@
 <!-- Stepper -->
 <div data-stepper='{"currentIndex": 1}' class="w-full">
   <!-- Stepper Nav -->
-  <div class="relative overflow-hidden rounded-2xl">
+  <div class="panel-header">
     <div id="stepper-header-image-container"
       data-step-1="{{ url_for('static', filename='assets/images/travel-header.png') }}"
       data-step-2="{{ url_for('static', filename='assets/images/home-header.png') }}"
       data-step-3="{{ url_for('static', filename='assets/images/food-header.png') }}"
       data-step-4="{{ url_for('static', filename='assets/images/shopping-header.png') }}"
       style="background-image: url('{{ url_for('static', filename='assets/images/travel-header.png') }}');"
-      class="w-full h-[195px] header-image-container rounded-t-2xl animate-bg-slide-down">
+      class="w-full h-[195px] image-design header-image-container animate-bg-slide-down">
     </div>
-    <ul class="relative flex flex-row gap-x-2 justify-center pb-2">
+    <ul class="relative flex flex-row gap-x-2 justify-center pb-2 font-semibold">
       <li class="group flex flex-1 shrink basis-0 items-center gap-x-2 cursor-pointer"
         data-stepper-nav-item='{ "index": 1 }'>
         <span class="min-h-7.5 min-w-7.5 inline-flex items-center align-middle text-sm">
@@ -96,14 +96,14 @@
       </div>
 
       <!-- Public Transit Section -->
-      <div class="flex justify-center gap-3 mb-3">
+      <div class="flex justify-center gap-3 mb-3 ">
         <button type="button" id="show-simple"
-          class="flex items-center gap-2 border border-primary rounded-full px-4 py-2 cursor-pointer text-primary bg-transparents">
+          class="flex font-semibold items-center gap-2 border border-primary rounded-full px-4 py-2 cursor-pointer bg-primary text-white hover:bg-primary/90">
           Simple
         </button>
 
         <button type="button" id="show-advanced"
-          class="flex items-center gap-2 border border-primary rounded-full px-4 py-2 transition cursor-pointer text-white bg-primary hover:bg-primary/90">
+          class="flex font-semibold items-center gap-2 border border-primary rounded-full px-4 py-2 transition cursor-pointer bg-transparent text-primary hover:bg-primary/10">
           Advanced
         </button>
       </div>
@@ -492,23 +492,28 @@
 
   <!-- Shopping Content -->
   <div data-stepper-content-item="4" class="hidden">
+    <div class="flex justify-center gap-3 mb-3">
+      <button type="button" id="show-simple-shopping"
+        class="flex font-semibold items-center gap-2 border border-primary rounded-full px-4 py-2 cursor-pointer bg-primary text-white hover:bg-primary/90">
+        Simple
+      </button>
+      <button type="button" id="show-advanced-shopping"
+        class="flex font-semibold items-center gap-2 border border-primary rounded-full px-4 py-2 transition cursor-pointer bg-transparent text-primary hover:bg-primary/10">
+        Advanced
+      </button>
+    </div>
+
     <form id="shoppingSimple" class="">
-      <div class="grid grid-cols-1 gap-6">
+      <div class="space-y-6">
+        <!-- Goods Panel -->
         <div class="panel panel-default">
-          <div class="panel-heading flex justify-between items-center">
-            <h3>How much do you spend on each of the following?</h3>
-            <div class="btn-group">
-              <button id="btnToAdvanced" type="button"
-                class="flex items-center gap-2 border border-primary bg-primary text-white rounded-full px-4 py-2 hover:bg-primary/90 transition cursor-pointer">
-                Click here for Advanced
-              </button>
-            </div>
+          <div class="panel-heading">
+            In a usual month, how much money do you allocate toward purchasing goods?
           </div>
-          <div class="panel-body space-y-6">
-            <!-- Goods Spending -->
+          <div class="panel-body">
             <div class="shopping-category">
               <h4 class="flex items-center gap-2">
-                <span>Goods</span>
+                <span>Goods:</span>
                 <button class="btn btn-xs btn-circle btn-ghost">
                   <i class="icon-[tabler--help] text-sm"></i>
                 </button>
@@ -528,11 +533,18 @@
                 </div>
               </div>
             </div>
+          </div>
+        </div>
 
-            <!-- Services Spending -->
+        <!-- Services Panel -->
+        <div class="panel panel-default">
+          <div class="panel-heading">
+            In a typical month, what’s your estimated spending on services?
+          </div>
+          <div class="panel-body">
             <div class="shopping-category">
               <h4 class="flex items-center gap-2">
-                <span>Services</span>
+                <span>Services:</span>
                 <button class="btn btn-xs btn-circle btn-ghost">
                   <i class="icon-[tabler--help] text-sm"></i>
                 </button>
@@ -556,111 +568,111 @@
         </div>
       </div>
     </form>
+
     <!-- Advanced Shopping Form -->
     <form id="shoppingAdvanced" class="hidden">
-      <div class="shopping-advanced-container min-h-screen bg-gray-100 grid gap-6">
-        <!-- Goods Section -->
-        <div class="panel panel-default shadow-lg">
-          <div class="panel-heading flex justify-between items-center p-4 font-semibold">
+      <div class="space-y-6">
+        <!-- Goods Panel -->
+        <div class="panel panel-default">
+          <div class="panel-heading">
             Goods
-            <div class="btn-group">
-              <button id="btnToSimple" type="button"
-                class="flex items-center gap-2 border border-primary bg-primary text-white rounded-full px-4 py-2 hover:bg-primary/90 transition cursor-pointer">
-                Click here for Simple
-              </button>
-            </div>
           </div>
-
-          <div class="panel-body p-4 space-y-4">
-            <div class="space-y-2">
-              <h4 class="text-sm font-medium">Furniture & Appliances</h4>
-              <div class="flex items-center space-x-2">
-                <input type="number" class="w-full p-2 border border-gray-300 rounded-md"
-                  id="input_input_footprint_shopping_goods_furnitureappliances" placeholder="362" min="0">
-                <span class="input-group-addon">$/month</span>
+          <div class="panel-body">
+            <div class="space-y-4">
+              <div class="space-y-2">
+                <h4 class="text-sm font-medium">Furniture & Appliances</h4>
+                <div class="flex items-center space-x-2">
+                  <input type="number" class="w-full p-2 border border-gray-300 rounded-md"
+                    id="input_input_footprint_shopping_goods_furnitureappliances" placeholder="362" min="0">
+                  <span class="input-group-addon">$/month</span>
+                </div>
               </div>
-            </div>
 
-            <div class="space-y-2">
-              <h4 class="text-sm font-medium">Clothing</h4>
-              <div class="flex items-center space-x-2">
-                <input type="number" class="w-full p-2 border border-gray-300 rounded-md"
-                  id="input_input_footprint_shopping_goods_clothing" placeholder="391" min="0">
-                <span class="input-group-addon">$/month</span>
+              <div class="space-y-2">
+                <h4 class="text-sm font-medium">Clothing</h4>
+                <div class="flex items-center space-x-2">
+                  <input type="number" class="w-full p-2 border border-gray-300 rounded-md"
+                    id="input_input_footprint_shopping_goods_clothing" placeholder="391" min="0">
+                  <span class="input-group-addon">$/month</span>
+                </div>
               </div>
-            </div>
 
-            <div class="space-y-2">
-              <h4 class="text-sm font-medium">Entertainment</h4>
-              <div class="flex items-center space-x-2">
-                <input type="number" class="w-full p-2 border border-gray-300 rounded-md"
-                  id="input_input_footprint_shopping_goods_entertainment" placeholder="54" min="0">
-                <span class="input-group-addon">$/month</span>
+              <div class="space-y-2">
+                <h4 class="text-sm font-medium">Entertainment</h4>
+                <div class="flex items-center space-x-2">
+                  <input type="number" class="w-full p-2 border border-gray-300 rounded-md"
+                    id="input_input_footprint_shopping_goods_entertainment" placeholder="54" min="0">
+                  <span class="input-group-addon">$/month</span>
+                </div>
               </div>
-            </div>
 
-            <div class="space-y-2">
-              <h4 class="text-sm font-medium">Office Supplies</h4>
-              <div class="flex items-center space-x-2">
-                <input type="number" class="w-full p-2 border border-gray-300 rounded-md"
-                  id="input_input_footprint_shopping_goods_officesupplies" placeholder="37" min="0">
-                <span class="input-group-addon">$/month</span>
+              <div class="space-y-2">
+                <h4 class="text-sm font-medium">Office Supplies</h4>
+                <div class="flex items-center space-x-2">
+                  <input type="number" class="w-full p-2 border border-gray-300 rounded-md"
+                    id="input_input_footprint_shopping_goods_officesupplies" placeholder="37" min="0">
+                  <span class="input-group-addon">$/month</span>
+                </div>
               </div>
-            </div>
 
-            <div class="space-y-2">
-              <h4 class="text-sm font-medium">Personal Care</h4>
-              <div class="flex items-center space-x-2">
-                <input type="number" class="w-full p-2 border border-gray-300 rounded-md"
-                  id="input_input_footprint_shopping_goods_personalcare" placeholder="56" min="0">
-                <span class="input-group-addon">$/month</span>
+              <div class="space-y-2">
+                <h4 class="text-sm font-medium">Personal Care</h4>
+                <div class="flex items-center space-x-2">
+                  <input type="number" class="w-full p-2 border border-gray-300 rounded-md"
+                    id="input_input_footprint_shopping_goods_personalcare" placeholder="56" min="0">
+                  <span class="input-group-addon">$/month</span>
+                </div>
               </div>
             </div>
           </div>
         </div>
 
-        <!-- Services Section -->
-        <div class="panel panel-default shadow-lg rounded-lg">
-          <div class="panel-heading p-4 font-semibold">Services</div>
-          <div class="panel-body p-4 space-y-4">
-            <div class="space-y-2">
-              <h4 class="text-sm font-medium">Food</h4>
-              <div class="flex items-center space-x-2">
-                <input type="number" class="w-full p-2 border border-gray-300 rounded-md"
-                  id="input_input_footprint_shopping_services_food" placeholder="196" min="0">
-                <span class="input-group-addon">$/month</span>
+        <!-- Services Panel -->
+        <div class="panel panel-default">
+          <div class="panel-heading">
+            Services
+          </div>
+          <div class="panel-body">
+            <div class="space-y-4">
+              <div class="space-y-2">
+                <h4 class="text-sm font-medium">Food</h4>
+                <div class="flex items-center space-x-2">
+                  <input type="number" class="w-full p-2 border border-gray-300 rounded-md"
+                    id="input_input_footprint_shopping_services_food" placeholder="196" min="0">
+                  <span class="input-group-addon">$/month</span>
+                </div>
               </div>
-            </div>
-            <div class="space-y-2">
-              <h4 class="text-sm font-medium">Education</h4>
-              <div class="flex items-center space-x-2">
-                <input type="number" class="w-full p-2 border border-gray-300 rounded-md"
-                  id="input_input_footprint_shopping_services_education" placeholder="22" min="0">
-                <span class="input-group-addon">$/month</span>
+              <div class="space-y-2">
+                <h4 class="text-sm font-medium">Education</h4>
+                <div class="flex items-center space-x-2">
+                  <input type="number" class="w-full p-2 border border-gray-300 rounded-md"
+                    id="input_input_footprint_shopping_services_education" placeholder="22" min="0">
+                  <span class="input-group-addon">$/month</span>
+                </div>
               </div>
-            </div>
-            <div class="space-y-2">
-              <h4 class="text-sm font-medium">Communication</h4>
-              <div class="flex items-center space-x-2">
-                <input type="number" class="w-full p-2 border border-gray-300 rounded-md"
-                  id="input_input_footprint_shopping_services_communication" placeholder="46" min="0">
-                <span class="input-group-addon">$/month</span>
+              <div class="space-y-2">
+                <h4 class="text-sm font-medium">Communication</h4>
+                <div class="flex items-center space-x-2">
+                  <input type="number" class="w-full p-2 border border-gray-300 rounded-md"
+                    id="input_input_footprint_shopping_services_communication" placeholder="46" min="0">
+                  <span class="input-group-addon">$/month</span>
+                </div>
               </div>
-            </div>
-            <div class="space-y-2">
-              <h4 class="text-sm font-medium">Loan</h4>
-              <div class="flex items-center space-x-2">
-                <input type="number" class="w-full p-2 border border-gray-300 rounded-md"
-                  id="input_input_footprint_shopping_services_loan" placeholder="82" min="0">
-                <span class="input-group-addon">$/month</span>
+              <div class="space-y-2">
+                <h4 class="text-sm font-medium">Loan</h4>
+                <div class="flex items-center space-x-2">
+                  <input type="number" class="w-full p-2 border border-gray-300 rounded-md"
+                    id="input_input_footprint_shopping_services_loan" placeholder="82" min="0">
+                  <span class="input-group-addon">$/month</span>
+                </div>
               </div>
-            </div>
-            <div class="space-y-2">
-              <h4 class="text-sm font-medium">Transport</h4>
-              <div class="flex items-center space-x-2">
-                <input type="number" class="w-full p-2 border border-gray-300 rounded-md"
-                  id="input_input_footprint_shopping_services_transport" placeholder="113" min="0">
-                <span class="input-group-addon">$/month</span>
+              <div class="space-y-2">
+                <h4 class="text-sm font-medium">Transport</h4>
+                <div class="flex items-center space-x-2">
+                  <input type="number" class="w-full p-2 border border-gray-300 rounded-md"
+                    id="input_input_footprint_shopping_services_transport" placeholder="113" min="0">
+                  <span class="input-group-addon">$/month</span>
+                </div>
               </div>
             </div>
           </div>
@@ -689,7 +701,7 @@
     </button>
 
     <button type="button"
-      class="flex items-center gap-2 border border-primary bg-primary text-white rounded-full px-4 py-2 hover:bg-primary/90 transition cursor-pointer"
+      class="ml-auto flex items-center gap-2 border border-primary bg-primary text-white rounded-full px-4 py-2 hover:bg-primary/90 transition cursor-pointer"
       data-stepper-next-btn="">
       Next
       <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -698,9 +710,9 @@
     </button>
 
     <button type="button"
-      class="hidden flex items-center gap-2 border border-primary bg-primary text-white rounded-full px-4 py-2 hover:bg-primary/90 transition cursor-pointer"
+      class="hidden ml-auto flex items-center gap-2 border border-primary bg-primary text-white rounded-full px-4 py-2 hover:bg-primary/90 transition cursor-pointer"
       data-stepper-finish-btn="">
-      <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+      <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0.0 0 24 24" stroke="currentColor">
         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
       </svg>
       Calculate Footprint
@@ -708,5 +720,4 @@
   </div>
 </div>
 <!-- End Stepper -->
-
 {% endblock %}
