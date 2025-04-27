@@ -113,8 +113,8 @@
         <div class="panel panel-default">
           <div class="panel-heading">Public Transit</div>
           <div class="panel-body">
-            <div class="input-group">
-              <input type="number" class="form-control w-full" placeholder="368" min="0">
+            <div class="input-group flex items-center space-x-2">
+              <input type="number" class="form-control input-structure" placeholder="368" min="0">
               <span class="input-group-addon">kms/yr</span>
             </div>
           </div>
@@ -124,8 +124,8 @@
         <div class="panel panel-default">
           <div class="panel-heading">Air Travel</div>
           <div class="panel-body">
-            <div class="input-group">
-              <input type="number" class="form-control w-full" placeholder="3300" min="0">
+            <div class="input-group flex items-center space-x-2">
+              <input type="number" class="form-control input-structure" placeholder="3300" min="0">
               <span class="input-group-addon">kms/yr</span>
             </div>
           </div>
@@ -249,12 +249,12 @@
               </button>
             </label>
             <div class="input-group">
-              <input type="number" class="input input-bordered w-full" placeholder="1,350" id="electricity" min="0">
-              <select class="select select-bordered">
+              <input type="number" class="input input-structure" placeholder="1,350" id="electricity" min="0">
+              <select class="select select-border">
                 <option>$</option>
                 <option>kWh</option>
               </select>
-              <select class="select select-bordered">
+              <select class="select select-border">
                 <option>/yr</option>
                 <option>/mo</option>
               </select>
@@ -288,13 +288,13 @@
               </button>
             </label>
             <div class="input-group">
-              <input type="number" class="input input-bordered w-full" placeholder="590" id="natural-gas" min="0">
-              <select class="select select-bordered">
+              <input type="number" class="input input-structure" placeholder="590" id="natural-gas" min="0">
+              <select class="select select-border">
                 <option>$</option>
                 <option>therms</option>
                 <option>m³</option>
               </select>
-              <select class="select select-bordered">
+              <select class="select select-border">
                 <option>/yr</option>
                 <option>/mo</option>
               </select>
@@ -310,12 +310,12 @@
               </button>
             </label>
             <div class="input-group">
-              <input type="number" class="input input-bordered w-full" placeholder="260" id="heating-oil" min="0">
-              <select class="select select-bordered">
+              <input type="number" class="input input-structure" placeholder="260" id="heating-oil" min="0">
+              <select class="select select-border">
                 <option>$</option>
                 <option>litres</option>
               </select>
-              <select class="select select-bordered">
+              <select class="select select-border">
                 <option>/yr</option>
                 <option>/mo</option>
               </select>
@@ -330,8 +330,8 @@
                 <i class="icon-[tabler--help]"></i>
               </button>
             </label>
-            <div class="input-group">
-              <input type="number" class="input input-bordered w-full" placeholder="1,850" id="living-space" min="0">
+            <div class="input-group flex items-center space-x-2">
+              <input type="number" class="input input-structure" placeholder="1,850" id="living-space" min="0">
               <span class="input-group-addon">m²</span>
             </div>
           </div>
@@ -339,18 +339,16 @@
           <!-- Water Usage -->
           <div class="form-control water-usage-slider-container">
             <div class="flex justify-between items-center mb-1">
-              <span class="text-sm">Water Usage</span>
-              <span class="font-bold water-value">50.0%</span>
+              <span class="text-sm">Water Usage (Similarities with other households)</span>
+              <span class="font-bold water-value">100%</span>
             </div>
-            <input type="range" min="0.01" max="100" step="0.01" value="50.0"
+            <input type="range" min="0.01" max="300" step="0.01" value="100"
               class="w-full range range-primary water-usage-slider">
             <div class="flex justify-between text-xs">
               <span>0</span>
-              <span>20</span>
-              <span>40</span>
-              <span>60</span>
-              <span>80</span>
-              <span>100</span>
+              <span>1x</span>
+              <span>2x</span>
+              <span>3x</span>
             </div>
           </div>
         </div>
@@ -513,7 +511,7 @@
           <div class="panel-body">
             <div class="shopping-category">
               <h4 class="flex items-center gap-2">
-                <span>Goods:</span>
+                <span>Goods</span>
                 <button class="btn btn-xs btn-circle btn-ghost">
                   <i class="icon-[tabler--help] text-sm"></i>
                 </button>
@@ -544,7 +542,7 @@
           <div class="panel-body">
             <div class="shopping-category">
               <h4 class="flex items-center gap-2">
-                <span>Services:</span>
+                <span>Services</span>
                 <button class="btn btn-xs btn-circle btn-ghost">
                   <i class="icon-[tabler--help] text-sm"></i>
                 </button>
@@ -582,7 +580,7 @@
               <div class="space-y-2">
                 <h4 class="text-sm font-medium">Furniture & Appliances</h4>
                 <div class="flex items-center space-x-2">
-                  <input type="number" class="w-full p-2 border border-gray-300 rounded-md"
+                  <input type="number" class="input-structure"
                     id="input_input_footprint_shopping_goods_furnitureappliances" placeholder="362" min="0">
                   <span class="input-group-addon">$/month</span>
                 </div>
@@ -591,8 +589,8 @@
               <div class="space-y-2">
                 <h4 class="text-sm font-medium">Clothing</h4>
                 <div class="flex items-center space-x-2">
-                  <input type="number" class="w-full p-2 border border-gray-300 rounded-md"
-                    id="input_input_footprint_shopping_goods_clothing" placeholder="391" min="0">
+                  <input type="number" class="input-structure" id="input_input_footprint_shopping_goods_clothing"
+                    placeholder="391" min="0">
                   <span class="input-group-addon">$/month</span>
                 </div>
               </div>
@@ -600,8 +598,8 @@
               <div class="space-y-2">
                 <h4 class="text-sm font-medium">Entertainment</h4>
                 <div class="flex items-center space-x-2">
-                  <input type="number" class="w-full p-2 border border-gray-300 rounded-md"
-                    id="input_input_footprint_shopping_goods_entertainment" placeholder="54" min="0">
+                  <input type="number" class="input-structure" id="input_input_footprint_shopping_goods_entertainment"
+                    placeholder="54" min="0">
                   <span class="input-group-addon">$/month</span>
                 </div>
               </div>
@@ -609,8 +607,8 @@
               <div class="space-y-2">
                 <h4 class="text-sm font-medium">Office Supplies</h4>
                 <div class="flex items-center space-x-2">
-                  <input type="number" class="w-full p-2 border border-gray-300 rounded-md"
-                    id="input_input_footprint_shopping_goods_officesupplies" placeholder="37" min="0">
+                  <input type="number" class="input-structure" id="input_input_footprint_shopping_goods_officesupplies"
+                    placeholder="37" min="0">
                   <span class="input-group-addon">$/month</span>
                 </div>
               </div>
@@ -618,8 +616,8 @@
               <div class="space-y-2">
                 <h4 class="text-sm font-medium">Personal Care</h4>
                 <div class="flex items-center space-x-2">
-                  <input type="number" class="w-full p-2 border border-gray-300 rounded-md"
-                    id="input_input_footprint_shopping_goods_personalcare" placeholder="56" min="0">
+                  <input type="number" class="input-structure" id="input_input_footprint_shopping_goods_personalcare"
+                    placeholder="56" min="0">
                   <span class="input-group-addon">$/month</span>
                 </div>
               </div>
@@ -637,23 +635,23 @@
               <div class="space-y-2">
                 <h4 class="text-sm font-medium">Food</h4>
                 <div class="flex items-center space-x-2">
-                  <input type="number" class="w-full p-2 border border-gray-300 rounded-md"
-                    id="input_input_footprint_shopping_services_food" placeholder="196" min="0">
+                  <input type="number" class="input-structure" id="input_input_footprint_shopping_services_food"
+                    placeholder="196" min="0">
                   <span class="input-group-addon">$/month</span>
                 </div>
               </div>
               <div class="space-y-2">
                 <h4 class="text-sm font-medium">Education</h4>
                 <div class="flex items-center space-x-2">
-                  <input type="number" class="w-full p-2 border border-gray-300 rounded-md"
-                    id="input_input_footprint_shopping_services_education" placeholder="22" min="0">
+                  <input type="number" class="input-structure" id="input_input_footprint_shopping_services_education"
+                    placeholder="22" min="0">
                   <span class="input-group-addon">$/month</span>
                 </div>
               </div>
               <div class="space-y-2">
                 <h4 class="text-sm font-medium">Communication</h4>
                 <div class="flex items-center space-x-2">
-                  <input type="number" class="w-full p-2 border border-gray-300 rounded-md"
+                  <input type="number" class="input-structure"
                     id="input_input_footprint_shopping_services_communication" placeholder="46" min="0">
                   <span class="input-group-addon">$/month</span>
                 </div>
@@ -661,16 +659,16 @@
               <div class="space-y-2">
                 <h4 class="text-sm font-medium">Loan</h4>
                 <div class="flex items-center space-x-2">
-                  <input type="number" class="w-full p-2 border border-gray-300 rounded-md"
-                    id="input_input_footprint_shopping_services_loan" placeholder="82" min="0">
+                  <input type="number" class="input-structure" id="input_input_footprint_shopping_services_loan"
+                    placeholder="82" min="0">
                   <span class="input-group-addon">$/month</span>
                 </div>
               </div>
               <div class="space-y-2">
                 <h4 class="text-sm font-medium">Transport</h4>
                 <div class="flex items-center space-x-2">
-                  <input type="number" class="w-full p-2 border border-gray-300 rounded-md"
-                    id="input_input_footprint_shopping_services_transport" placeholder="113" min="0">
+                  <input type="number" class="input-structure" id="input_input_footprint_shopping_services_transport"
+                    placeholder="113" min="0">
                   <span class="input-group-addon">$/month</span>
                 </div>
               </div>

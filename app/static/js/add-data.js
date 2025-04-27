@@ -122,8 +122,8 @@ vehicleTemplate.innerHTML = `
     </button>
     </div>
     
-    <div class="input-group">
-    <input type="number" class="input input-bordered w-full vehicle-distance" placeholder="15,600">
+    <div class="input-group flex items-center space-x-2">
+    <input type="number" class="w-full p-2 border border-gray-300 rounded-md vehicle-distance" placeholder="15,600">
     <span class="input-group-addon">kms/yr</span>
     </div>
     
