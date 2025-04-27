@@ -1,7 +1,5 @@
-// 1. 找到画布
 const ctx = document.getElementById('myChart').getContext('2d');
 
-// 2. 写数据
 const data = {
   labels: ['Travel', 'Home', 'Food', 'Shopping'],
   datasets: [
@@ -22,7 +20,6 @@ const data = {
   ]
 };
 
-// 3. 写设置
 const options = {
   responsive: true,
   plugins: {
@@ -42,12 +39,10 @@ const options = {
   }
 };
 
-// 4. 配置
 const config = {
   type: 'bar',
   data: data,
   options: options
 };
 
-// 5. 画图！
 new Chart(ctx, config);
