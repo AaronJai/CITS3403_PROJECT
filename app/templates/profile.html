@@ -4,4 +4,13 @@
 
 {% block content %}
 User Profile
+
+
+<!-- Logout Button -->
+<div class="mt-4">
+    <a href="{{ url_for('logout') }}" class="sidebar-nav-link">
+        <img src="{{ url_for('static', filename='assets/icons/logout.svg') }}" alt="Logout" class="nav-icon" />
+        <p class="hidden lg:block">Logout</p>
+    </a>
+</div>
 {% endblock %}

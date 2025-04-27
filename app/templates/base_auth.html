@@ -8,11 +8,15 @@
 
     <link rel="icon" href="{{ url_for('static', filename='assets/favicon.ico') }}" type="image/x-icon" />
     <link href="../../static/css/output.css" rel="stylesheet" />
+    <script src="{{ url_for('static', filename='js/flash-alerts.js') }}"></script>
 
     {% block head %} {% endblock %}
 </head>
 
 <body class="h-screen font-sans">
+    <!-- Include shadcn-style Flash messages -->
+    {% include 'components/alerts/flash.html' %}
+
     {% block content %} {% endblock %}
 </body>
 
