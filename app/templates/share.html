@@ -3,5 +3,184 @@
 {% block title %}Share | EcoTrack{% endblock %}
 
 {% block content %}
-Share page
+<div>
+    <h1 class="subtitle">Share Your Eco Data</h1>
+
+    <!-- Search Section -->
+    <section class="mb-8">
+        <div class="bg-white p-6 rounded-xl shadow-md">
+            <h2 class="text-xl font-semibold mb-4">Find Users to Share With</h2>
+
+            <form method="POST" class="flex flex-col md:flex-row md:items-end gap-4">
+                {{ form.hidden_tag() }}
+
+                <div class="flex-1 relative">
+                    {{ form.search_email(class="input-field floating-input", id="search-email", placeholder="") }}
+                    {{ form.search_email.label(class="floating-label", for="search-email") }}
+                    {% if form.search_email.errors %}
+                    <div class="text-red-600 text-sm mt-1">
+                        {% for error in form.search_email.errors %}
+                        <span>{{ error }}</span>
+                        {% endfor %}
+                    </div>
+                    {% endif %}
+                </div>
+
+                <div>
+                    {{ form.submit(class="button-primary py-3 px-6 w-full md:w-auto") }}
+                </div>
+            </form>
+
+            <!-- Search Results -->
+            {% if search_results %}
+            <div class="mt-4 p-4 bg-green-50 border border-green-200 rounded-md">
+                <h3 class="font-semibold">Search Results</h3>
+                <div class="flex items-center justify-between mt-2">
+                    <div>
+                        <p><strong>{{ search_results.first_name }} {{ search_results.last_name }}</strong></p>
+                        <p class="text-gray-500 hidden md:block">{{ search_results.email }}</p>
+                    </div>
+                    <button
+                        class="px-4 py-2 cursor-pointer bg-primary font-semibold text-white rounded-md hover:bg-green-900 transition">
+                        Share with {{ search_results.first_name }}
+                    </button>
+                </div>
+            </div>
+            {% endif %}
+        </div>
+    </section>
+
+    <!-- Shared with Me Section -->
+    <section class="mb-8">
+        <div class="bg-white p-6 rounded-xl shadow-md">
+            <h2 class="text-xl font-semibold mb-4">Shared with Me</h2>
+
+            {% if shared_with_me %}
+            <div class="overflow-x-auto">
+                <table class="w-full">
+                    <thead class="border-b">
+                        <tr>
+                            <th class="text-left py-3 px-4">Name</th>
+                            <th class="text-left py-3 px-4 hidden md:table-cell">Email</th>
+                            <th class="text-left py-3 px-4">Carbon Footprint</th>
+                            <th class="text-left py-3 px-4">Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for user in shared_with_me %}
+                        <tr class="border-b">
+                            <td class="py-3 px-4">{{ user.name }}</td>
+                            <td class="py-3 px-4 hidden md:table-cell">{{ user.email }}</td>
+                            <td class="py-3 px-4">{{ user.carbon_footprint }}</td>
+                            <td class="py-3 px-4">
+                                <button class="text-blue-500 hover:underline cursor-pointer">View Details</button>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+            {% else %}
+            <p class="text-gray-500">No one has shared their eco data with you yet.</p>
+            {% endif %}
+        </div>
+    </section>
+
+    <!-- Currently Shared With Section -->
+    <section>
+        <div class="bg-white p-6 rounded-xl shadow-md">
+            <h2 class="text-xl font-semibold mb-4">Currently Shared With</h2>
+
+            {% if sharing_with %}
+            <div class="overflow-x-auto">
+                <table class="w-full">
+                    <thead class="border-b">
+                        <tr>
+                            <th class="text-left py-3 px-4">Name</th>
+                            <th class="text-left py-3 px-4 hidden md:table-cell">Email</th>
+                            <th class="text-left py-3 px-4">Shared Date</th>
+                            <th class="text-left py-3 px-4">Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for user in sharing_with %}
+                        <tr class="border-b">
+                            <td class="py-3 px-4">{{ user.name }}</td>
+                            <td class="py-3 px-4 hidden md:table-cell">{{ user.email }}</td>
+                            <td class="py-3 px-4">{{ user.shared_date }}</td>
+                            <td class="py-3 px-4">
+                                <button class="text-red-600 hover:underline cursor-pointer">Stop Sharing</button>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+            {% else %}
+            <p class="text-gray-500">You are not sharing your eco data with anyone yet.</p>
+            {% endif %}
+        </div>
+    </section>
+
+    <!-- Footprint Card Preview (to show what others will see) -->
+    <section class="mt-8">
+        <div class="bg-white p-6 rounded-xl shadow-md">
+            <h2 class="text-xl font-semibold mb-4">Your Shared Footprint Preview</h2>
+            <p class="text-gray-500 mb-4">This is what others will see when you share your data:</p>
+
+            <div class="bg-gray-50 p-4 rounded-lg border border-gray-200">
+                <div class="flex items-center mb-4">
+                    <img src="{{ url_for('static', filename='assets/images/avatar.png') }}" alt="Avatar"
+                        class="w-10 h-10 rounded-full mr-3" />
+                    <div>
+                        <p class="font-semibold">{{ first_name }} {{ last_name }}</p>
+                        <p class="text-gray-500 text-sm hidden md:block">{{ email }}</p>
+                    </div>
+                </div>
+
+                <div class="grid grid-cols-2 gap-4">
+                    <!-- Travel Summary -->
+                    <div class="bg-white p-3 rounded-md shadow-sm">
+                        <h3 class="font-semibold">Travel</h3>
+                        <div class="mt-2 h-2 bg-gray-200 rounded-full">
+                            <div class="h-2 bg-primary rounded-full w-[65%]"></div>
+                        </div>
+                        <p class="text-sm text-gray-600 mt-1">65% of your carbon budget</p>
+                    </div>
+
+                    <!-- Food Summary -->
+                    <div class="bg-white p-3 rounded-md shadow-sm">
+                        <h3 class="font-semibold">Food</h3>
+                        <div class="mt-2 h-2 bg-gray-200 rounded-full">
+                            <div class="h-2 bg-primary rounded-full w-[40%]"></div>
+                        </div>
+                        <p class="text-sm text-gray-600 mt-1">40% of your carbon budget</p>
+                    </div>
+
+                    <!-- Home Summary -->
+                    <div class="bg-white p-3 rounded-md shadow-sm">
+                        <h3 class="font-semibold">Home</h3>
+                        <div class="mt-2 h-2 bg-gray-200 rounded-full">
+                            <div class="h-2 bg-primary rounded-full w-[65%]"></div>
+                        </div>
+                        <p class="text-sm text-gray-600 mt-1">65% of your carbon budget</p>
+                    </div>
+
+                    <!-- Shopping Summary -->
+                    <div class="bg-white p-3 rounded-md shadow-sm">
+                        <h3 class="font-semibold">Shopping</h3>
+                        <div class="mt-2 h-2 bg-gray-200 rounded-full">
+                            <div class="h-2 bg-primary rounded-full w-[40%]"></div>
+                        </div>
+                        <p class="text-sm text-gray-600 mt-1">40% of your carbon budget</p>
+                    </div>
+                </div>
+
+                <p class="mt-4 text-sm font-semibold text-center">
+                    Total: <span class="text-primary">700 kg CO2eq</span> this month
+                </p>
+            </div>
+        </div>
+    </section>
+</div>
 {% endblock %}
