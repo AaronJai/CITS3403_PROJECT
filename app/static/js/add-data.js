@@ -115,7 +115,7 @@ vehicleTemplate.innerHTML = `
         <option value="diesel">Diesel</option>
         <option value="electric">Electric</option>
     </select>
-    <button type="button" class="focus:outline-none text-white bg-red-700 hover:bg-red-800 focus:ring-4 focus:ring-red-300 font-medium rounded-lg text-sm px-2 py-1 me-2 mb-2 dark:bg-red-600 dark:hover:bg-red-700 dark:focus:ring-red-900" 
+    <button type="button" class="focus:outline-none cursor-pointer text-white bg-red-700 hover:bg-red-800 focus:ring-4 focus:ring-red-300 font-medium rounded-lg text-sm px-2 py-1 me-2 mb-2 dark:bg-red-600 dark:hover:bg-red-700 dark:focus:ring-red-900" 
         onclick="deleteVehicle(this.closest('div.vehicle-item'))"
     >
         X
