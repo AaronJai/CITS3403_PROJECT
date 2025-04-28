@@ -286,6 +286,24 @@
   display: flex;
 }
 
+.energy-input, .energy-select {
+  height: 2.5rem;
+  padding: 0 0.75rem;
+  font-size: 1rem;
+  border: 1px solid #ccc; 
+  border-radius: 0.5rem;
+  background-color: white;
+}
+
+.energy-input {
+  flex-grow: 1;
+  min-width: 0;
+}
+
+.energy-select {
+  width: 5rem;
+}
+
 .input-structure {
   width: 100%;
   padding: 0.5rem;
