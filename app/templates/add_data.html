@@ -113,7 +113,7 @@
         <div class="panel panel-default">
           <div class="panel-heading">Public Transit</div>
           <div class="panel-body">
-            <div class="input-group flex items-center space-x-2">
+            <div class="input-group items-center space-x-2">
               <input type="number" class="form-control input-structure" placeholder="368" min="0">
               <span class="input-group-addon">kms/yr</span>
             </div>
@@ -124,7 +124,7 @@
         <div class="panel panel-default">
           <div class="panel-heading">Air Travel</div>
           <div class="panel-body">
-            <div class="input-group flex items-center space-x-2">
+            <div class="input-group items-center space-x-2">
               <input type="number" class="form-control input-structure" placeholder="3300" min="0">
               <span class="input-group-addon">kms/yr</span>
             </div>
@@ -141,8 +141,8 @@
               <label class="label">
                 <span class="label-text">Bus</span>
               </label>
-              <div class="input-group">
-                <input type="number" class="input input-bordered w-full" placeholder="130" id="bus-miles" min="0">
+              <div class="input-group items-center space-x-2">
+                <input type="number" class="input-structure" placeholder="130" id="bus-miles" min="0">
                 <span class="input-group-addon">kms/yr</span>
               </div>
             </div>
@@ -151,9 +151,8 @@
               <label class="label">
                 <span class="label-text">Transit Rail (light & heavy)</span>
               </label>
-              <div class="input-group">
-                <input type="number" class="input input-bordered w-full" placeholder="97" id="transit-rail-miles"
-                  min="0">
+              <div class="input-group items-center space-x-2">
+                <input type="number" class="input-structure" placeholder="97" id="transit-rail-miles" min="0">
                 <span class="input-group-addon">kms/yr</span>
               </div>
             </div>
@@ -162,9 +161,8 @@
               <label class="label">
                 <span class="label-text">Commuter Rail</span>
               </label>
-              <div class="input-group">
-                <input type="number" class="input input-bordered w-full" placeholder="65" id="commuter-rail-miles"
-                  min="0">
+              <div class="input-group items-center space-x-2">
+                <input type="number" class="input-structure" placeholder="65" id="commuter-rail-miles" min="0">
                 <span class="input-group-addon">kms/yr</span>
               </div>
             </div>
@@ -173,9 +171,8 @@
               <label class="label">
                 <span class="label-text">Inter-city Rail (Amtrak)</span>
               </label>
-              <div class="input-group">
-                <input type="number" class="input input-bordered w-full" placeholder="32" id="intercity-rail-miles"
-                  min="0">
+              <div class="input-group items-center space-x-2">
+                <input type="number" class="input-structure" placeholder="32" id="intercity-rail-miles" min="0">
                 <span class="input-group-addon">kms/yr</span>
               </div>
             </div>
@@ -190,8 +187,8 @@
               <label class="label">
                 <span class="label-text">Short (&lt; 400 kms/yr)</span>
               </label>
-              <div class="input-group">
-                <input type="number" class="input input-bordered w-full" placeholder="3" id="short-flights" min="0">
+              <div class="input-group items-center space-x-2">
+                <input type="number" class="input-structure" placeholder="3" id="short-flights" min="0">
                 <span class="input-group-addon">flights/year</span>
               </div>
             </div>
@@ -200,8 +197,8 @@
               <label class="label">
                 <span class="label-text">Medium (400 - 1500 kms/yr)</span>
               </label>
-              <div class="input-group">
-                <input type="number" class="input input-bordered w-full" placeholder="2" id="medium-flights" min="0">
+              <div class="input-group items-center space-x-2">
+                <input type="number" class="input-structure" placeholder="2" id="medium-flights" min="0">
                 <span class="input-group-addon">flights/year</span>
               </div>
             </div>
@@ -210,9 +207,8 @@
               <label class="label">
                 <span class="label-text">Long (1500 - 3000 kms/yr)</span>
               </label>
-              <div class="input-group">
-                <input type="number" prediction="off" class="input input-bordered w-full" placeholder="0"
-                  id="long-flights" min="0">
+              <div class="input-group items-center space-x-2">
+                <input type="number" prediction="off" class="input-structure" placeholder="0" id="long-flights" min="0">
                 <span class="input-group-addon">flights/year</span>
               </div>
             </div>
@@ -221,8 +217,8 @@
               <label class="label">
                 <span class="label-text">Extended (&gt; 3000 kms/yr)</span>
               </label>
-              <div class="input-group">
-                <input type="number" class="input input-bordered w-full" placeholder="0" id="extended-flights" min="0">
+              <div class="input-group items-center space-x-2">
+                <input type="number" class="input-structure" placeholder="0" id="extended-flights" min="0">
                 <span class="input-group-addon">flights/year</span>
               </div>
             </div>
@@ -249,12 +245,13 @@
               </button>
             </label>
             <div class="input-group">
-              <input type="number" class="input input-structure" placeholder="1,350" id="electricity" min="0">
-              <select class="select select-border">
+              <input type="number" class="input input-structure col-span-2 w-full" placeholder="1,350" id="electricity"
+                min="0">
+              <select class="select-border">
                 <option>$</option>
                 <option>kWh</option>
               </select>
-              <select class="select select-border">
+              <select class="select-border">
                 <option>/yr</option>
                 <option>/mo</option>
               </select>
@@ -289,12 +286,12 @@
             </label>
             <div class="input-group">
               <input type="number" class="input input-structure" placeholder="590" id="natural-gas" min="0">
-              <select class="select select-border">
+              <select class="select-border">
                 <option>$</option>
                 <option>therms</option>
                 <option>m³</option>
               </select>
-              <select class="select select-border">
+              <select class="select-border">
                 <option>/yr</option>
                 <option>/mo</option>
               </select>
@@ -311,11 +308,11 @@
             </label>
             <div class="input-group">
               <input type="number" class="input input-structure" placeholder="260" id="heating-oil" min="0">
-              <select class="select select-border">
+              <select class="select-border">
                 <option>$</option>
                 <option>litres</option>
               </select>
-              <select class="select select-border">
+              <select class="select-border">
                 <option>/yr</option>
                 <option>/mo</option>
               </select>
@@ -339,8 +336,8 @@
           <!-- Water Usage -->
           <div class="form-control water-usage-slider-container">
             <div class="flex justify-between items-center mb-1">
-              <span class="text-sm">Water Usage (Similarities with other households)</span>
-              <span class="font-bold water-value">100%</span>
+              <span class="text-sm">Water Usage</span>
+              <span class="font-bold water-value">100% of similar households</span>
             </div>
             <input type="range" min="0.01" max="300" step="0.01" value="100"
               class="w-full range range-primary water-usage-slider">

@@ -242,7 +242,7 @@ setupSlider('.clean-energy-slider', '.clean-energy-value', (slider, value) => {
 
 // Water Usage sliders
 setupSlider('.water-usage-slider', '.water-value', (slider, value) => {
-    return parseFloat(value).toFixed(1) + "%";
+    return parseFloat(value).toFixed(1) + "% of similar households";
 });
 
 // Food sliders
