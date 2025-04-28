@@ -25,12 +25,20 @@ document.addEventListener('DOMContentLoaded', function () {
     function goToStep(index) {
         currentIndex = index;
         updateStepper();
+        window.scrollTo({
+            top: 0,
+            behavior: 'smooth' // Smooth scrolling for better UX
+        });
     }
 
     function goToPrevStep() {
         if (currentIndex > 1) {
             currentIndex--;
             updateStepper();
+            window.scrollTo({
+                top: 0,
+                behavior: 'smooth'
+            });
         }
     }
 
@@ -38,6 +46,10 @@ document.addEventListener('DOMContentLoaded', function () {
         if (currentIndex < totalSteps) {
             currentIndex++;
             updateStepper();
+            window.scrollTo({
+                top: 0,
+                behavior: 'smooth'
+            });
         }
     }
 
@@ -64,6 +76,17 @@ document.addEventListener('DOMContentLoaded', function () {
             else if (stepNumber < currentIndex) {
                 circle.classList.add('stepper-completed');
                 circle.classList.remove('bg-gray-200', 'text-gray-700');
+            }
+
+            const headerImageContainer = document.getElementById('stepper-header-image-container');
+            if (headerImageContainer) {
+                const newSrc = headerImageContainer.getAttribute(`data-step-${currentIndex}`);
+                if (newSrc) {
+                    headerImageContainer.style.backgroundImage = `url(${newSrc})`;
+                    headerImageContainer.classList.remove('animate-bg-slide-down');
+                    void headerImageContainer.offsetWidth; // Force reflow to restart animation
+                    headerImageContainer.classList.add('animate-bg-slide-down');
+                }
             }
         });
 
@@ -92,15 +115,15 @@ vehicleTemplate.innerHTML = `
         <option value="diesel">Diesel</option>
         <option value="electric">Electric</option>
     </select>
-    <button type="button" class="focus:outline-none text-white bg-red-700 hover:bg-red-800 focus:ring-4 focus:ring-red-300 font-medium rounded-lg text-sm px-2 py-1 me-2 mb-2 dark:bg-red-600 dark:hover:bg-red-700 dark:focus:ring-red-900" 
+    <button type="button" class="focus:outline-none cursor-pointer text-white bg-red-700 hover:bg-red-800 focus:ring-4 focus:ring-red-300 font-medium rounded-lg text-sm px-2 py-1 me-2 mb-2 dark:bg-red-600 dark:hover:bg-red-700 dark:focus:ring-red-900" 
         onclick="deleteVehicle(this.closest('div.vehicle-item'))"
     >
         X
     </button>
     </div>
     
-    <div class="input-group">
-    <input type="number" class="input input-bordered w-full vehicle-distance" placeholder="15,600">
+    <div class="input-group flex items-center space-x-2">
+    <input type="number" class="w-full p-2 border border-gray-300 rounded-md vehicle-distance" placeholder="15,600">
     <span class="input-group-addon">kms/yr</span>
     </div>
     
@@ -148,13 +171,10 @@ const showSimpleBtn = document.getElementById('show-simple');
 const showAdvancedBtn = document.getElementById('show-advanced');
 
 function setActiveButton(activeBtn, inactiveBtn) {
-    // Active: green text, transparent background
-    activeBtn.classList.remove('bg-primary', 'text-white', 'hover:bg-primary/90');
-    activeBtn.classList.add('bg-transparent', 'text-primary', 'hover:bg-primary/10');
-
-    // Inactive: white text, filled green background
-    inactiveBtn.classList.remove('bg-transparent', 'text-primary', 'hover:bg-primary/10');
-    inactiveBtn.classList.add('bg-primary', 'text-white', 'hover:bg-primary/90');
+    activeBtn.classList.remove('bg-transparent', 'text-primary', 'hover:bg-primary/10');
+    activeBtn.classList.add('bg-primary', 'text-white', 'hover:bg-primary/90');
+    inactiveBtn.classList.remove('bg-primary', 'text-white', 'hover:bg-primary/90');
+    inactiveBtn.classList.add('bg-transparent', 'text-primary', 'hover:bg-primary/10');
 }
 
 showSimpleBtn.addEventListener('click', () => {
@@ -173,10 +193,10 @@ showAdvancedBtn.addEventListener('click', () => {
 
 //Shopping Form Toggle
 document.addEventListener('DOMContentLoaded', function () {
-    const simpleForm = document.getElementById('shoppingSimple');
-    const advancedForm = document.getElementById('shoppingAdvanced');
-    const btnToAdvanced = document.getElementById('btnToAdvanced');
-    const btnToSimple = document.getElementById('btnToSimple');
+    const simpleFormShopping = document.getElementById('shoppingSimple');
+    const advancedFormShopping = document.getElementById('shoppingAdvanced');
+    const showSimpleBtnShopping = document.getElementById('show-simple-shopping');
+    const showAdvancedBtnShopping = document.getElementById('show-advanced-shopping');
 
     function syncForms(fromForm, toForm) {
         const fromInputs = fromForm.querySelectorAll('input');
@@ -187,20 +207,18 @@ document.addEventListener('DOMContentLoaded', function () {
         });
     }
 
-    btnToAdvanced.addEventListener('click', function () {
-        syncForms(simpleForm, advancedForm);
-        simpleForm.classList.add('hidden');
-        advancedForm.classList.remove('hidden');
-        btnToAdvanced.classList.add('hidden');
-        btnToSimple.classList.remove('hidden');
+    showSimpleBtnShopping.addEventListener('click', () => {
+        syncForms(advancedFormShopping, simpleFormShopping);
+        simpleFormShopping.classList.remove('hidden');
+        advancedFormShopping.classList.add('hidden');
+        setActiveButton(showSimpleBtnShopping, showAdvancedBtnShopping);
     });
 
-    btnToSimple.addEventListener('click', function () {
-        syncForms(advancedForm, simpleForm);
-        advancedForm.classList.add('hidden');
-        simpleForm.classList.remove('hidden');
-        btnToSimple.classList.add('hidden');
-        btnToAdvanced.classList.remove('hidden');
+    showAdvancedBtnShopping.addEventListener('click', () => {
+        syncForms(simpleFormShopping, advancedFormShopping);
+        advancedFormShopping.classList.remove('hidden');
+        simpleFormShopping.classList.add('hidden');
+        setActiveButton(showAdvancedBtnShopping, showSimpleBtnShopping);
     });
 });
 
