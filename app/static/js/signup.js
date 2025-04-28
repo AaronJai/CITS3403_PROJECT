@@ -2,8 +2,15 @@
 function validatePassword() {
   const password = document.getElementById("password").value;
   const confirmPassword = document.getElementById("confirm-password").value;
-  const errorMessage = document.getElementById("password-error");
-
+  
+  // Find or create error containers
+  let passwordErrorContainer = document.querySelector(".password-error");
+  if (!passwordErrorContainer) {
+    passwordErrorContainer = document.createElement("div");
+    passwordErrorContainer.className = "password-error text-red-600 text-sm mt-1";
+    document.getElementById("password").parentNode.appendChild(passwordErrorContainer);
+  }
+  
   const errors = [];
 
   if (password.length < 8) errors.push("at least 8 characters");
@@ -13,20 +20,17 @@ function validatePassword() {
 
   // If there are password format errors
   if (errors.length > 0) {
-    errorMessage.textContent = "Password must include: " + errors.join(", ");
-    errorMessage.style.display = "block";
+    passwordErrorContainer.textContent = "Password must include: " + errors.join(", ");
     return false;
   }
 
   // Check if passwords match
-  if (password !== confirmPassword) {
-    errorMessage.textContent = "Passwords do not match.";
-    errorMessage.style.display = "block";
+  if (password !== confirmPassword && confirmPassword.length > 0) {
+    passwordErrorContainer.textContent = "Passwords do not match.";
     return false;
   }
 
-  errorMessage.textContent = ""; // Clear error message
-  errorMessage.style.display = "none";
+  passwordErrorContainer.textContent = ""; // Clear error message
   return true;
 }
 
@@ -52,19 +56,25 @@ async function handleSignup(event) {
   // TODO: Add signup server communication logic here
 }
 
-// Ensure DOM is fully loaded before attaching event listener
-document.addEventListener("DOMContentLoaded", () => {
-  const signupForm = document.querySelector("form[action='/signup']");
+// Function to handle form input validation in real-time
+function setupRealTimeValidation() {
   const passwordInput = document.getElementById("password");
   const confirmPasswordInput = document.getElementById("confirm-password");
-
-  if (signupForm) {
-    signupForm.addEventListener("submit", handleSignup);
-  } else {
-    console.error("Signup form not found.");
+  
+  if (passwordInput) {
+    passwordInput.addEventListener("input", validatePassword);
   }
+  
+  if (confirmPasswordInput) {
+    confirmPasswordInput.addEventListener("input", validatePassword);
+  }
+}
 
-  // Real-time password validation
-  passwordInput.addEventListener("input", validatePassword);
-  confirmPasswordInput.addEventListener("input", validatePassword);
+// Ensure DOM is fully loaded before attaching event listeners
+document.addEventListener("DOMContentLoaded", () => {
+  // Set up real-time validation
+  setupRealTimeValidation();
+  
+  // We allow the form to submit normally to the server
+  // WTForms will handle the final validation
 });

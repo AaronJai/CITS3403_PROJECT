@@ -4,54 +4,82 @@
         {{ 'Welcome back! Please enter your details.' if active_page == 'login' else 'Create your account to get
         started.' }}
     </p>
-    <form action="{{ '/login' if active_page == 'login' else '/signup' }}" method="POST" class="space-y-6" {% if
-        active_page=='signup' %} onsubmit="return validatePassword()" {% endif %}>
+    <form method="POST" class="space-y-6">
+        {{ form.hidden_tag() }}
 
         {% if active_page == 'signup' %}
         <div class="grid grid-cols-2 gap-4">
             <!-- First Name -->
             <div class="relative">
-                <input type="text" id="first-name" name="first_name" placeholder="" required
-                    class="input-field floating-input" />
-                <label for="first-name" class="floating-label">First Name</label>
+                {{ form.first_name(class="input-field floating-input", id="first-name", placeholder="") }}
+                {{ form.first_name.label(class="floating-label", for="first-name") }}
+                {% if form.first_name.errors %}
+                <div class="text-red-600 text-sm mt-1">
+                    {% for error in form.first_name.errors %}
+                    <span>{{ error }}</span>
+                    {% endfor %}
+                </div>
+                {% endif %}
             </div>
 
             <!-- Last Name -->
             <div class="relative">
-                <input type="text" id="last-name" name="last_name" placeholder="" required
-                    class="input-field floating-input" />
-                <label for="last-name" class="floating-label">Last Name</label>
+                {{ form.last_name(class="input-field floating-input", id="last-name", placeholder="") }}
+                {{ form.last_name.label(class="floating-label", for="last-name") }}
+                {% if form.last_name.errors %}
+                <div class="text-red-600 text-sm mt-1">
+                    {% for error in form.last_name.errors %}
+                    <span>{{ error }}</span>
+                    {% endfor %}
+                </div>
+                {% endif %}
             </div>
         </div>
         {% endif %}
 
         <!-- Email -->
         <div class="relative">
-            <input type="email" id="email" name="email" placeholder="" required class="input-field floating-input" />
-            <label for="email" class="floating-label">Email</label>
+            {{ form.email(class="input-field floating-input", id="email", placeholder="") }}
+            {{ form.email.label(class="floating-label", for="email") }}
+            {% if form.email.errors %}
+            <div class="text-red-600 text-sm mt-1">
+                {% for error in form.email.errors %}
+                <span>{{ error }}</span>
+                {% endfor %}
+            </div>
+            {% endif %}
         </div>
 
         <!-- Password -->
         <div class="relative">
-            <input type="password" id="password" name="password" placeholder="" required
-                class="input-field floating-input" />
-            <label for="password" class="floating-label">Password</label>
+            {{ form.password(class="input-field floating-input", id="password", placeholder="") }}
+            {{ form.password.label(class="floating-label", for="password") }}
+            {% if form.password.errors %}
+            <div class="text-red-600 text-sm mt-1">
+                {% for error in form.password.errors %}
+                <span>{{ error }}</span>
+                {% endfor %}
+            </div>
+            {% endif %}
         </div>
 
         {% if active_page == 'signup' %}
         <!-- Confirm Password -->
         <div class="relative">
-            <input type="password" id="confirm-password" name="confirm_password" placeholder="" required
-                class="input-field floating-input" />
-            <label for="confirm-password" class="floating-label">Confirm Password</label>
+            {{ form.confirm_password(class="input-field floating-input", id="confirm-password", placeholder="") }}
+            {{ form.confirm_password.label(class="floating-label", for="confirm-password") }}
+            {% if form.confirm_password.errors %}
+            <div class="text-red-600 text-sm mt-1">
+                {% for error in form.confirm_password.errors %}
+                <span>{{ error }}</span>
+                {% endfor %}
+            </div>
+            {% endif %}
         </div>
-        <p id="password-error" class="text-red-600 text-sm"></p>
         {% endif %}
 
         <!-- Submit -->
-        <button type="submit" class="button-primary">
-            {{ 'Login' if active_page == 'login' else 'Sign Up' }}
-        </button>
+        {{ form.submit(class="button-primary") }}
     </form>
 
     <!-- Switch Forms -->
