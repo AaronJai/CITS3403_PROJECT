@@ -1,5 +1,5 @@
 from flask_wtf import FlaskForm
-from wtforms import StringField, PasswordField, SubmitField, EmailField
+from wtforms import StringField, PasswordField, SubmitField, EmailField, SearchField
 from wtforms.validators import DataRequired, Email, EqualTo, Length, ValidationError
 import re
 
@@ -51,3 +51,26 @@ class SignupForm(FlaskForm):
         EqualTo('password', message="Passwords must match")
     ])
     submit = SubmitField('Sign Up')
+
+class ShareForm(FlaskForm):
+    """Form for searching users by email"""
+    search_email = EmailField('Search by email', validators=[
+        Email(message="Please enter a valid email address")
+    ])
+    submit = SubmitField('Search')
+
+class ChangePasswordForm(FlaskForm):
+    """Form for changing user password"""
+    current_password = PasswordField('Current Password', validators=[
+        DataRequired(message="Please enter your current password")
+    ])
+    new_password = PasswordField('New Password', validators=[
+        DataRequired(),
+        Length(min=8, message="Password must be at least 8 characters long"),
+        password_check
+    ])
+    confirm_password = PasswordField('Confirm New Password', validators=[
+        DataRequired(),
+        EqualTo('new_password', message="Passwords must match")
+    ])
+    submit = SubmitField('Save')

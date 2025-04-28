@@ -1,7 +1,8 @@
 from app import app, db
-from flask import redirect, render_template, request, url_for, flash, session
+from flask import redirect, render_template, request, url_for, flash, session, flash
+import re
 from app.constants import nav_items
-from app.forms import LoginForm, SignupForm
+from app.forms import LoginForm, SignupForm, ChangePasswordForm, ShareForm
 from app.models import User
 
 @app.route('/')
@@ -43,18 +44,45 @@ def view_data():
                           last_name=user.last_name,
                           email=user.email)
 
-@app.route('/share')
+@app.route('/share', methods=['GET', 'POST'])
 def share():
     if 'user_id' not in session:
         return redirect(url_for('login'))
     
     user = User.query.get(session['user_id'])
+    form = ShareForm()
+    search_results = None
+    
+    if form.validate_on_submit():
+        search_email = form.search_email.data
+        search_results = User.query.filter_by(email=search_email).first()
+        if not search_results:
+            flash('No user found with that email address.', 'warning')
+        else:
+            flash('User found!', 'success')
+    
+    # Placeholder data for shared with me and currently sharing with
+    # This would be replaced with actual database queries in the full implementation
+    shared_with_me = [
+        {'name': 'Jane Doe', 'email': 'jane@example.com', 'carbon_footprint': '120 CO2eq'},
+        {'name': 'John Smith', 'email': 'john@example.com', 'carbon_footprint': '95 CO2eq'},
+    ]
+    
+    sharing_with = [
+        {'name': 'Mike Johnson', 'email': 'mike@example.com', 'shared_date': 'April 22, 2025'},
+        {'name': 'Sarah Williams', 'email': 'sarah@example.com', 'shared_date': 'April 20, 2025'},
+    ]
+    
     return render_template('share.html', 
                           active_page='share', 
                           nav_items=nav_items,
                           first_name=user.first_name,
                           last_name=user.last_name,
-                          email=user.email)
+                          email=user.email,
+                          form=form,
+                          search_results=search_results,
+                          shared_with_me=shared_with_me,
+                          sharing_with=sharing_with)
 
 @app.route('/facts')
 def facts():
@@ -75,11 +103,14 @@ def profile():
         return redirect(url_for('login'))
     
     user = User.query.get(session['user_id'])
+    form = ChangePasswordForm()
+    
     return render_template('profile.html', 
                           nav_items=nav_items,
                           first_name=user.first_name,
                           last_name=user.last_name,
-                          email=user.email)
+                          email=user.email,
+                          form=form)
 
 @app.route('/login', methods=['GET', 'POST'])
 def login():
@@ -140,4 +171,39 @@ def logout():
     # Remove user_id from session
     session.pop('user_id', None)
     flash('Logged out successfully!', 'success')
+    return redirect(url_for('login'))
+
+@app.route('/change_password', methods=['POST'])
+def change_password():
+    if 'user_id' not in session:
+        flash("Please log in first.", "error")
+        return redirect(url_for('login'))
+    
+    form = ChangePasswordForm()
+    user = User.query.get(session['user_id'])
+    
+    if form.validate_on_submit():
+        # Check if current password is correct
+        if not user.check_password(form.current_password.data):
+            flash("Current password is incorrect.", "error")
+            return redirect(url_for('profile'))
+        
+        # Set new password and save to database
+        user.set_password(form.new_password.data)
+        db.session.commit()
+        
+        flash("Password updated successfully!", "success")
+        return redirect(url_for('profile'))
+    else:
+        # Form validation failed
+        for field, errors in form.errors.items():
+            for error in errors:
+                flash(f"{form[field].label.text}: {error}", "error")
+        
+        return redirect(url_for('profile'))
+
+@app.route('/delete_account', methods=['POST'])
+def delete_account():
+    print("Deleting user account")
+    flash('Your account has been deleted.', 'success')
     return redirect(url_for('login'))
