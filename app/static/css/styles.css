@@ -373,3 +373,25 @@ ul[class*="flex flex-row gap-x-2"] {
 #show-advanced:not(.bg-primary):hover {
   background-color: transparent !important;
 }
+
+/* View Data*/
+/* Clouds Animation*/
+@keyframes floatSmall {
+  0% { transform: translateX(0px); }
+  50% { transform: translateX(10px); }
+  100% { transform: translateX(0px); }
+}
+
+@keyframes floatBig {
+  0% { transform: translateX(0px); }
+  50% { transform: translateX(10px); }
+  100% { transform: translateX(0px); }
+}
+
+.float-cloud-small {
+  animation: floatSmall 6s ease-in-out infinite;
+}
+
+.float-cloud-big {
+  animation: floatBig 6s ease-in-out infinite;
+}
