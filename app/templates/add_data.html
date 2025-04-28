@@ -2,6 +2,720 @@
 
 {% block title %}Add Data | EcoTrack{% endblock %}
 
+{% block head %}
+<script src="{{ url_for('static', filename='js/add-data.js') }}" defer></script>
+{% endblock %}
+
 {% block content %}
-Add data page
+
+<!-- Stepper -->
+<div data-stepper='{"currentIndex": 1}' class="w-full">
+  <!-- Stepper Nav -->
+  <div class="panel-header">
+    <div id="stepper-header-image-container"
+      data-step-1="{{ url_for('static', filename='assets/images/travel-header.png') }}"
+      data-step-2="{{ url_for('static', filename='assets/images/home-header.png') }}"
+      data-step-3="{{ url_for('static', filename='assets/images/food-header.png') }}"
+      data-step-4="{{ url_for('static', filename='assets/images/shopping-header.png') }}"
+      style="background-image: url('{{ url_for('static', filename='assets/images/travel-header.png') }}');"
+      class="w-full h-[195px] image-design header-image-container animate-bg-slide-down">
+    </div>
+    <ul class="relative flex flex-row gap-x-2 justify-center pb-2 font-semibold">
+      <li class="group flex flex-1 shrink basis-0 items-center gap-x-2 cursor-pointer"
+        data-stepper-nav-item='{ "index": 1 }'>
+        <span class="min-h-7.5 min-w-7.5 inline-flex items-center align-middle text-sm">
+          <span
+            class="flex size-8 items-center justify-center rounded-full font-bold shadow-sm ring-2 ring-offset-2 ring-white bg-gray-200 text-gray-700">
+            1
+          </span>
+          <span class="ms-2 max-sm:hidden">Travel</span>
+          <div class="bg-neutral/20 ms-2 h-px w-full flex-1 group-last:hidden"></div>
+        </span>
+        <div class="bg-neutral/20 h-px w-full flex-1 group-last:hidden"></div>
+      </li>
+      <li class="group flex flex-1 shrink basis-0 items-center gap-x-2 cursor-pointer"
+        data-stepper-nav-item='{ "index": 2 }'>
+        <span class="min-h-7.5 min-w-7.5 inline-flex items-center align-middle text-sm">
+          <span
+            class="stepper-active:bg-primary stepper-active:text-white stepper-completed:bg-success stepper-completed:text-white stepper-error:bg-red-500 stepper-error:text-white bg-gray-200 text-gray-700 flex size-8 items-center justify-center rounded-full font-bold shadow-sm ring-2 ring-offset-2 ring-white">
+            <span class="stepper-success:hidden stepper-completed:hidden">2</span>
+            <span class="icon-[tabler--check] stepper-success:block hidden size-4 shrink-0"></span>
+          </span>
+          <span class="text-base-content ms-2 max-sm:hidden">Home</span>
+        </span>
+        <div
+          class="stepper-success:bg-primary stepper-completed:bg-success bg-neutral/20 h-px w-full flex-1 group-last:hidden">
+        </div>
+      </li>
+      <li class="group flex flex-1 shrink basis-0 items-center gap-x-2 cursor-pointer"
+        data-stepper-nav-item='{ "index": 3 }'>
+        <span class="min-h-7.5 min-w-7.5 inline-flex items-center align-middle text-sm">
+          <span
+            class="stepper-active:bg-primary stepper-active:text-white stepper-completed:bg-success stepper-completed:text-white stepper-error:bg-red-500 stepper-error:text-white bg-gray-200 text-gray-700 flex size-8 items-center justify-center rounded-full font-bold shadow-sm ring-2 ring-offset-2 ring-white">
+            <span class="stepper-success:hidden stepper-completed:hidden">3</span>
+            <span class="icon-[tabler--check] stepper-success:block hidden size-4 shrink-0"></span>
+          </span>
+          <span class="text-base-content ms-2 max-sm:hidden">Food</span>
+        </span>
+        <div
+          class="stepper-success:bg-primary stepper-completed:bg-success bg-neutral/20 h-px w-full flex-1 group-last:hidden">
+        </div>
+      </li>
+      <li class="group flex flex-1 shrink basis-0 items-center gap-x-2 cursor-pointer"
+        data-stepper-nav-item='{ "index": 4 }'>
+        <span class="min-h-7.5 min-w-7.5 inline-flex items-center align-middle text-sm">
+          <span
+            class="stepper-active:bg-primary stepper-active:text-white stepper-completed:bg-success stepper-completed:text-white stepper-error:bg-red-500 stepper-error:text-white bg-gray-200 text-gray-700 flex size-8 items-center justify-center rounded-full font-bold shadow-sm ring-2 ring-offset-2 ring-white">
+            <span class="stepper-success:hidden stepper-completed:hidden">4</span>
+            <span class="icon-[tabler--check] stepper-success:block hidden size-4 shrink-0"></span>
+          </span>
+          <span class="text-base-content ms-2 max-sm:hidden">Shopping</span>
+        </span>
+      </li>
+    </ul>
+  </div>
+  <!-- End Stepper Nav -->
+
+  <!-- Stepper Content -->
+  <!-- Travel Content -->
+  <div data-stepper-content-item="1">
+    <div class="grid grid-cols-1 gap-6">
+      <!-- Your Vehicles Section -->
+      <div class="panel panel-default">
+        <div class="panel-heading flex justify-between items-center">
+          <span>Your Vehicles</span>
+          <button id="travel__add_vehicle"
+            class="flex items-center gap-2 border border-primary bg-primary text-white rounded-full px-4 py-2 hover:bg-primary/90 transition cursor-pointer"
+            onclick="addVehicle()">
+            <i class="icon-[tabler--plus] mr-1"></i>Add Vehicle
+          </button>
+        </div>
+        <div class="panel-body space-y-4" id="vehicles-container">
+          <!-- Vehicle template will be added here dynamically -->
+        </div>
+      </div>
+
+      <!-- Public Transit Section -->
+      <div class="flex justify-center gap-3 mb-3 ">
+        <button type="button" id="show-simple"
+          class="flex font-semibold items-center gap-2 border border-primary rounded-full px-4 py-2 cursor-pointer bg-primary text-white hover:bg-primary/90">
+          Simple
+        </button>
+
+        <button type="button" id="show-advanced"
+          class="flex font-semibold items-center gap-2 border border-primary rounded-full px-4 py-2 transition cursor-pointer bg-transparent text-primary hover:bg-primary/10">
+          Advanced
+        </button>
+      </div>
+
+      <form id="simple-form" class="space-y-4">
+        <!-- Public Transit -->
+        <div class="panel panel-default">
+          <div class="panel-heading">Public Transit</div>
+          <div class="panel-body">
+            <div class="input-group flex items-center space-x-2">
+              <input type="number" class="form-control input-structure" placeholder="368" min="0">
+              <span class="input-group-addon">kms/yr</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Air Travel -->
+        <div class="panel panel-default">
+          <div class="panel-heading">Air Travel</div>
+          <div class="panel-body">
+            <div class="input-group flex items-center space-x-2">
+              <input type="number" class="form-control input-structure" placeholder="3300" min="0">
+              <span class="input-group-addon">kms/yr</span>
+            </div>
+          </div>
+        </div>
+      </form>
+
+      <!-- Advanced Form -->
+      <form id="advanced-form" class="space-y-4 hidden">
+        <div class="panel panel-default">
+          <div class="panel-heading">Public Transit</div>
+          <div class="panel-body space-y-4">
+            <div class="form-control">
+              <label class="label">
+                <span class="label-text">Bus</span>
+              </label>
+              <div class="input-group">
+                <input type="number" class="input input-bordered w-full" placeholder="130" id="bus-miles" min="0">
+                <span class="input-group-addon">kms/yr</span>
+              </div>
+            </div>
+
+            <div class="form-control">
+              <label class="label">
+                <span class="label-text">Transit Rail (light & heavy)</span>
+              </label>
+              <div class="input-group">
+                <input type="number" class="input input-bordered w-full" placeholder="97" id="transit-rail-miles"
+                  min="0">
+                <span class="input-group-addon">kms/yr</span>
+              </div>
+            </div>
+
+            <div class="form-control">
+              <label class="label">
+                <span class="label-text">Commuter Rail</span>
+              </label>
+              <div class="input-group">
+                <input type="number" class="input input-bordered w-full" placeholder="65" id="commuter-rail-miles"
+                  min="0">
+                <span class="input-group-addon">kms/yr</span>
+              </div>
+            </div>
+
+            <div class="form-control">
+              <label class="label">
+                <span class="label-text">Inter-city Rail (Amtrak)</span>
+              </label>
+              <div class="input-group">
+                <input type="number" class="input input-bordered w-full" placeholder="32" id="intercity-rail-miles"
+                  min="0">
+                <span class="input-group-addon">kms/yr</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Air Travel Section -->
+        <div class="panel panel-default">
+          <div class="panel-heading">Air Travel</div>
+          <div class="panel-body space-y-4">
+            <div class="form-control">
+              <label class="label">
+                <span class="label-text">Short (&lt; 400 kms/yr)</span>
+              </label>
+              <div class="input-group">
+                <input type="number" class="input input-bordered w-full" placeholder="3" id="short-flights" min="0">
+                <span class="input-group-addon">flights/year</span>
+              </div>
+            </div>
+
+            <div class="form-control">
+              <label class="label">
+                <span class="label-text">Medium (400 - 1500 kms/yr)</span>
+              </label>
+              <div class="input-group">
+                <input type="number" class="input input-bordered w-full" placeholder="2" id="medium-flights" min="0">
+                <span class="input-group-addon">flights/year</span>
+              </div>
+            </div>
+
+            <div class="form-control">
+              <label class="label">
+                <span class="label-text">Long (1500 - 3000 kms/yr)</span>
+              </label>
+              <div class="input-group">
+                <input type="number" prediction="off" class="input input-bordered w-full" placeholder="0"
+                  id="long-flights" min="0">
+                <span class="input-group-addon">flights/year</span>
+              </div>
+            </div>
+
+            <div class="form-control">
+              <label class="label">
+                <span class="label-text">Extended (&gt; 3000 kms/yr)</span>
+              </label>
+              <div class="input-group">
+                <input type="number" class="input input-bordered w-full" placeholder="0" id="extended-flights" min="0">
+                <span class="input-group-addon">flights/year</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- Home Content -->
+  <div data-stepper-content-item="2" class="hidden">
+    <div class="panel">
+      <div class="panel-heading">
+        Home Energy Usage
+      </div>
+      <div class="panel-body">
+        <div class="grid grid-cols-1 gap-6">
+          <!-- Electricity Section -->
+          <div class="form-control">
+            <label class="label">
+              <span class="label-text">Electricity</span>
+              <button class="btn btn-xs btn-circle btn-ghost">
+                <i class="icon-[tabler--help]"></i>
+              </button>
+            </label>
+            <div class="input-group">
+              <input type="number" class="input input-structure" placeholder="1,350" id="electricity" min="0">
+              <select class="select select-border">
+                <option>$</option>
+                <option>kWh</option>
+              </select>
+              <select class="select select-border">
+                <option>/yr</option>
+                <option>/mo</option>
+              </select>
+            </div>
+          </div>
+
+          <!-- Clean Energy Percentage -->
+          <div class="form-control clean-energy-slider-container">
+            <div class="flex justify-between items-center mb-1">
+              <span class="text-sm">Percent purchased from clean energy</span>
+              <span class="font-bold clean-energy-value">31%</span>
+            </div>
+            <input type="range" min="0" max="100" step="0.01" value="31"
+              class="w-full range range-primary clean-energy-slider">
+            <div class="flex justify-between text-xs">
+              <span>0</span>
+              <span>20</span>
+              <span>40</span>
+              <span>60</span>
+              <span>80</span>
+              <span>100</span>
+            </div>
+          </div>
+
+          <!-- Natural Gas Section -->
+          <div class="form-control">
+            <label class="label">
+              <span class="label-text">Natural Gas</span>
+              <button class="btn btn-xs btn-circle btn-ghost">
+                <i class="icon-[tabler--help]"></i>
+              </button>
+            </label>
+            <div class="input-group">
+              <input type="number" class="input input-structure" placeholder="590" id="natural-gas" min="0">
+              <select class="select select-border">
+                <option>$</option>
+                <option>therms</option>
+                <option>m³</option>
+              </select>
+              <select class="select select-border">
+                <option>/yr</option>
+                <option>/mo</option>
+              </select>
+            </div>
+          </div>
+
+          <!-- Heating Oil Section -->
+          <div class="form-control">
+            <label class="label">
+              <span class="label-text">Heating Oil & Other Fuels</span>
+              <button class="btn btn-xs btn-circle btn-ghost">
+                <i class="icon-[tabler--help]"></i>
+              </button>
+            </label>
+            <div class="input-group">
+              <input type="number" class="input input-structure" placeholder="260" id="heating-oil" min="0">
+              <select class="select select-border">
+                <option>$</option>
+                <option>litres</option>
+              </select>
+              <select class="select select-border">
+                <option>/yr</option>
+                <option>/mo</option>
+              </select>
+            </div>
+          </div>
+
+          <!-- Living Space Area -->
+          <div class="form-control">
+            <label class="label">
+              <span class="label-text">Living space area</span>
+              <button class="btn btn-xs btn-circle btn-ghost">
+                <i class="icon-[tabler--help]"></i>
+              </button>
+            </label>
+            <div class="input-group flex items-center space-x-2">
+              <input type="number" class="input input-structure" placeholder="1,850" id="living-space" min="0">
+              <span class="input-group-addon">m²</span>
+            </div>
+          </div>
+
+          <!-- Water Usage -->
+          <div class="form-control water-usage-slider-container">
+            <div class="flex justify-between items-center mb-1">
+              <span class="text-sm">Water Usage (Similarities with other households)</span>
+              <span class="font-bold water-value">100%</span>
+            </div>
+            <input type="range" min="0.01" max="300" step="0.01" value="100"
+              class="w-full range range-primary water-usage-slider">
+            <div class="flex justify-between text-xs">
+              <span>0</span>
+              <span>1x</span>
+              <span>2x</span>
+              <span>3x</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Food Content -->
+  <div data-stepper-content-item="3" class="hidden">
+    <div class="grid grid-cols-1 gap-6">
+      <div class="panel panel-default">
+        <div class="panel-heading flex justify-between items-center">
+          <h3>How much does the average person in your household eat?</h3>
+          <button class="btn btn-xs btn-circle btn-ghost">
+            <i class="icon-[tabler--help]"></i>
+          </button>
+        </div>
+        <div class="panel-body space-y-6">
+          <!-- Food Categories -->
+          <div class="food-category">
+            <h4 class="flex items-center gap-2">
+              <span>Meat, fish, eggs</span>
+              <button class="btn btn-xs btn-circle btn-ghost">
+                <i class="icon-[tabler--help] text-sm"></i>
+              </button>
+            </h4>
+            <div class="food-slider-container">
+              <div class="flex justify-between items-center mb-1">
+                <span class="text-sm">Servings per person:</span>
+                <span class="font-bold food-value">2.3x</span>
+              </div>
+              <input type="range" min="0.01" max="3" step="0.01" value="2.3"
+                class="w-full range range-primary food-slider">
+              <div class="flex justify-between text-xs">
+                <span>0</span>
+                <span>Average</span>
+                <span>2x</span>
+                <span>3x</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- More food categories -->
+          <div class="food-category">
+            <h4 class="flex items-center gap-2">
+              <span>Grains & baked goods</span>
+              <button class="btn btn-xs btn-circle btn-ghost">
+                <i class="icon-[tabler--help] text-sm"></i>
+              </button>
+            </h4>
+            <div class="food-slider-container">
+              <div class="flex justify-between items-center mb-1">
+                <span class="text-sm">Servings per person:</span>
+                <span class="font-bold food-value">3.9x</span>
+              </div>
+              <input type="range" min="0.01" max="3" step="0.01" value="3.9"
+                class="w-full range range-primary food-slider">
+              <div class="flex justify-between text-xs">
+                <span>0</span>
+                <span>Average</span>
+                <span>2x</span>
+                <span>3x</span>
+              </div>
+            </div>
+          </div>
+
+          <div class="food-category">
+            <h4 class="flex items-center gap-2">
+              <span>Dairy</span>
+              <button class="btn btn-xs btn-circle btn-ghost">
+                <i class="icon-[tabler--help] text-sm"></i>
+              </button>
+            </h4>
+            <div class="food-slider-container">
+              <div class="flex justify-between items-center mb-1">
+                <span class="text-sm">Servings per person:</span>
+                <span class="font-bold food-value">2.1x</span>
+              </div>
+              <input type="range" min="0.01" max="3" step="0.01" value="2.1"
+                class="w-full range range-primary food-slider">
+              <div class="flex justify-between text-xs">
+                <span>0</span>
+                <span>Average</span>
+                <span>2x</span>
+                <span>3x</span>
+              </div>
+            </div>
+          </div>
+
+          <div class="food-category">
+            <h4 class="flex items-center gap-2">
+              <span>Fruits and vegetables</span>
+              <button class="btn btn-xs btn-circle btn-ghost">
+                <i class="icon-[tabler--help] text-sm"></i>
+              </button>
+            </h4>
+            <div class="food-slider-container">
+              <div class="flex justify-between items-center mb-1">
+                <span class="text-sm">Servings per person:</span>
+                <span class="font-bold food-value">3.4x</span>
+              </div>
+              <input type="range" min="0.01" max="3" step="0.01" value="3.4"
+                class="w-full range range-primary food-slider">
+              <div class="flex justify-between text-xs">
+                <span>0</span>
+                <span>Average</span>
+                <span>2x</span>
+                <span>3x</span>
+              </div>
+            </div>
+          </div>
+
+          <div class="food-category">
+            <h4 class="flex items-center gap-2">
+              <span>Snacks, drinks, etc...</span>
+              <button class="btn btn-xs btn-circle btn-ghost">
+                <i class="icon-[tabler--help] text-sm"></i>
+              </button>
+            </h4>
+            <div class="food-slider-container">
+              <div class="flex justify-between items-center mb-1">
+                <span class="text-sm">Servings per person:</span>
+                <span class="font-bold food-value">3.2x</span>
+              </div>
+              <input type="range" min="0.01" max="3" step="0.01" value="3.2"
+                class="w-full range range-primary food-slider">
+              <div class="flex justify-between text-xs">
+                <span>0</span>
+                <span>Average</span>
+                <span>2x</span>
+                <span>3x</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Shopping Content -->
+  <div data-stepper-content-item="4" class="hidden">
+    <div class="flex justify-center gap-3 mb-3">
+      <button type="button" id="show-simple-shopping"
+        class="flex font-semibold items-center gap-2 border border-primary rounded-full px-4 py-2 cursor-pointer bg-primary text-white hover:bg-primary/90">
+        Simple
+      </button>
+      <button type="button" id="show-advanced-shopping"
+        class="flex font-semibold items-center gap-2 border border-primary rounded-full px-4 py-2 transition cursor-pointer bg-transparent text-primary hover:bg-primary/10">
+        Advanced
+      </button>
+    </div>
+
+    <form id="shoppingSimple" class="">
+      <div class="space-y-6">
+        <!-- Goods Panel -->
+        <div class="panel panel-default">
+          <div class="panel-heading">
+            In a usual month, how much money do you allocate toward purchasing goods?
+          </div>
+          <div class="panel-body">
+            <div class="shopping-category">
+              <h4 class="flex items-center gap-2">
+                <span>Goods</span>
+                <button class="btn btn-xs btn-circle btn-ghost">
+                  <i class="icon-[tabler--help] text-sm"></i>
+                </button>
+              </h4>
+              <div class="shopping-slider-container">
+                <div class="flex justify-between items-center mb-1">
+                  <span class="text-sm">Monthly spending:</span>
+                  <span class="font-bold shopping-value">$1,595</span>
+                </div>
+                <input type="range" min="0.0001" max="3" step="0.01" value="1"
+                  class="w-full range range-primary shopping-slider">
+                <div class="flex justify-between text-xs">
+                  <span>0</span>
+                  <span>Average</span>
+                  <span>2x</span>
+                  <span>3x</span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Services Panel -->
+        <div class="panel panel-default">
+          <div class="panel-heading">
+            In a typical month, what’s your estimated spending on services?
+          </div>
+          <div class="panel-body">
+            <div class="shopping-category">
+              <h4 class="flex items-center gap-2">
+                <span>Services</span>
+                <button class="btn btn-xs btn-circle btn-ghost">
+                  <i class="icon-[tabler--help] text-sm"></i>
+                </button>
+              </h4>
+              <div class="shopping-slider-container">
+                <div class="flex justify-between items-center mb-1">
+                  <span class="text-sm">Monthly spending:</span>
+                  <span class="font-bold shopping-value">$2,929</span>
+                </div>
+                <input type="range" min="0.0001" max="3" step="0.01" value="1"
+                  class="w-full range range-primary shopping-slider">
+                <div class="flex justify-between text-xs">
+                  <span>0</span>
+                  <span>Average</span>
+                  <span>2x</span>
+                  <span>3x</span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </form>
+
+    <!-- Advanced Shopping Form -->
+    <form id="shoppingAdvanced" class="hidden">
+      <div class="space-y-6">
+        <!-- Goods Panel -->
+        <div class="panel panel-default">
+          <div class="panel-heading">
+            Goods
+          </div>
+          <div class="panel-body">
+            <div class="space-y-4">
+              <div class="space-y-2">
+                <h4 class="text-sm font-medium">Furniture & Appliances</h4>
+                <div class="flex items-center space-x-2">
+                  <input type="number" class="input-structure"
+                    id="input_input_footprint_shopping_goods_furnitureappliances" placeholder="362" min="0">
+                  <span class="input-group-addon">$/month</span>
+                </div>
+              </div>
+
+              <div class="space-y-2">
+                <h4 class="text-sm font-medium">Clothing</h4>
+                <div class="flex items-center space-x-2">
+                  <input type="number" class="input-structure" id="input_input_footprint_shopping_goods_clothing"
+                    placeholder="391" min="0">
+                  <span class="input-group-addon">$/month</span>
+                </div>
+              </div>
+
+              <div class="space-y-2">
+                <h4 class="text-sm font-medium">Entertainment</h4>
+                <div class="flex items-center space-x-2">
+                  <input type="number" class="input-structure" id="input_input_footprint_shopping_goods_entertainment"
+                    placeholder="54" min="0">
+                  <span class="input-group-addon">$/month</span>
+                </div>
+              </div>
+
+              <div class="space-y-2">
+                <h4 class="text-sm font-medium">Office Supplies</h4>
+                <div class="flex items-center space-x-2">
+                  <input type="number" class="input-structure" id="input_input_footprint_shopping_goods_officesupplies"
+                    placeholder="37" min="0">
+                  <span class="input-group-addon">$/month</span>
+                </div>
+              </div>
+
+              <div class="space-y-2">
+                <h4 class="text-sm font-medium">Personal Care</h4>
+                <div class="flex items-center space-x-2">
+                  <input type="number" class="input-structure" id="input_input_footprint_shopping_goods_personalcare"
+                    placeholder="56" min="0">
+                  <span class="input-group-addon">$/month</span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Services Panel -->
+        <div class="panel panel-default">
+          <div class="panel-heading">
+            Services
+          </div>
+          <div class="panel-body">
+            <div class="space-y-4">
+              <div class="space-y-2">
+                <h4 class="text-sm font-medium">Food</h4>
+                <div class="flex items-center space-x-2">
+                  <input type="number" class="input-structure" id="input_input_footprint_shopping_services_food"
+                    placeholder="196" min="0">
+                  <span class="input-group-addon">$/month</span>
+                </div>
+              </div>
+              <div class="space-y-2">
+                <h4 class="text-sm font-medium">Education</h4>
+                <div class="flex items-center space-x-2">
+                  <input type="number" class="input-structure" id="input_input_footprint_shopping_services_education"
+                    placeholder="22" min="0">
+                  <span class="input-group-addon">$/month</span>
+                </div>
+              </div>
+              <div class="space-y-2">
+                <h4 class="text-sm font-medium">Communication</h4>
+                <div class="flex items-center space-x-2">
+                  <input type="number" class="input-structure"
+                    id="input_input_footprint_shopping_services_communication" placeholder="46" min="0">
+                  <span class="input-group-addon">$/month</span>
+                </div>
+              </div>
+              <div class="space-y-2">
+                <h4 class="text-sm font-medium">Loan</h4>
+                <div class="flex items-center space-x-2">
+                  <input type="number" class="input-structure" id="input_input_footprint_shopping_services_loan"
+                    placeholder="82" min="0">
+                  <span class="input-group-addon">$/month</span>
+                </div>
+              </div>
+              <div class="space-y-2">
+                <h4 class="text-sm font-medium">Transport</h4>
+                <div class="flex items-center space-x-2">
+                  <input type="number" class="input-structure" id="input_input_footprint_shopping_services_transport"
+                    placeholder="113" min="0">
+                  <span class="input-group-addon">$/month</span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </form>
+  </div>
+
+  <!-- Final Step Content -->
+  <div data-stepper-content-item="5" class="hidden">
+    <div
+      class="border-base-content/40 bg-base-200/50 flex h-48 items-center justify-center rounded-xl border border-dashed p-4">
+      <h3 class="text-base-content/50 text-2xl">Your Carbon Footprint Calculation is Complete!</h3>
+    </div>
+  </div>
+
+  <!-- Button Group -->
+  <div class="mt-5 flex items-center justify-between gap-x-4">
+    <button type="button"
+      class="flex items-center font-semibold gap-2 border border-primary text-primary rounded-full px-4 py-2 hover:bg-primary hover:text-white transition cursor-pointer"
+      data-stepper-back-btn="">
+      <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7" />
+      </svg>
+      Back
+    </button>
+
+    <button type="button"
+      class="ml-auto flex font-semibold items-center gap-2 border border-primary bg-primary text-white rounded-full px-4 py-2 hover:bg-primary/90 transition cursor-pointer"
+      data-stepper-next-btn="">
+      Next
+      <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
+      </svg>
+    </button>
+
+    <button type="button"
+      class="hidden font-semibold ml-auto flex items-center gap-2 border border-primary bg-primary text-white rounded-full px-4 py-2 hover:bg-primary/90 transition cursor-pointer"
+      data-stepper-finish-btn="">
+      <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0.0 0 24 24" stroke="currentColor">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
+      </svg>
+      Calculate Footprint
+    </button>
+  </div>
+</div>
+<!-- End Stepper -->
 {% endblock %}
