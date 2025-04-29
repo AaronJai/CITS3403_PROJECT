@@ -1,8 +1,11 @@
 from app import app, db
-from flask import redirect, render_template, request, url_for, flash, session, flash
+from flask import redirect, render_template, request, url_for, flash, session, flash, jsonify
 import re
 from app.constants import nav_items
 from app.forms import LoginForm, SignupForm, ChangePasswordForm, ShareForm
+from app.forms import VehicleForm, PublicTransitSimpleForm, PublicTransitAdvancedForm
+from app.forms import AirTravelSimpleForm, AirTravelAdvancedForm, HomeEnergyForm
+from app.forms import FoodForm, ShoppingSimpleForm, ShoppingAdvancedForm, CarbonFootprintForm
 from app.models import User
 
 @app.route('/')
@@ -18,18 +21,51 @@ def dashboard():
                           last_name=user.last_name,
                           email=user.email)
 
-@app.route('/add_data')
+@app.route('/add_data', methods=['GET', 'POST'])
 def add_data():
     if 'user_id' not in session:
         return redirect(url_for('login'))
     
     user = User.query.get(session['user_id'])
+    
+    # Create primary form with CSRF token
+    form = CarbonFootprintForm()
+    
+    # Create form instances
+    vehicle_form = VehicleForm(prefix='vehicle')
+    public_transit_simple = PublicTransitSimpleForm(prefix='public_transit_simple')
+    public_transit_advanced = PublicTransitAdvancedForm(prefix='public_transit_advanced')
+    air_travel_simple = AirTravelSimpleForm(prefix='air_travel_simple')
+    air_travel_advanced = AirTravelAdvancedForm(prefix='air_travel_advanced')
+    home_energy = HomeEnergyForm(prefix='home_energy')
+    food = FoodForm(prefix='food')
+    shopping_simple = ShoppingSimpleForm(prefix='shopping_simple')
+    shopping_advanced = ShoppingAdvancedForm(prefix='shopping_advanced')
+    
+    if request.method == 'POST':
+        # Process form submission
+        if 'calculate_footprint' in request.form:
+            # Here you would save the form data to the database
+            # And calculate the carbon footprint
+            flash('Your carbon footprint has been calculated and saved!', 'success')
+            return redirect(url_for('view_data'))
+            
     return render_template('add_data.html', 
                           active_page='add_data', 
                           nav_items=nav_items,
                           first_name=user.first_name,
                           last_name=user.last_name,
-                          email=user.email)
+                          email=user.email,
+                          form=form,
+                          vehicle_form=vehicle_form,
+                          public_transit_simple=public_transit_simple,
+                          public_transit_advanced=public_transit_advanced,
+                          air_travel_simple=air_travel_simple,
+                          air_travel_advanced=air_travel_advanced,
+                          home_energy=home_energy,
+                          food=food,
+                          shopping_simple=shopping_simple,
+                          shopping_advanced=shopping_advanced)
 
 @app.route('/view_data')
 def view_data():
