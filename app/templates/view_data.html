@@ -4,8 +4,8 @@
 
 {% block content %}
 
-<!-- Background Color -->
-<div class="relative min-h-screen flex" style="background: linear-gradient(to bottom right, #f0fdf4, #f0f9ff);">
+<!-- Background Section -->
+<div class="relative min-h-screen flex">
 
   <!-- Left Side -->
   <div class="w-2/3 relative rounded-2xl m-4 p-4 flex items-center justify-center overflow-hidden" 
@@ -31,7 +31,7 @@
          class="absolute top-6 right-0 w-60 opacity-90 float-cloud-big z-10"
          alt="Cloud 3" />
 
-    <!-- Chart -->
+    <!-- Main Chart -->
     <canvas id="myChart" class="w-full h-full relative z-10"></canvas>
   </div>
 
@@ -66,8 +66,78 @@
 
 </div>
 
+<!-- Grid Section -->
+<div class="grid grid-cols-2 grid-rows-2 min-h-screen gap-4 p-4">
+
+  <!-- Top Left: Travel -->
+  <div class="relative rounded-xl shadow p-6 flex flex-col items-center overflow-hidden bg-gradient-to-t from-[#b3e2dd] to-[#f4f6d3]">
+    <!-- Title -->
+    <h2 class="text-lg font-semibold mb-4 z-10 relative">Travel</h2>
+    <!-- Chart Container -->
+    <div class="relative w-48 h-48 z-10">
+      <canvas id="travelPieChart" class="absolute top-0 left-0 w-full h-full"></canvas>
+    </div>
+    <!-- Background Image -->
+    <img
+      src="/static/assets/images/spring.png" 
+      class="absolute bottom-0 left-0 w-full object-contain z-0 pointer-events-none"
+      alt="Travel Background"
+    />
+  </div>
+
+  <!-- Top Right: Home -->
+  <div class="relative rounded-xl shadow p-6 flex flex-col items-center overflow-hidden bg-gradient-to-t from-[#b6e2dd] to-[#d3f6f4]">
+    <!-- Title -->
+    <h2 class="text-lg font-semibold mb-4 z-10 relative">Home</h2>
+    <!-- Chart Container -->
+    <div class="relative w-48 h-48 z-10">
+      <canvas id="homePieChart" class="absolute top-0 left-0 w-full h-full"></canvas>
+    </div>
+    <!-- Background Image -->
+    <img
+      src="/static/assets/images/summer.png" 
+      class="absolute bottom-0 left-0 w-full object-contain z-0 pointer-events-none"
+      alt="Home Background"
+    />
+  </div>
+
+  <!-- Bottom Left: Food -->
+  <div class="relative rounded-xl shadow p-6 flex flex-col items-center overflow-hidden bg-gradient-to-t from-[#ffe4d3] to-[#f8f3de]">
+    <!-- Title -->
+    <h2 class="text-lg font-semibold mb-4 z-10 relative">Food</h2>
+    <!-- Chart Container -->
+    <div class="relative w-48 h-48 z-10">
+      <canvas id="foodPieChart" class="absolute top-0 left-0 w-full h-full"></canvas>
+    </div>
+    <!-- Background Image -->
+    <img
+      src="/static/assets/images/autumn.png"
+      class="absolute bottom-0 left-0 w-full object-contain z-0 pointer-events-none"
+      alt="Food Background"
+    />
+  </div>
+
+  <!-- Bottom Right: Goods & Services -->
+  <div class="relative rounded-xl shadow p-6 flex flex-col items-center overflow-hidden bg-gradient-to-t from-[#c2d7d9] to-[#faedda]">
+    <!-- Title -->
+    <h2 class="text-lg font-semibold mb-4 z-10 relative">Goods & Services</h2>
+    <!-- Chart Container -->
+    <div class="relative w-48 h-48 z-10">
+      <canvas id="shoppingPieChart" class="absolute top-0 left-0 w-full h-full"></canvas>
+    </div>
+    <!-- Background Image -->
+    <img
+      src="/static/assets/images/winter.png"
+      class="absolute bottom-0 left-0 w-full object-contain z-0 pointer-events-none"
+      alt="Goods & Services Background"
+    />
+  </div>
+
+</div>
+
 <!-- Scripts -->
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-<script src="{{ url_for('static', filename='js/view_data.js') }}"></script>
+<script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels"></script> <!-- Load Chart.js Plugin -->
+<script src="{{ url_for('static', filename='js/view_data.js') }}"></script> <!-- Load Custom JS -->
 
 {% endblock %}
