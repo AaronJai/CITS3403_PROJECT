@@ -132,7 +132,7 @@ vehicleTemplate.innerHTML = `
         <span>Fuel Efficiency (L/100km or kWh/100km)</span>
         <span class="vehicle-mpg-value">7</span>
     </div>
-    <input type="range" min="0" max="35" value="7" step="1" class="w-full range range-primary vehicle-mpg">
+    <input type="range" min="0" max="35" value="7" step="0.1" class="w-full range range-primary vehicle-mpg">
     <div class="flex justify-between text-xs">
         <span>0</span>
         <span>5</span>
