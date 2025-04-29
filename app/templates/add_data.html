@@ -242,21 +242,24 @@
             <!-- Electricity Section -->
             <div class="form-control">
               <label class="label">
-                <span class="label-text">Electricity</span>
+                <span class="label-text font-semibold">Electricity</span>
                 <button type="button" class="btn btn-xs btn-circle btn-ghost">
                   <i class="icon-[tabler--help]"></i>
                 </button>
               </label>
               <div class="flex items-center">
-                <input type="number" name="{{ home_energy.electricity.name }}" class="energy-input" placeholder="1,350" min="0" id="electricity" value="{{ home_energy.electricity.data or '1350' }}">
+                <input type="number" name="{{ home_energy.electricity.name }}" class="energy-input" placeholder="1,350"
+                  min="0" id="electricity" value="{{ home_energy.electricity.data or '1350' }}">
                 <select name="{{ home_energy.electricity_unit.name }}" class="energy-select">
                   {% for value, label in home_energy.electricity_unit.choices %}
-                  <option value="{{ value }}" {% if home_energy.electricity_unit.data == value %}selected{% endif %}>{{ label }}</option>
+                  <option value="{{ value }}" {% if home_energy.electricity_unit.data==value %}selected{% endif %}>{{
+                    label }}</option>
                   {% endfor %}
                 </select>
                 <select name="{{ home_energy.electricity_frequency.name }}" class="energy-select">
                   {% for value, label in home_energy.electricity_frequency.choices %}
-                  <option value="{{ value }}" {% if home_energy.electricity_frequency.data == value %}selected{% endif %}>{{ label }}</option>
+                  <option value="{{ value }}" {% if home_energy.electricity_frequency.data==value %}selected{% endif %}>
+                    {{ label }}</option>
                   {% endfor %}
                 </select>
               </div>
@@ -265,11 +268,11 @@
             <!-- Clean Energy Percentage -->
             <div class="form-control clean-energy-slider-container">
               <div class="flex justify-between items-center mb-1">
-                <span class="text-sm">Percent purchased from clean energy</span>
+                <span class="font-semibold">Percent purchased from clean energy</span>
                 <span class="font-bold clean-energy-value">31%</span>
               </div>
-              <input type="range" name="{{ home_energy.clean_energy_percentage.name }}" min="0" max="100" step="0.01" value="31"
-                class="w-full range range-primary clean-energy-slider">
+              <input type="range" name="{{ home_energy.clean_energy_percentage.name }}" min="0" max="100" step="0.01"
+                value="31" class="w-full range range-primary clean-energy-slider">
               <div class="flex justify-between text-xs">
                 <span>0</span>
                 <span>20</span>
@@ -283,21 +286,24 @@
             <!-- Natural Gas Section -->
             <div class="form-control">
               <label class="label">
-                <span class="label-text">Natural Gas</span>
+                <span class="label-text font-semibold">Natural Gas</span>
                 <button type="button" class="btn btn-xs btn-circle btn-ghost">
                   <i class="icon-[tabler--help]"></i>
                 </button>
               </label>
               <div class="flex items-center">
-                <input type="number" name="{{ home_energy.natural_gas.name }}" class="energy-input" placeholder="590" min="0" id="natural-gas" value="{{ home_energy.natural_gas.data or '590' }}">
+                <input type="number" name="{{ home_energy.natural_gas.name }}" class="energy-input" placeholder="590"
+                  min="0" id="natural-gas" value="{{ home_energy.natural_gas.data or '590' }}">
                 <select name="{{ home_energy.natural_gas_unit.name }}" class="energy-select">
                   {% for value, label in home_energy.natural_gas_unit.choices %}
-                  <option value="{{ value }}" {% if home_energy.natural_gas_unit.data == value %}selected{% endif %}>{{ label }}</option>
+                  <option value="{{ value }}" {% if home_energy.natural_gas_unit.data==value %}selected{% endif %}>{{
+                    label }}</option>
                   {% endfor %}
                 </select>
                 <select name="{{ home_energy.natural_gas_frequency.name }}" class="energy-select">
                   {% for value, label in home_energy.natural_gas_frequency.choices %}
-                  <option value="{{ value }}" {% if home_energy.natural_gas_frequency.data == value %}selected{% endif %}>{{ label }}</option>
+                  <option value="{{ value }}" {% if home_energy.natural_gas_frequency.data==value %}selected{% endif %}>
+                    {{ label }}</option>
                   {% endfor %}
                 </select>
               </div>
@@ -306,21 +312,24 @@
             <!-- Heating Oil Section -->
             <div class="form-control">
               <label class="label">
-                <span class="label-text">Heating Oil & Other Fuels</span>
+                <span class="label-text font-semibold">Heating Oil & Other Fuels</span>
                 <button type="button" class="btn btn-xs btn-circle btn-ghost">
                   <i class="icon-[tabler--help]"></i>
                 </button>
               </label>
               <div class="flex items-center">
-                <input type="number" name="{{ home_energy.heating_oil.name }}" class="energy-input" placeholder="260" min="0" id="heating-oil" value="{{ home_energy.heating_oil.data or '260' }}">
+                <input type="number" name="{{ home_energy.heating_oil.name }}" class="energy-input" placeholder="260"
+                  min="0" id="heating-oil" value="{{ home_energy.heating_oil.data or '260' }}">
                 <select name="{{ home_energy.heating_oil_unit.name }}" class="energy-select">
                   {% for value, label in home_energy.heating_oil_unit.choices %}
-                  <option value="{{ value }}" {% if home_energy.heating_oil_unit.data == value %}selected{% endif %}>{{ label }}</option>
+                  <option value="{{ value }}" {% if home_energy.heating_oil_unit.data==value %}selected{% endif %}>{{
+                    label }}</option>
                   {% endfor %}
                 </select>
                 <select name="{{ home_energy.heating_oil_frequency.name }}" class="energy-select">
                   {% for value, label in home_energy.heating_oil_frequency.choices %}
-                  <option value="{{ value }}" {% if home_energy.heating_oil_frequency.data == value %}selected{% endif %}>{{ label }}</option>
+                  <option value="{{ value }}" {% if home_energy.heating_oil_frequency.data==value %}selected{% endif %}>
+                    {{ label }}</option>
                   {% endfor %}
                 </select>
               </div>
@@ -329,13 +338,14 @@
             <!-- Living Space Area -->
             <div class="form-control">
               <label class="label">
-                <span class="label-text">Living space area</span>
+                <span class="label-text font-semibold">Living space area</span>
                 <button type="button" class="btn btn-xs btn-circle btn-ghost">
                   <i class="icon-[tabler--help]"></i>
                 </button>
               </label>
               <div class="input-group flex items-center space-x-2">
-                <input type="number" name="{{ home_energy.living_space.name }}" class="input input-structure" placeholder="1,850" min="0" id="living-space" value="{{ home_energy.living_space.data or '1850' }}">
+                <input type="number" name="{{ home_energy.living_space.name }}" class="input input-structure"
+                  placeholder="1,850" min="0" id="living-space" value="{{ home_energy.living_space.data or '1850' }}">
                 <span class="input-group-addon">m²</span>
               </div>
             </div>
@@ -343,7 +353,7 @@
             <!-- Water Usage -->
             <div class="form-control water-usage-slider-container">
               <div class="flex justify-between items-center mb-1">
-                <span class="text-sm">Water Usage</span>
+                <span class="label-text font-semibold">Water Usage</span>
                 <span class="font-bold water-value">100% of similar households</span>
               </div>
               <input type="range" name="{{ home_energy.water_usage.name }}" min="0.01" max="300" step="0.01" value="100"
@@ -365,7 +375,7 @@
       <div class="grid grid-cols-1 gap-6">
         <div class="panel panel-default">
           <div class="panel-heading flex justify-between items-center">
-            <h3>How much does the average person in your household eat?</h3>
+            <h3>Average food consumption</h3>
             <button type="button" class="btn btn-xs btn-circle btn-ghost">
               <i class="icon-[tabler--help]"></i>
             </button>
@@ -374,7 +384,7 @@
             <!-- Food Categories -->
             <div class="food-category">
               <h4 class="flex items-center gap-2">
-                <span>Meat, fish, eggs</span>
+                <span class="font-semibold">Meat, fish, eggs</span>
                 <button type="button" class="btn btn-xs btn-circle btn-ghost">
                   <i class="icon-[tabler--help] text-sm"></i>
                 </button>
@@ -382,9 +392,9 @@
               <div class="food-slider-container">
                 <div class="flex justify-between items-center mb-1">
                   <span class="text-sm">Servings per person:</span>
-                  <span class="font-bold food-value">2.3x</span>
+                  <span class="font-bold food-value">1.0x</span>
                 </div>
-                <input type="range" name="{{ food.meat_fish_eggs.name }}" min="0.01" max="3" step="0.01" value="2.3"
+                <input type="range" name="{{ food.meat_fish_eggs.name }}" min="0.01" max="3" step="0.01" value="1.0"
                   class="w-full range range-primary food-slider">
                 <div class="flex justify-between text-xs">
                   <span>0</span>
@@ -398,7 +408,7 @@
             <!-- More food categories -->
             <div class="food-category">
               <h4 class="flex items-center gap-2">
-                <span>Grains & baked goods</span>
+                <span class="font-semibold">Grains & baked goods</span>
                 <button type="button" class="btn btn-xs btn-circle btn-ghost">
                   <i class="icon-[tabler--help] text-sm"></i>
                 </button>
@@ -406,9 +416,9 @@
               <div class="food-slider-container">
                 <div class="flex justify-between items-center mb-1">
                   <span class="text-sm">Servings per person:</span>
-                  <span class="font-bold food-value">3.9x</span>
+                  <span class="font-bold food-value">1.0x</span>
                 </div>
-                <input type="range" name="{{ food.grains_baked_goods.name }}" min="0.01" max="3" step="0.01" value="3.9"
+                <input type="range" name="{{ food.grains_baked_goods.name }}" min="0.01" max="3" step="0.01" value="1.0"
                   class="w-full range range-primary food-slider">
                 <div class="flex justify-between text-xs">
                   <span>0</span>
@@ -421,7 +431,7 @@
 
             <div class="food-category">
               <h4 class="flex items-center gap-2">
-                <span>Dairy</span>
+                <span class="font-semibold">Dairy</span>
                 <button type="button" class="btn btn-xs btn-circle btn-ghost">
                   <i class="icon-[tabler--help] text-sm"></i>
                 </button>
@@ -429,9 +439,9 @@
               <div class="food-slider-container">
                 <div class="flex justify-between items-center mb-1">
                   <span class="text-sm">Servings per person:</span>
-                  <span class="font-bold food-value">2.1x</span>
+                  <span class="font-bold food-value">1.0x</span>
                 </div>
-                <input type="range" name="{{ food.dairy.name }}" min="0.01" max="3" step="0.01" value="2.1"
+                <input type="range" name="{{ food.dairy.name }}" min="0.01" max="3" step="0.01" value="1.0"
                   class="w-full range range-primary food-slider">
                 <div class="flex justify-between text-xs">
                   <span>0</span>
@@ -444,7 +454,7 @@
 
             <div class="food-category">
               <h4 class="flex items-center gap-2">
-                <span>Fruits and vegetables</span>
+                <span class="font-semibold">Fruits and vegetables</span>
                 <button type="button" class="btn btn-xs btn-circle btn-ghost">
                   <i class="icon-[tabler--help] text-sm"></i>
                 </button>
@@ -452,9 +462,9 @@
               <div class="food-slider-container">
                 <div class="flex justify-between items-center mb-1">
                   <span class="text-sm">Servings per person:</span>
-                  <span class="font-bold food-value">3.4x</span>
+                  <span class="font-bold food-value">1.0x</span>
                 </div>
-                <input type="range" name="{{ food.fruits_vegetables.name }}" min="0.01" max="3" step="0.01" value="3.4"
+                <input type="range" name="{{ food.fruits_vegetables.name }}" min="0.01" max="3" step="0.01" value="1.0"
                   class="w-full range range-primary food-slider">
                 <div class="flex justify-between text-xs">
                   <span>0</span>
@@ -467,7 +477,7 @@
 
             <div class="food-category">
               <h4 class="flex items-center gap-2">
-                <span>Snacks, drinks, etc...</span>
+                <span class="font-semibold">Snacks, drinks, etc...</span>
                 <button type="button" class="btn btn-xs btn-circle btn-ghost">
                   <i class="icon-[tabler--help] text-sm"></i>
                 </button>
@@ -475,9 +485,9 @@
               <div class="food-slider-container">
                 <div class="flex justify-between items-center mb-1">
                   <span class="text-sm">Servings per person:</span>
-                  <span class="font-bold food-value">3.2x</span>
+                  <span class="font-bold food-value">1.0x</span>
                 </div>
-                <input type="range" name="{{ food.snacks_drinks.name }}" min="0.01" max="3" step="0.01" value="3.2"
+                <input type="range" name="{{ food.snacks_drinks.name }}" min="0.01" max="3" step="0.01" value="1.0"
                   class="w-full range range-primary food-slider">
                 <div class="flex justify-between text-xs">
                   <span>0</span>
@@ -510,12 +520,12 @@
           <!-- Goods Panel -->
           <div class="panel panel-default">
             <div class="panel-heading">
-              In a usual month, how much money do you allocate toward purchasing goods?
+              On average each month, how much do you spend on goods (e.g., clothing, electronics, etc.)?
             </div>
             <div class="panel-body">
               <div class="shopping-category">
                 <h4 class="flex items-center gap-2">
-                  <span>Goods</span>
+                  <span class="font-medium">Goods</span>
                   <button type="button" class="btn btn-xs btn-circle btn-ghost">
                     <i class="icon-[tabler--help] text-sm"></i>
                   </button>
@@ -525,8 +535,8 @@
                     <span class="text-sm">Monthly spending:</span>
                     <span class="font-bold shopping-value">$1,595</span>
                   </div>
-                  <input type="range" name="{{ shopping_simple.goods_multiplier.name }}" min="0.0001" max="3" step="0.01" value="1"
-                    class="w-full range range-primary shopping-slider">
+                  <input type="range" name="{{ shopping_simple.goods_multiplier.name }}" min="0.0001" max="3"
+                    step="0.01" value="1" class="w-full range range-primary shopping-slider">
                   <div class="flex justify-between text-xs">
                     <span>0</span>
                     <span>Average</span>
@@ -541,12 +551,12 @@
           <!-- Services Panel -->
           <div class="panel panel-default">
             <div class="panel-heading">
-              In a typical month, what's your estimated spending on services?
+              On average each month, how much do you spend on services (e.g., streaming, subscriptions, repairs)?"
             </div>
             <div class="panel-body">
               <div class="shopping-category">
                 <h4 class="flex items-center gap-2">
-                  <span>Services</span>
+                  <span class="font-medium">Services</span>
                   <button type="button" class="btn btn-xs btn-circle btn-ghost">
                     <i class="icon-[tabler--help] text-sm"></i>
                   </button>
@@ -556,8 +566,8 @@
                     <span class="text-sm">Monthly spending:</span>
                     <span class="font-bold shopping-value">$2,929</span>
                   </div>
-                  <input type="range" name="{{ shopping_simple.services_multiplier.name }}" min="0.0001" max="3" step="0.01" value="1"
-                    class="w-full range range-primary shopping-slider">
+                  <input type="range" name="{{ shopping_simple.services_multiplier.name }}" min="0.0001" max="3"
+                    step="0.01" value="1" class="w-full range range-primary shopping-slider">
                   <div class="flex justify-between text-xs">
                     <span>0</span>
                     <span>Average</span>

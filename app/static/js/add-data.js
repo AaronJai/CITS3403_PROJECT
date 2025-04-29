@@ -129,19 +129,19 @@ vehicleTemplate.innerHTML = `
     
     <div class="space-y-1">
     <div class="flex justify-between text-sm">
-        <span>Fuel Efficiency</span>
+        <span>Fuel Efficiency (L/100km or kWh/100km)</span>
         <span class="vehicle-mpg-value">22</span>
     </div>
-    <input type="range" min="10" max="115" value="22" step="1" class="w-full range range-primary vehicle-mpg">
+    <input type="range" min="0" max="35" value="7" step="1" class="w-full range range-primary vehicle-mpg">
     <div class="flex justify-between text-xs">
+        <span>0</span>
+        <span>5</span>
         <span>10</span>
+        <span>15</span>
+        <span>20</span>
         <span>25</span>
-        <span>40</span>
-        <span>55</span>
-        <span>70</span>
-        <span>85</span>
-        <span>100</span>
-        <span>115</span>
+        <span>30</span>
+        <span>35</span>
     </div>
     </div>
 </div>
