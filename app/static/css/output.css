@@ -1308,7 +1308,7 @@
 }
 .floating-label {
   position: absolute;
-  top: 50%;
+  top: 1.7rem;
   left: 16px;
   transform: translateY(-50%);
   color: #9ca3af;
