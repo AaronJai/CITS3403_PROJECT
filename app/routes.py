@@ -43,10 +43,74 @@ def add_data():
     shopping_advanced = ShoppingAdvancedForm(prefix='shopping_advanced')
     
     if request.method == 'POST':
+        # Get the active mode for travel and shopping sections
+        travel_mode = request.form.get('travel_mode', 'simple')
+        shopping_mode = request.form.get('shopping_mode', 'simple')
+
         # Process form submission
         if 'calculate_footprint' in request.form:
+            # Process vehicle data
+            # Here you would extract the vehicle data from the form
+            
+            # Process travel data based on active mode
+            if travel_mode == 'simple':
+                # Validate and process simple travel form
+                if public_transit_simple.validate() and air_travel_simple.validate():
+                    public_transit_distance = public_transit_simple.distance.data
+                    air_travel_distance = air_travel_simple.distance.data
+                    # Process simple travel data
+            else:
+                # Validate and process advanced travel form
+                if public_transit_advanced.validate() and air_travel_advanced.validate():
+                    bus_kms = public_transit_advanced.bus_kms.data
+                    transit_rail_kms = public_transit_advanced.transit_rail_kms.data
+                    commuter_rail_kms = public_transit_advanced.commuter_rail_kms.data
+                    intercity_rail_kms = public_transit_advanced.intercity_rail_kms.data
+                    
+                    short_flights = air_travel_advanced.short_flights.data
+                    medium_flights = air_travel_advanced.medium_flights.data
+                    long_flights = air_travel_advanced.long_flights.data
+                    extended_flights = air_travel_advanced.extended_flights.data
+                    # Process advanced travel data
+            
+            # Home energy data is always required and has only one form
+            if home_energy.validate():
+                # Process home energy data
+                pass
+            
+            # Food data is always required and has only one form
+            if food.validate():
+                # Process food data
+                pass
+            
+            # Process shopping data based on active mode
+            if shopping_mode == 'simple':
+                # Validate and process simple shopping form
+                if shopping_simple.validate():
+                    goods_multiplier = shopping_simple.goods_multiplier.data
+                    services_multiplier = shopping_simple.services_multiplier.data
+                    # Process simple shopping data
+            else:
+                # Validate and process advanced shopping form
+                if shopping_advanced.validate():
+                    # Goods
+                    furniture_appliances = shopping_advanced.furniture_appliances.data
+                    clothing = shopping_advanced.clothing.data
+                    entertainment = shopping_advanced.entertainment.data
+                    office_supplies = shopping_advanced.office_supplies.data
+                    personal_care = shopping_advanced.personal_care.data
+                    
+                    # Services
+                    services_food = shopping_advanced.services_food.data
+                    education = shopping_advanced.education.data
+                    communication = shopping_advanced.communication.data
+                    loan = shopping_advanced.loan.data
+                    transport = shopping_advanced.transport.data
+                    # Process advanced shopping data
+            
             # Here you would save the form data to the database
-            # And calculate the carbon footprint
+            # And calculate the carbon footprint based on the collected data
+            
             flash('Your carbon footprint has been calculated and saved!', 'success')
             return redirect(url_for('view_data'))
             

@@ -145,7 +145,7 @@
                   <span class="label-text">Bus</span>
                 </label>
                 <div class="input-group items-center space-x-2">
-                  {{ public_transit_advanced.bus_miles(class="input-structure", placeholder="130", min="0") }}
+                  {{ public_transit_advanced.bus_kms(class="input-structure", placeholder="130", min="0") }}
                   <span class="input-group-addon">kms/yr</span>
                 </div>
               </div>
@@ -155,7 +155,7 @@
                   <span class="label-text">Transit Rail (light & heavy)</span>
                 </label>
                 <div class="input-group items-center space-x-2">
-                  {{ public_transit_advanced.transit_rail_miles(class="input-structure", placeholder="97", min="0") }}
+                  {{ public_transit_advanced.transit_rail_kms(class="input-structure", placeholder="97", min="0") }}
                   <span class="input-group-addon">kms/yr</span>
                 </div>
               </div>
@@ -165,7 +165,7 @@
                   <span class="label-text">Commuter Rail</span>
                 </label>
                 <div class="input-group items-center space-x-2">
-                  {{ public_transit_advanced.commuter_rail_miles(class="input-structure", placeholder="65", min="0") }}
+                  {{ public_transit_advanced.commuter_rail_kms(class="input-structure", placeholder="65", min="0") }}
                   <span class="input-group-addon">kms/yr</span>
                 </div>
               </div>
@@ -175,7 +175,7 @@
                   <span class="label-text">Inter-city Rail (Amtrak)</span>
                 </label>
                 <div class="input-group items-center space-x-2">
-                  {{ public_transit_advanced.intercity_rail_miles(class="input-structure", placeholder="32", min="0") }}
+                  {{ public_transit_advanced.intercity_rail_kms(class="input-structure", placeholder="32", min="0") }}
                   <span class="input-group-addon">kms/yr</span>
                 </div>
               </div>
@@ -249,7 +249,7 @@
               </label>
               <div class="flex items-center">
                 <input type="number" name="{{ home_energy.electricity.name }}" class="energy-input" placeholder="1,350"
-                  min="0" id="electricity" value="{{ home_energy.electricity.data or '1350' }}">
+                  min="0" id="electricity">
                 <select name="{{ home_energy.electricity_unit.name }}" class="energy-select">
                   {% for value, label in home_energy.electricity_unit.choices %}
                   <option value="{{ value }}" {% if home_energy.electricity_unit.data==value %}selected{% endif %}>{{
@@ -293,7 +293,7 @@
               </label>
               <div class="flex items-center">
                 <input type="number" name="{{ home_energy.natural_gas.name }}" class="energy-input" placeholder="590"
-                  min="0" id="natural-gas" value="{{ home_energy.natural_gas.data or '590' }}">
+                  min="0" id="natural-gas">
                 <select name="{{ home_energy.natural_gas_unit.name }}" class="energy-select">
                   {% for value, label in home_energy.natural_gas_unit.choices %}
                   <option value="{{ value }}" {% if home_energy.natural_gas_unit.data==value %}selected{% endif %}>{{
@@ -319,7 +319,7 @@
               </label>
               <div class="flex items-center">
                 <input type="number" name="{{ home_energy.heating_oil.name }}" class="energy-input" placeholder="260"
-                  min="0" id="heating-oil" value="{{ home_energy.heating_oil.data or '260' }}">
+                  min="0" id="heating-oil">
                 <select name="{{ home_energy.heating_oil_unit.name }}" class="energy-select">
                   {% for value, label in home_energy.heating_oil_unit.choices %}
                   <option value="{{ value }}" {% if home_energy.heating_oil_unit.data==value %}selected{% endif %}>{{
@@ -345,7 +345,7 @@
               </label>
               <div class="input-group flex items-center space-x-2">
                 <input type="number" name="{{ home_energy.living_space.name }}" class="input input-structure"
-                  placeholder="1,850" min="0" id="living-space" value="{{ home_energy.living_space.data or '1850' }}">
+                  placeholder="1,850" min="0" id="living-space">
                 <span class="input-group-addon">m²</span>
               </div>
             </div>
