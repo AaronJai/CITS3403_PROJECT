@@ -134,6 +134,8 @@ def login():
             return redirect(url_for('dashboard'))
         else:
             flash('Invalid email or password', 'error')
+            # Redirect to the login page instead of rendering template directly
+            return redirect(url_for('login'))
             
     return render_template('auth/login.html', active_page='login', form=form)
 
@@ -149,6 +151,7 @@ def signup():
         existing_user = User.query.filter_by(email=form.email.data).first()
         if existing_user:
             flash('Email already exists', 'error')
+            return redirect(url_for('signup'))
         else:
             # Create new user
             new_user = User(
@@ -164,6 +167,14 @@ def signup():
             
             flash('Account created successfully! Please login.', 'success')
             return redirect(url_for('login'))
+            
+    # If form validation failed, redirect with errors
+    if form.errors:
+        for field, errors in form.errors.items():
+            for error in errors:
+                flash(f"{form[field].label.text}: {error}", "error")
+        return redirect(url_for('signup'))
+        
     return render_template('auth/signup.html', active_page='signup', form=form)
 
 @app.route('/logout')
