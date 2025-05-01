@@ -6,7 +6,7 @@ from app.forms import LoginForm, SignupForm, ChangePasswordForm, ShareForm
 from app.forms import VehicleForm, PublicTransitSimpleForm, PublicTransitAdvancedForm
 from app.forms import AirTravelSimpleForm, AirTravelAdvancedForm, HomeEnergyForm
 from app.forms import FoodForm, ShoppingSimpleForm, ShoppingAdvancedForm, CarbonFootprintForm
-from app.models import User
+from app.models import User, CarbonFootprint, Travel, Vehicle, Home, Food, Shopping
 
 @app.route('/')
 def dashboard():
@@ -21,17 +21,16 @@ def dashboard():
                           last_name=user.last_name,
                           email=user.email)
 
+
 @app.route('/add_data', methods=['GET', 'POST'])
 def add_data():
     if 'user_id' not in session:
         return redirect(url_for('login'))
     
     user = User.query.get(session['user_id'])
-    
-    # Create primary form with CSRF token
+
+    # Instantiate all forms
     form = CarbonFootprintForm()
-    
-    # Create form instances
     vehicle_form = VehicleForm(prefix='vehicle')
     public_transit_simple = PublicTransitSimpleForm(prefix='public_transit_simple')
     public_transit_advanced = PublicTransitAdvancedForm(prefix='public_transit_advanced')
@@ -41,79 +40,74 @@ def add_data():
     food = FoodForm(prefix='food')
     shopping_simple = ShoppingSimpleForm(prefix='shopping_simple')
     shopping_advanced = ShoppingAdvancedForm(prefix='shopping_advanced')
-    
+
     if request.method == 'POST':
-        # Get the active mode for travel and shopping sections
+        # # Get the active mode for travel and shopping sections
         travel_mode = request.form.get('travel_mode', 'simple')
         shopping_mode = request.form.get('shopping_mode', 'simple')
 
         # Process form submission
         if 'calculate_footprint' in request.form:
-            # Process vehicle data
-            # Here you would extract the vehicle data from the form
-            
-            # Process travel data based on active mode
+        
+            is_valid = home_energy.validate() and food.validate()
             if travel_mode == 'simple':
-                # Validate and process simple travel form
-                if public_transit_simple.validate() and air_travel_simple.validate():
-                    public_transit_distance = public_transit_simple.distance.data
-                    air_travel_distance = air_travel_simple.distance.data
-                    # Process simple travel data
+                is_valid &= public_transit_simple.validate() and air_travel_simple.validate()
             else:
-                # Validate and process advanced travel form
-                if public_transit_advanced.validate() and air_travel_advanced.validate():
-                    bus_kms = public_transit_advanced.bus_kms.data
-                    transit_rail_kms = public_transit_advanced.transit_rail_kms.data
-                    commuter_rail_kms = public_transit_advanced.commuter_rail_kms.data
-                    intercity_rail_kms = public_transit_advanced.intercity_rail_kms.data
-                    
-                    short_flights = air_travel_advanced.short_flights.data
-                    medium_flights = air_travel_advanced.medium_flights.data
-                    long_flights = air_travel_advanced.long_flights.data
-                    extended_flights = air_travel_advanced.extended_flights.data
-                    # Process advanced travel data
-            
-            # Home energy data is always required and has only one form
-            if home_energy.validate():
-                # Process home energy data
-                pass
-            
-            # Food data is always required and has only one form
-            if food.validate():
-                # Process food data
-                pass
-            
-            # Process shopping data based on active mode
+                is_valid &= public_transit_advanced.validate() and air_travel_advanced.validate()
             if shopping_mode == 'simple':
-                # Validate and process simple shopping form
-                if shopping_simple.validate():
-                    goods_multiplier = shopping_simple.goods_multiplier.data
-                    services_multiplier = shopping_simple.services_multiplier.data
-                    # Process simple shopping data
+                is_valid &= shopping_simple.validate()
             else:
-                # Validate and process advanced shopping form
-                if shopping_advanced.validate():
-                    # Goods
-                    furniture_appliances = shopping_advanced.furniture_appliances.data
-                    clothing = shopping_advanced.clothing.data
-                    entertainment = shopping_advanced.entertainment.data
-                    office_supplies = shopping_advanced.office_supplies.data
-                    personal_care = shopping_advanced.personal_care.data
-                    
-                    # Services
-                    services_food = shopping_advanced.services_food.data
-                    education = shopping_advanced.education.data
-                    communication = shopping_advanced.communication.data
-                    loan = shopping_advanced.loan.data
-                    transport = shopping_advanced.transport.data
-                    # Process advanced shopping data
-            
-            # Here you would save the form data to the database
-            # And calculate the carbon footprint based on the collected data
-            
+                is_valid &= shopping_advanced.validate()
+                
+            travel_mode = request.form.get('travel_mode', 'simple')
+            shopping_mode = request.form.get('shopping_mode', 'simple')
+
+            if not is_valid:
+                flash("There were errors in your submission. Please correct them and try again.", "danger")
+                return render_template('add_data.html', 
+                            active_page='add_data', 
+                            nav_items=nav_items,
+                            first_name=user.first_name,
+                            last_name=user.last_name,
+                            email=user.email,
+                            form=form,
+                            vehicle_form=vehicle_form,
+                            public_transit_simple=public_transit_simple,
+                            public_transit_advanced=public_transit_advanced,
+                            air_travel_simple=air_travel_simple,
+                            air_travel_advanced=air_travel_advanced,
+                            home_energy=home_energy,
+                            food=food,
+                            shopping_simple=shopping_simple,
+                            shopping_advanced=shopping_advanced)
+
+            # All forms are valid, process and save
+            travel = process_travel_data(travel_mode, public_transit_simple, public_transit_advanced,
+                                        air_travel_simple, air_travel_advanced)
+            db.session.add(travel)
+            db.session.flush()
+
+            process_vehicles_data(travel.id)
+
+            home = process_home_data(home_energy)
+            food_data = process_food_data(food)
+            shopping = process_shopping_data(shopping_mode, shopping_simple, shopping_advanced)
+
+            db.session.add_all([home, food_data, shopping])
+            db.session.flush()
+
+            db.session.add(CarbonFootprint(
+                user_id=user.id,
+                travel_id=travel.id,
+                home_id=home.id,
+                food_id=food_data.id,
+                shopping_id=shopping.id
+            ))
+            db.session.commit()
+
             flash('Your carbon footprint has been calculated and saved!', 'success')
             return redirect(url_for('view_data'))
-            
+
     return render_template('add_data.html', 
                           active_page='add_data', 
                           nav_items=nav_items,
@@ -130,6 +124,83 @@ def add_data():
                           food=food,
                           shopping_simple=shopping_simple,
                           shopping_advanced=shopping_advanced)
+
+def process_travel_data(mode, pts:PublicTransitSimpleForm, pta:PublicTransitAdvancedForm, ats:AirTravelSimpleForm, ata:AirTravelAdvancedForm):
+    travel = Travel()
+    if mode == 'simple':
+        travel.public_transit_distance = pts.distance.data
+        travel.air_travel_distance = ats.distance.data
+    else:
+        travel.bus_kms = pta.bus_kms.data
+        travel.transit_rail_kms = pta.transit_rail_kms.data
+        travel.commuter_rail_kms = pta.commuter_rail_kms.data
+        travel.intercity_rail_kms = pta.intercity_rail_kms.data
+        travel.short_flights = ata.short_flights.data
+        travel.medium_flights = ata.medium_flights.data
+        travel.long_flights = ata.long_flights.data
+        travel.extended_flights = ata.extended_flights.data
+    return travel
+
+def process_vehicles_data(travel_id):
+    i = 0
+    while True:
+        fuel_type = request.form.get(f'vehicle-fuel_type{i}')
+        distance = request.form.get(f'vehicle-distance{i}')
+        efficiency = request.form.get(f'vehicle-fuel_efficiency{i}')
+        if not fuel_type:
+            break
+        db.session.add(Vehicle(
+            travel_id=travel_id,
+            fuel_type=fuel_type,
+            distance=distance,
+            fuel_efficiency=efficiency
+        ))
+        i += 1
+
+def process_home_data(form:HomeEnergyForm):
+    return Home(
+        electricity=form.electricity.data,
+        electricity_unit=form.electricity_unit.data,
+        electricity_frequency=form.electricity_frequency.data,
+        clean_energy_percentage=form.clean_energy_percentage.data,
+        natural_gas=form.natural_gas.data,
+        natural_gas_unit=form.natural_gas_unit.data,
+        natural_gas_frequency=form.natural_gas_frequency.data,
+        heating_oil=form.heating_oil.data,
+        heating_oil_unit=form.heating_oil_unit.data,
+        heating_oil_frequency=form.heating_oil_frequency.data,
+        living_space=form.living_space.data,
+        water_usage=form.water_usage.data
+    )
+
+def process_food_data(form:FoodForm):
+    return Food(
+        meat_fish_eggs=form.meat_fish_eggs.data,
+        grains_baked_goods=form.grains_baked_goods.data,
+        dairy=form.dairy.data,
+        fruits_vegetables=form.fruits_vegetables.data,
+        snacks_drinks=form.snacks_drinks.data
+    )
+
+def process_shopping_data(mode, simple_form:ShoppingSimpleForm, advanced_form:ShoppingAdvancedForm):
+    shopping = Shopping()
+    if mode == 'simple':
+        shopping.goods_multiplier = simple_form.goods_multiplier.data
+        shopping.services_multiplier = simple_form.services_multiplier.data
+    else:
+        shopping.furniture_appliances = advanced_form.furniture_appliances.data
+        shopping.clothing = advanced_form.clothing.data
+        shopping.entertainment = advanced_form.entertainment.data
+        shopping.office_supplies = advanced_form.office_supplies.data
+        shopping.personal_care = advanced_form.personal_care.data
+        shopping.services_food = advanced_form.services_food.data
+        shopping.education = advanced_form.education.data
+        shopping.communication = advanced_form.communication.data
+        shopping.loan = advanced_form.loan.data
+        shopping.transport = advanced_form.transport.data
+    return shopping
+
+
 
 @app.route('/view_data')
 def view_data():

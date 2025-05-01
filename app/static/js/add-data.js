@@ -11,14 +11,14 @@ document.addEventListener('DOMContentLoaded', function () {
     // Track which mode is active for each section
     let isTravelSimpleMode = true;
     let isShoppingSimpleMode = true;
-    
+
     // Add hidden fields to track active modes
     const travelModeField = document.createElement('input');
     travelModeField.setAttribute('type', 'hidden');
     travelModeField.setAttribute('name', 'travel_mode');
     travelModeField.setAttribute('value', 'simple');
     form.appendChild(travelModeField);
-    
+
     const shoppingModeField = document.createElement('input');
     shoppingModeField.setAttribute('type', 'hidden');
     shoppingModeField.setAttribute('name', 'shopping_mode');
@@ -26,7 +26,7 @@ document.addEventListener('DOMContentLoaded', function () {
     form.appendChild(shoppingModeField);
 
     // Handle form submission and use placeholder values as defaults
-    form.addEventListener('submit', function(e) {
+    form.addEventListener('submit', function (e) {
         // Before submitting, apply placeholder values to empty fields
         applyPlaceholdersToEmptyFields();
         // Now log the form values for debugging
@@ -43,7 +43,7 @@ document.addEventListener('DOMContentLoaded', function () {
                 input.value = input.placeholder.replace(/,/g, '');
             }
         });
-        
+
         // Handle vehicles specifically
         const vehicleItems = document.querySelectorAll('.vehicle-item');
         vehicleItems.forEach((vehicle, index) => {
@@ -63,9 +63,9 @@ document.addEventListener('DOMContentLoaded', function () {
     // Navigation handlers
     prevBtn.addEventListener('click', goToPrevStep);
     nextBtn.addEventListener('click', goToNextStep);
-    
+
     // Add logging to the finish button click
-    finishBtn.addEventListener('click', function() {
+    finishBtn.addEventListener('click', function () {
         // Apply placeholders before logging and submitting
         applyPlaceholdersToEmptyFields();
         logFormValues();
@@ -76,21 +76,21 @@ document.addEventListener('DOMContentLoaded', function () {
         console.log('========== FORM SUBMISSION VALUES ==========');
         console.log('Active Travel Mode:', travelModeField.value);
         console.log('Active Shopping Mode:', shoppingModeField.value);
-        
+
         // Log all input values
         const allInputs = form.querySelectorAll('input, select, textarea');
         const formData = {};
-        
+
         allInputs.forEach(input => {
             // Skip submit buttons
             if (input.type !== 'submit') {
                 formData[input.name] = input.value;
             }
         });
-        
+
         // Log by category
         console.log('--- Travel Data ---');
-        
+
         // Enhanced vehicle logging with details
         const vehicleItems = document.querySelectorAll('.vehicle-item');
         console.log(`Vehicles: ${vehicleItems.length}`);
@@ -98,13 +98,13 @@ document.addEventListener('DOMContentLoaded', function () {
             const fuelType = vehicle.querySelector('.vehicle-fuel-type').value;
             const distance = vehicle.querySelector('.vehicle-distance').value;
             const fuelEfficiency = vehicle.querySelector('.vehicle-mpg').value;
-            
+
             console.log(`  Vehicle #${index + 1}:`);
             console.log(`    Type: ${fuelType}`);
             console.log(`    Distance: ${distance || 'Not specified'} kms/yr`);
             console.log(`    Fuel Efficiency: ${fuelEfficiency} ${fuelType === 'electric' ? 'kWh/100km' : 'L/100km'}`);
         });
-        
+
         // Log simple travel data
         if (travelModeField.value === 'simple') {
             console.log('Public Transit (simple):', formData['public_transit_simple-distance']);
@@ -120,7 +120,7 @@ document.addEventListener('DOMContentLoaded', function () {
             console.log('Long Flights:', formData['air_travel_advanced-long_flights']);
             console.log('Extended Flights:', formData['air_travel_advanced-extended_flights']);
         }
-        
+
         console.log('--- Home Energy Data ---');
         console.log('Electricity:', formData['home_energy-electricity']);
         console.log('Electricity Unit:', formData['home_energy-electricity_unit']);
@@ -134,14 +134,14 @@ document.addEventListener('DOMContentLoaded', function () {
         console.log('Heating Oil Frequency:', formData['home_energy-heating_oil_frequency']);
         console.log('Living Space:', formData['home_energy-living_space']);
         console.log('Water Usage:', formData['home_energy-water_usage']);
-        
+
         console.log('--- Food Data ---');
         console.log('Meat/Fish/Eggs:', formData['food-meat_fish_eggs']);
         console.log('Grains/Baked Goods:', formData['food-grains_baked_goods']);
         console.log('Dairy:', formData['food-dairy']);
         console.log('Fruits/Vegetables:', formData['food-fruits_vegetables']);
         console.log('Snacks/Drinks:', formData['food-snacks_drinks']);
-        
+
         console.log('--- Shopping Data ---');
         if (shoppingModeField.value === 'simple') {
             console.log('Goods Multiplier:', formData['shopping_simple-goods_multiplier']);
@@ -153,7 +153,7 @@ document.addEventListener('DOMContentLoaded', function () {
             console.log('Entertainment:', formData['shopping_advanced-entertainment']);
             console.log('Office Supplies:', formData['shopping_advanced-office_supplies']);
             console.log('Personal Care:', formData['shopping_advanced-personal_care']);
-            
+
             // Services
             console.log('Services Food:', formData['shopping_advanced-services_food']);
             console.log('Education:', formData['shopping_advanced-education']);
@@ -249,7 +249,6 @@ document.addEventListener('DOMContentLoaded', function () {
         finishBtn.style.display = currentIndex === totalSteps ? 'flex' : 'none';
     }
     addVehicle();
-    addVehicle();
 
     //Public Transport and Air Travel Form Toggle
     const simpleForm = document.getElementById('simple-form');
@@ -314,59 +313,28 @@ document.addEventListener('DOMContentLoaded', function () {
     });
 });
 
-// Vehicle Template (hidden)
-const vehicleTemplate = document.createElement('template');
-vehicleTemplate.innerHTML = `
-<div class="vehicle-mpg-container vehicle-item space-y-2 pb-4 border-b border-gray-300 last:border-b-0">
-    <div class="flex gap-2">
-    <select class="select select-bordered flex-1 vehicle-fuel-type">
-        <option value="gasoline">Gasoline</option>
-        <option value="diesel">Diesel</option>
-        <option value="electric">Electric</option>
-    </select>
-    <button type="button" class="focus:outline-none cursor-pointer text-white bg-red-700 hover:bg-red-800 focus:ring-4 focus:ring-red-300 font-medium rounded-lg text-sm px-2 py-1 me-2 mb-2 dark:bg-red-600 dark:hover:bg-red-700 dark:focus:ring-red-900" 
-        onclick="deleteVehicle(this.closest('div.vehicle-item'))"
-    >
-        X
-    </button>
-    </div>
-    
-    <div class="input-group flex items-center space-x-2">
-    <input type="number" class="w-full p-2 border border-gray-300 rounded-md vehicle-distance" placeholder="12100">
-    <span class="input-group-addon">kms/yr</span>
-    </div>
-    
-    <div class="space-y-1">
-    <div class="flex justify-between text-sm">
-        <span>Fuel Efficiency (L/100km or kWh/100km)</span>
-        <span class="vehicle-mpg-value">7</span>
-    </div>
-    <input type="range" min="0" max="35" value="7" step="0.1" class="w-full range range-primary vehicle-mpg">
-    <div class="flex justify-between text-xs">
-        <span>0</span>
-        <span>5</span>
-        <span>10</span>
-        <span>15</span>
-        <span>20</span>
-        <span>25</span>
-        <span>30</span>
-        <span>35</span>
-    </div>
-    </div>
-</div>
-`;
+// Vehicle addition and deletion
+let vehicleIndex = 0;
 
-// Add Vehicle
 function addVehicle() {
-    const addingVehicleContainer = document.getElementById('vehicles-container')
-    const vehicleChildNode = vehicleTemplate.content.cloneNode(true)
-    addingVehicleContainer.appendChild(vehicleChildNode);
+    const container = document.getElementById('vehicles-container');
+    const clone = vehicleTemplate.content.cloneNode(true);
 
-    // Vehicle sliders
+    // Set proper name attributes based on index
+    const inputs = clone.querySelectorAll('input, select');
+    inputs.forEach(input => {
+        input.name = `${input.name}${vehicleIndex}`;
+    });
+
+    container.appendChild(clone);
+    vehicleIndex++;
+
+    // Reattach sliders for new elements
     setupSlider('.vehicle-mpg', '.vehicle-mpg-value', (slider, value) => {
         return parseFloat(value).toFixed(1);
     });
 }
+
 
 function deleteVehicle(el) {
     const locatingVehicleItem = el
