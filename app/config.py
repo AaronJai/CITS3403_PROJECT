@@ -5,4 +5,4 @@ default_database_location = 'sqlite:///' + os.path.join(basedir, 'app.db')
 
 class Config:
     SQLALCHEMY_DATABASE_URI = os.environ.get('DATABASE_URL') or default_database_location
-    SECRET_KEY = 'i_love_matcha'
+    SECRET_KEY = os.environ.get('FLASK_SECRET_KEY')
