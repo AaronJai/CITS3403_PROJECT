@@ -1,5 +1,6 @@
 from app import app, db
-from flask import redirect, render_template, request, url_for, flash, session
+from flask import redirect, render_template, request, url_for, flash
+from flask_login import login_user, logout_user, current_user, login_required
 import re
 from app.constants import nav_items
 from app.forms import LoginForm, SignupForm, ChangePasswordForm, ShareForm, ResetPasswordRequestForm, ResetPasswordForm
@@ -7,50 +8,38 @@ from app.models import User
 from app.email_utils import send_confirmation_email, send_password_reset_email
 
 @app.route('/')
+@login_required
 def dashboard():
-    if 'user_id' not in session:
-        return redirect(url_for('login'))
-    
-    user = User.query.get(session['user_id'])
     return render_template('dashboard.html', 
                           active_page='dashboard', 
                           nav_items=nav_items,
-                          first_name=user.first_name,
-                          last_name=user.last_name,
-                          email=user.email)
+                          first_name=current_user.first_name,
+                          last_name=current_user.last_name,
+                          email=current_user.email)
 
 @app.route('/add_data')
+@login_required
 def add_data():
-    if 'user_id' not in session:
-        return redirect(url_for('login'))
-    
-    user = User.query.get(session['user_id'])
     return render_template('add_data.html', 
                           active_page='add_data', 
                           nav_items=nav_items,
-                          first_name=user.first_name,
-                          last_name=user.last_name,
-                          email=user.email)
+                          first_name=current_user.first_name,
+                          last_name=current_user.last_name,
+                          email=current_user.email)
 
 @app.route('/view_data')
+@login_required
 def view_data():
-    if 'user_id' not in session:
-        return redirect(url_for('login'))
-    
-    user = User.query.get(session['user_id'])
     return render_template('view_data.html', 
                           active_page='view_data', 
                           nav_items=nav_items,
-                          first_name=user.first_name,
-                          last_name=user.last_name,
-                          email=user.email)
+                          first_name=current_user.first_name,
+                          last_name=current_user.last_name,
+                          email=current_user.email)
 
 @app.route('/share', methods=['GET', 'POST'])
+@login_required
 def share():
-    if 'user_id' not in session:
-        return redirect(url_for('login'))
-    
-    user = User.query.get(session['user_id'])
     form = ShareForm()
     search_results = None
     
@@ -77,46 +66,40 @@ def share():
     return render_template('share.html', 
                           active_page='share', 
                           nav_items=nav_items,
-                          first_name=user.first_name,
-                          last_name=user.last_name,
-                          email=user.email,
+                          first_name=current_user.first_name,
+                          last_name=current_user.last_name,
+                          email=current_user.email,
                           form=form,
                           search_results=search_results,
                           shared_with_me=shared_with_me,
                           sharing_with=sharing_with)
 
 @app.route('/facts')
+@login_required
 def facts():
-    if 'user_id' not in session:
-        return redirect(url_for('login'))
-    
-    user = User.query.get(session['user_id'])
     return render_template('facts.html', 
                           active_page='facts', 
                           nav_items=nav_items,
-                          first_name=user.first_name,
-                          last_name=user.last_name,
-                          email=user.email)
+                          first_name=current_user.first_name,
+                          last_name=current_user.last_name,
+                          email=current_user.email)
 
 @app.route('/profile')
+@login_required
 def profile():
-    if 'user_id' not in session:
-        return redirect(url_for('login'))
-    
-    user = User.query.get(session['user_id'])
     form = ChangePasswordForm()
     
     return render_template('profile.html', 
                           nav_items=nav_items,
-                          first_name=user.first_name,
-                          last_name=user.last_name,
-                          email=user.email,
+                          first_name=current_user.first_name,
+                          last_name=current_user.last_name,
+                          email=current_user.email,
                           form=form)
 
 @app.route('/login', methods=['GET', 'POST'])
 def login():
     # If user is already logged in, redirect to dashboard
-    if 'user_id' in session:
+    if current_user.is_authenticated:
         return redirect(url_for('dashboard'))
         
     form = LoginForm()
@@ -134,10 +117,16 @@ def login():
                 flash('Please confirm your email address before logging in.', 'warning')
                 return redirect(url_for('inactive', email=user.email))
             
-            # Store user ID in session
-            session['user_id'] = user.id
+            # Login user with Flask-Login
+            login_user(user, remember=form.remember_me.data if hasattr(form, 'remember_me') else False)
+            
+            # Redirect to next page if specified, otherwise dashboard
+            next_page = request.args.get('next')
+            if not next_page or not next_page.startswith('/'):
+                next_page = url_for('dashboard')
+                
             flash('Logged in successfully!', 'success')
-            return redirect(url_for('dashboard'))
+            return redirect(next_page)
         else:
             flash('Invalid email or password', 'error')
             # Redirect to the login page instead of rendering template directly
@@ -148,7 +137,7 @@ def login():
 @app.route('/signup', methods=['GET', 'POST'])
 def signup():
     # If user is already logged in, redirect to dashboard
-    if 'user_id' in session:
+    if current_user.is_authenticated:
         return redirect(url_for('dashboard'))
         
     form = SignupForm()
@@ -189,28 +178,23 @@ def signup():
 
 @app.route('/logout')
 def logout():
-    # Remove user_id from session
-    session.pop('user_id', None)
+    logout_user()
     flash('Logged out successfully!', 'success')
     return redirect(url_for('login'))
 
 @app.route('/change_password', methods=['POST'])
+@login_required
 def change_password():
-    if 'user_id' not in session:
-        flash("Please log in first.", "error")
-        return redirect(url_for('login'))
-    
     form = ChangePasswordForm()
-    user = User.query.get(session['user_id'])
     
     if form.validate_on_submit():
         # Check if current password is correct
-        if not user.check_password(form.current_password.data):
+        if not current_user.check_password(form.current_password.data):
             flash("Current password is incorrect.", "error")
             return redirect(url_for('profile'))
         
         # Set new password and save to database
-        user.set_password(form.new_password.data)
+        current_user.set_password(form.new_password.data)
         db.session.commit()
         
         flash("Password updated successfully!", "success")
@@ -224,7 +208,15 @@ def change_password():
         return redirect(url_for('profile'))
 
 @app.route('/delete_account', methods=['POST'])
+@login_required
 def delete_account():
+    # Delete user from database
+    db.session.delete(current_user._get_current_object())
+    db.session.commit()
+    
+    # Logout user
+    logout_user()
+    
     print("Deleting user account")
     flash('Your account has been deleted.', 'success')
     return redirect(url_for('login'))
@@ -266,7 +258,7 @@ def confirm_email(token):
 # Password reset functionality
 @app.route('/confirm_email', methods=['GET', 'POST'])
 def request_password_reset():
-    if 'user_id' in session:
+    if current_user.is_authenticated:
         return redirect(url_for('dashboard'))
     
     form = ResetPasswordRequestForm()
@@ -282,7 +274,7 @@ def request_password_reset():
 
 @app.route('/reset_password/<token>', methods=['GET', 'POST'])
 def reset_password(token):
-    if 'user_id' in session:
+    if current_user.is_authenticated:
         return redirect(url_for('dashboard'))
     
     user = User.verify_reset_password_token(token)

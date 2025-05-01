@@ -1,12 +1,19 @@
 # Database models (ORM)
-from app import db, app
+from app import db, app, login_manager
 from werkzeug.security import generate_password_hash, check_password_hash
+from flask_login import UserMixin
 from time import time
 import jwt
 
 
+# User loader function required by Flask-Login
+@login_manager.user_loader
+def load_user(id):
+    return User.query.get(int(id))
+
+
 # Database Model for User (Single Row within our DB)
-class User(db.Model):
+class User(UserMixin, db.Model):
     # class variables
     id = db.Column(db.Integer, primary_key=True)
     first_name = db.Column(db.String(50), nullable=False)
