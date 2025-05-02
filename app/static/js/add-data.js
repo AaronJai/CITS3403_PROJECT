@@ -8,6 +8,15 @@ document.addEventListener('DOMContentLoaded', function () {
     const finishBtn = document.querySelector('[data-stepper-finish-btn]');
     const form = document.querySelector('form');
 
+    // Prevent form submission on Enter key press
+    form.addEventListener('keypress', function(e) {
+        // Check if Enter key is pressed
+        if (e.key === 'Enter') {
+            // Prevent default form submission
+            e.preventDefault();
+        }
+    });
+
     // Track which mode is active for each section
     let isTravelSimpleMode = true;
     let isShoppingSimpleMode = true;
