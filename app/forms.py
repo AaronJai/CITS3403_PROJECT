@@ -86,7 +86,7 @@ class VehicleForm(FlaskForm):
         ('electric', 'Electric')
     ])
     distance = FloatField('Distance', validators=[NumberRange(min=0), Optional()])
-    fuel_efficiency = FloatField('Fuel Efficiency', validators=[NumberRange(min=10, max=115), Optional()])
+    fuel_efficiency = FloatField('Fuel Efficiency', validators=[NumberRange(min=0, max=35), Optional()])
 
 class PublicTransitSimpleForm(FlaskForm):
     """Simple form for public transit"""

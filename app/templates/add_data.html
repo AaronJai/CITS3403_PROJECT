@@ -257,7 +257,7 @@
                 </button>
               </label>
               <div class="flex items-center">
-                <input type="number" name="{{ home_energy.electricity.name }}" class="energy-input" placeholder="1,350"
+                <input type="number" name="{{ home_energy.electricity.name }}" class="energy-input" placeholder="1350"
                   min="0" id="electricity">
                 <select name="{{ home_energy.electricity_unit.name }}" class="energy-select">
                   {% for value, label in home_energy.electricity_unit.choices %}
@@ -354,7 +354,7 @@
               </label>
               <div class="input-group flex items-center space-x-2">
                 <input type="number" name="{{ home_energy.living_space.name }}" class="input input-structure"
-                  placeholder="1,850" min="0" id="living-space">
+                  placeholder="200" min="0" id="living-space">
                 <span class="input-group-addon">m²</span>
               </div>
             </div>
@@ -764,7 +764,7 @@
         </div>
         
         <div class="input-group flex items-center space-x-2">
-          {{vehicle_form.distance(class= "input-structure", placeholder = "15,600", min = "0")}}
+          {{vehicle_form.distance(class= "input-structure", placeholder = "12100", min = "0")}}
         <span class="input-group-addon">kms/yr</span>
         </div>
         
