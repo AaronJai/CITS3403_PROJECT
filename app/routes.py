@@ -6,7 +6,8 @@ from app.forms import LoginForm, SignupForm, ChangePasswordForm, ShareForm
 from app.forms import VehicleForm, PublicTransitSimpleForm, PublicTransitAdvancedForm
 from app.forms import AirTravelSimpleForm, AirTravelAdvancedForm, HomeEnergyForm
 from app.forms import FoodForm, ShoppingSimpleForm, ShoppingAdvancedForm, CarbonFootprintForm
-from app.models import User, CarbonFootprint, Travel, Vehicle, Home, Food, Shopping
+from app.models import User, CarbonFootprint, Travel, Vehicle, Home, Food, Shopping, Emissions
+from app.processing_layer import CarbonFootprintCalculator
 
 @app.route('/')
 def dashboard():
@@ -21,12 +22,11 @@ def dashboard():
                           last_name=user.last_name,
                           email=user.email)
 
-
 @app.route('/add_data', methods=['GET', 'POST'])
 def add_data():
     if 'user_id' not in session:
         return redirect(url_for('login'))
-    
+
     user = User.query.get(session['user_id'])
 
     # Instantiate all forms
@@ -42,88 +42,114 @@ def add_data():
     shopping_advanced = ShoppingAdvancedForm(prefix='shopping_advanced')
 
     if request.method == 'POST':
-        # # Get the active mode for travel and shopping sections
+        # Get the active mode for travel and shopping sections
         travel_mode = request.form.get('travel_mode', 'simple')
         shopping_mode = request.form.get('shopping_mode', 'simple')
 
         # Process form submission
         if 'calculate_footprint' in request.form:
-        
+
             is_valid = home_energy.validate() and food.validate()
             if travel_mode == 'simple':
                 is_valid &= public_transit_simple.validate() and air_travel_simple.validate()
             else:
                 is_valid &= public_transit_advanced.validate() and air_travel_advanced.validate()
+
             if shopping_mode == 'simple':
                 is_valid &= shopping_simple.validate()
             else:
                 is_valid &= shopping_advanced.validate()
-                
-            travel_mode = request.form.get('travel_mode', 'simple')
-            shopping_mode = request.form.get('shopping_mode', 'simple')
 
             if not is_valid:
                 flash("There were errors in your submission. Please correct them and try again.", "danger")
-                return render_template('add_data.html', 
-                            active_page='add_data', 
-                            nav_items=nav_items,
-                            first_name=user.first_name,
-                            last_name=user.last_name,
-                            email=user.email,
-                            form=form,
-                            vehicle_form=vehicle_form,
-                            public_transit_simple=public_transit_simple,
-                            public_transit_advanced=public_transit_advanced,
-                            air_travel_simple=air_travel_simple,
-                            air_travel_advanced=air_travel_advanced,
-                            home_energy=home_energy,
-                            food=food,
-                            shopping_simple=shopping_simple,
-                            shopping_advanced=shopping_advanced)
+                return render_template(
+                    'add_data.html',
+                    active_page='add_data',
+                    nav_items=nav_items,
+                    first_name=user.first_name,
+                    last_name=user.last_name,
+                    email=user.email,
+                    form=form,
+                    vehicle_form=vehicle_form,
+                    public_transit_simple=public_transit_simple,
+                    public_transit_advanced=public_transit_advanced,
+                    air_travel_simple=air_travel_simple,
+                    air_travel_advanced=air_travel_advanced,
+                    home_energy=home_energy,
+                    food=food,
+                    shopping_simple=shopping_simple,
+                    shopping_advanced=shopping_advanced
+                )
 
-            # All forms are valid, process and save
-            travel = process_travel_data(travel_mode, public_transit_simple, public_transit_advanced,
-                                        air_travel_simple, air_travel_advanced)
+            calc = CarbonFootprintCalculator(Emissions())
+
+            # Process and save data
+            travel = process_travel_data(
+                travel_mode,
+                public_transit_simple,
+                public_transit_advanced,
+                air_travel_simple,
+                air_travel_advanced
+            )
+            calc.calculate_travel(travel_mode, travel)
+
             db.session.add(travel)
             db.session.flush()
 
-            process_vehicles_data(travel.id)
+            vehicles = process_vehicles_data(travel.id)
+            for vehicle in vehicles:
+                db.session.add(vehicle)
+            calc.calculate_vehicles(vehicles)
 
             home = process_home_data(home_energy)
+            calc.calculate_home(home)
+
             food_data = process_food_data(food)
+            calc.calculate_food(food_data)
+
             shopping = process_shopping_data(shopping_mode, shopping_simple, shopping_advanced)
+            calc.calculate_shopping(shopping_mode, shopping)
 
             db.session.add_all([home, food_data, shopping])
             db.session.flush()
 
-            db.session.add(CarbonFootprint(
+            footprint = CarbonFootprint(
                 user_id=user.id,
                 travel_id=travel.id,
                 home_id=home.id,
                 food_id=food_data.id,
                 shopping_id=shopping.id
-            ))
+            )
+            db.session.add(footprint)
+            db.session.flush()
+
+            calc.calculate_total_emissions()
+            calc.emission.carbon_footprint_id = footprint.id
+            calc.emission.user_id = user.id
+            db.session.add(calc.emission)
             db.session.commit()
 
             flash('Your carbon footprint has been calculated and saved!', 'success')
             return redirect(url_for('view_data'))
 
-    return render_template('add_data.html', 
-                          active_page='add_data', 
-                          nav_items=nav_items,
-                          first_name=user.first_name,
-                          last_name=user.last_name,
-                          email=user.email,
-                          form=form,
-                          vehicle_form=vehicle_form,
-                          public_transit_simple=public_transit_simple,
-                          public_transit_advanced=public_transit_advanced,
-                          air_travel_simple=air_travel_simple,
-                          air_travel_advanced=air_travel_advanced,
-                          home_energy=home_energy,
-                          food=food,
-                          shopping_simple=shopping_simple,
-                          shopping_advanced=shopping_advanced)
+    return render_template(
+        'add_data.html',
+        active_page='add_data',
+        nav_items=nav_items,
+        first_name=user.first_name,
+        last_name=user.last_name,
+        email=user.email,
+        form=form,
+        vehicle_form=vehicle_form,
+        public_transit_simple=public_transit_simple,
+        public_transit_advanced=public_transit_advanced,
+        air_travel_simple=air_travel_simple,
+        air_travel_advanced=air_travel_advanced,
+        home_energy=home_energy,
+        food=food,
+        shopping_simple=shopping_simple,
+        shopping_advanced=shopping_advanced
+    )
 
 def process_travel_data(mode, pts:PublicTransitSimpleForm, pta:PublicTransitAdvancedForm, ats:AirTravelSimpleForm, ata:AirTravelAdvancedForm):
     travel = Travel()
@@ -142,20 +168,27 @@ def process_travel_data(mode, pts:PublicTransitSimpleForm, pta:PublicTransitAdva
     return travel
 
 def process_vehicles_data(travel_id):
+    """
+    Process vehicle form data and return a list of Vehicle objects.
+    """
+    vehicles = []
+    valid_fuel_types = ['gasoline', 'diesel', 'electric']
     i = 0
+
     while True:
         fuel_type = request.form.get(f'vehicle-fuel_type{i}')
         distance = request.form.get(f'vehicle-distance{i}')
         efficiency = request.form.get(f'vehicle-fuel_efficiency{i}')
-        if not fuel_type:
+        if not fuel_type or fuel_type not in valid_fuel_types:
             break
-        db.session.add(Vehicle(
+        vehicles.append(Vehicle(
             travel_id=travel_id,
             fuel_type=fuel_type,
             distance=distance,
             fuel_efficiency=efficiency
         ))
         i += 1
+    return vehicles
 
 def process_home_data(form:HomeEnergyForm):
     return Home(
