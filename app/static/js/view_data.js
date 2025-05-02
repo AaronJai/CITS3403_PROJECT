@@ -137,9 +137,9 @@ const chartConfigs = [
   },
   {
     id: 'foodPieChart',
-    labels: ['Grains/Baked Goods', 'Dairy', 'Fruits/Vegetables', 'Snacks/Drinks/Other Foods Consumption'],
-    data: [30, 20, 30, 20],
-    colors: ['#ffb997', '#ff8fab', '#a4c3b2', '#c5a3ff']
+    labels: ['Meat/Fish/Eggs','Grains/Baked Goods', 'Dairy', 'Fruits/Vegetables', 'Snacks/Drinks'],
+    data: [30, 30, 20, 30, 20],
+    colors: ['#ffb997','#ffb997', '#ff8fab', '#a4c3b2', '#c5a3ff']
   },
   {
     id: 'shoppingPieChart',
@@ -149,41 +149,75 @@ const chartConfigs = [
   }
 ];
 
-// For each chart config, create PieChart instance
-chartConfigs.forEach(config => {
-  const ctx1 = document.getElementById(config.id)?.getContext('2d');
-  if (!ctx1) return; 
+const chartInstances = {}; 
 
-  new Chart(ctx1, {
-    type: 'pie',
-    data: {
-      labels: config.labels,
-      datasets: [{
-        data: config.data,
-        backgroundColor: config.colors,
-        borderColor: '#ffffff', 
-        borderWidth: 2
-      }]
-    },
-    plugins: [ChartDataLabels],
-    options: {
-      responsive: true,
-      plugins: {
-        legend: {
-          display: false  // legend not displayed
-        },
-        tooltip: {
-          backgroundColor: '#2f5c47',
-          titleColor: '#ffffff',
-          bodyColor: '#ffffff',
-          borderColor: '#497f66',
-          borderWidth: 1
-        },
-        datalabels: {   
-          display: false  // Disable data labels
-        }
+function showTab(index) {
+  const canvasIds = ['travelPieChart', 'homePieChart', 'foodPieChart', 'shoppingPieChart'];
+  const contentIds = ['tabContent0', 'tabContent1', 'tabContent2', 'tabContent3'];
+  const buttons = document.querySelectorAll('.tab-btn');
+
+  // Hide all canvas elements and destroy existing charts
+  canvasIds.forEach((id, i) => {
+    const canvas = document.getElementById(id);
+    if (i === index) {
+      canvas.classList.remove('hidden');
+    } else {
+      canvas.classList.add('hidden');
+      if (chartInstances[id]) {
+        chartInstances[id].destroy();
+        delete chartInstances[id];
       }
     }
   });
-  
-});
+
+  // Show the selected content and hide others
+  contentIds.forEach((id, i) => {
+    const content = document.getElementById(id);
+    content.classList.toggle('hidden', i !== index);
+  });
+
+  // Update button styles
+  buttons.forEach((btn, i) => {
+    btn.classList.toggle('border-b-2', i === index);
+    btn.classList.toggle('text-[#16372c]', i === index);
+    btn.classList.toggle('border-[#16372c]', i === index);
+  });
+
+  // Initialize the chart for the selected tab
+  const chartId = canvasIds[index];
+  if (!chartInstances[chartId]) {
+    const config = chartConfigs.find(c => c.id === chartId);
+    const ctx = document.getElementById(chartId)?.getContext('2d');
+    if (ctx && config) {
+      chartInstances[chartId] = new Chart(ctx, {
+        type: 'pie',
+        data: {
+          labels: config.labels,
+          datasets: [{
+            data: config.data,
+            backgroundColor: config.colors,
+            borderColor: '#ffffff',
+            borderWidth: 2
+          }]
+        },
+        plugins: [ChartDataLabels],
+        options: {
+          responsive: true,
+          plugins: {
+            legend: { display: false },
+            tooltip: {
+              backgroundColor: '#2f5c47',
+              titleColor: '#ffffff',
+              bodyColor: '#ffffff',
+              borderColor: '#497f66',
+              borderWidth: 1
+            },
+            datalabels: { display: false }
+          }
+        }
+      });
+    }
+  }
+}
+
+showTab(0);

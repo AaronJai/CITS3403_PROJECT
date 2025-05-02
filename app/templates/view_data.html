@@ -66,74 +66,57 @@
 
 </div>
 
-<!-- Grid Section -->
-<div class="grid grid-cols-2 grid-rows-2 min-h-screen gap-4 p-4">
+<!-- Charts & Suggestions -->
+<div class="bg-white relative rounded-2xl w-full h-[600px] p-6 shadow-2xl flex flex-row overflow-hidden">
 
-  <!-- Top Left: Travel -->
-  <div class="relative rounded-xl shadow p-6 flex flex-col items-center overflow-hidden bg-gradient-to-t from-[#b3e2dd] to-[#f4f6d3]">
-    <!-- Title -->
-    <h2 class="text-lg font-semibold mb-4 z-10 relative">Travel</h2>
-    <!-- Chart Container -->
-    <div class="relative w-48 h-48 z-10">
-      <canvas id="travelPieChart" class="absolute top-0 left-0 w-full h-full"></canvas>
-    </div>
-    <!-- Background Image -->
-    <img
-      src="/static/assets/images/spring.png" 
-      class="absolute bottom-0 left-0 w-full object-contain z-0 pointer-events-none"
-      alt="Travel Background"
-    />
+  <div class="relative w-full h-[400px]">
+    <canvas id="travelPieChart" class="w-full h-full"></canvas>
+    <canvas id="homePieChart" class="w-full h-full hidden"></canvas>
+    <canvas id="foodPieChart" class="w-full h-full hidden"></canvas>
+    <canvas id="shoppingPieChart" class="w-full h-full hidden"></canvas>
+  </div>
+  
+
+
+  <!-- Right content -->
+  <div class="flex-[1] flex flex-col gap-4 p-4 bg-white">
+
+
+
+  <!-- Buttons -->
+  <div class="flex border-b border-gray-300 space-x-4">
+    <button onclick="showTab(0)" class="tab-btn px-4 py-2 text-sm font-semibold">Travel</button>
+    <button onclick="showTab(1)" class="tab-btn px-4 py-2 text-sm font-semibold">Home</button>
+    <button onclick="showTab(2)" class="tab-btn px-4 py-2 text-sm font-semibold">Food</button>
+    <button onclick="showTab(3)" class="tab-btn px-4 py-2 text-sm font-semibold">Shopping</button>
   </div>
 
-  <!-- Top Right: Home -->
-  <div class="relative rounded-xl shadow p-6 flex flex-col items-center overflow-hidden bg-gradient-to-t from-[#b6e2dd] to-[#d3f6f4]">
-    <!-- Title -->
-    <h2 class="text-lg font-semibold mb-4 z-10 relative">Home</h2>
-    <!-- Chart Container -->
-    <div class="relative w-48 h-48 z-10">
-      <canvas id="homePieChart" class="absolute top-0 left-0 w-full h-full"></canvas>
-    </div>
-    <!-- Background Image -->
-    <img
-      src="/static/assets/images/summer.png" 
-      class="absolute bottom-0 left-0 w-full object-contain z-0 pointer-events-none"
-      alt="Home Background"
-    />
+  <!-- Chart Summary -->
+  <div id="tabContent0" class="tab-content">
+    <p>🚌 Travel insights here...</p>
+  </div>
+  <div id="tabContent1" class="tab-content hidden">
+    <p>🏠 Home energy info...</p>
+  </div>
+  <div id="tabContent2" class="tab-content hidden">
+    <p>🍔 Food-related suggestions...</p>
+  </div>
+  <div id="tabContent3" class="tab-content hidden">
+    <p>🛍️ Goods & Services summary...</p>
   </div>
 
-  <!-- Bottom Left: Food -->
-  <div class="relative rounded-xl shadow p-6 flex flex-col items-center overflow-hidden bg-gradient-to-t from-[#ffe4d3] to-[#f8f3de]">
-    <!-- Title -->
-    <h2 class="text-lg font-semibold mb-4 z-10 relative">Food</h2>
-    <!-- Chart Container -->
-    <div class="relative w-48 h-48 z-10">
-      <canvas id="foodPieChart" class="absolute top-0 left-0 w-full h-full"></canvas>
+    <!-- Suggestions -->
+    <div class="bg-green-100 rounded-xl p-4 mt-auto">
+      <h3 class="font-bold text-[#16372c] text-base">What you can do about it</h3>
+      <p class="text-sm text-gray-700 mt-1">
+        Take small actions to offset your footprint or support carbon restoration.
+      </p>
     </div>
-    <!-- Background Image -->
-    <img
-      src="/static/assets/images/autumn.png"
-      class="absolute bottom-0 left-0 w-full object-contain z-0 pointer-events-none"
-      alt="Food Background"
-    />
-  </div>
 
-  <!-- Bottom Right: Goods & Services -->
-  <div class="relative rounded-xl shadow p-6 flex flex-col items-center overflow-hidden bg-gradient-to-t from-[#c2d7d9] to-[#faedda]">
-    <!-- Title -->
-    <h2 class="text-lg font-semibold mb-4 z-10 relative">Goods & Services</h2>
-    <!-- Chart Container -->
-    <div class="relative w-48 h-48 z-10">
-      <canvas id="shoppingPieChart" class="absolute top-0 left-0 w-full h-full"></canvas>
-    </div>
-    <!-- Background Image -->
-    <img
-      src="/static/assets/images/winter.png"
-      class="absolute bottom-0 left-0 w-full object-contain z-0 pointer-events-none"
-      alt="Goods & Services Background"
-    />
   </div>
 
 </div>
+
 
 <!-- Scripts -->
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
