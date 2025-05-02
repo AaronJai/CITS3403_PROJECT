@@ -110,7 +110,7 @@ class CarbonFootprintCalculator:
             distance = float(vehicle.distance) if vehicle.distance else 0.0
             efficiency = float(vehicle.fuel_efficiency) if vehicle.fuel_efficiency else 0.0
             if fuel_type and distance and efficiency:
-                vehicle_emissions = distance * EMISSION_FACTORS['vehicle'][fuel_type]
+                vehicle_emissions = (distance / 100) * efficiency * EMISSION_FACTORS['vehicle'][fuel_type]
                 car_emissions += vehicle_emissions / 1000  # Convert kg to metric tons
 
         self.emission.car_emissions = car_emissions
