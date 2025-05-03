@@ -248,6 +248,43 @@ def view_data():
                           last_name=user.last_name,
                           email=user.email)
 
+
+@app.route('/api/emissions', methods=['GET'])
+def get_emissions():
+    """
+    Fetch the latest Emissions record for the logged-in user.
+    Returns JSON with emission fields.
+    """
+    if 'user_id' not in session:
+        return jsonify({'error': 'User not logged in'}), 401
+
+    emissions = Emissions.query.filter_by(user_id=session['user_id']).order_by(Emissions.calculated_at.desc()).first()
+    if not emissions:
+        return jsonify({'error': 'No emissions data found'}), 404
+
+    return jsonify({
+        'car_emissions': emissions.car_emissions or 0.0,
+        'public_transit_emissions': emissions.public_transit_emissions or 0.0,
+        'air_travel_emissions': emissions.air_travel_emissions or 0.0,
+        'electricity_emissions': emissions.electricity_emissions or 0.0,
+        'natural_gas_emissions': emissions.natural_gas_emissions or 0.0,
+        'heating_fuels_emissions': emissions.heating_fuels_emissions or 0.0,
+        'water_emissions': emissions.water_emissions or 0.0,
+        'construction_emissions': emissions.construction_emissions or 0.0,
+        'meat_emissions': emissions.meat_emissions or 0.0,
+        'dairy_emissions': emissions.dairy_emissions or 0.0,
+        'fruits_vegetables_emissions': emissions.fruits_vegetables_emissions or 0.0,
+        'cereals_emissions': emissions.cereals_emissions or 0.0,
+        'snacks_emissions': emissions.snacks_emissions or 0.0,
+        'furniture_emissions': emissions.furniture_emissions or 0.0,
+        'clothing_emissions': emissions.clothing_emissions or 0.0,
+        'other_goods_emissions': emissions.other_goods_emissions or 0.0,
+        'services_emissions': emissions.services_emissions or 0.0,
+        'total_emissions': emissions.total_emissions or 0.0
+    })
+
+
+
 @app.route('/share', methods=['GET', 'POST'])
 def share():
     if 'user_id' not in session:

@@ -11,15 +11,16 @@
       <div class="progress-circle">
         <svg class="absolute w-full h-full transform -rotate-90" viewBox="0 0 100 100">
           <circle cx="50" cy="50" r="45" stroke="white" stroke-width="10" fill="none" opacity="0.2" />
-          <circle cx="50" cy="50" r="45" stroke="white" stroke-width="10" fill="none" stroke-dasharray="282.74"
-            stroke-dashoffset="120.27" stroke-linecap="round" />
+          <circle id="progress-circle" cx="50" cy="50" r="45" stroke="white" stroke-width="10" fill="none"
+            stroke-dasharray="282.74" stroke-dashoffset="120.27" stroke-linecap="round" />
         </svg>
-        <div class="progress-text">65%</div>
+        <div id="progress-text" class="progress-text">Loading...
+        </div>
       </div>
       <div class="emission-details">
         <h2 class="text-2xl font-semibold mb-2">Your Footprint</h2>
-        <p class="text-lg">‘x’ CO2eq emitted</p>
-        <p class="text-lg">‘y’ CO2eq saved</p>
+        <p id="emitted-total" class="text-lg">Loading...</p>
+        <p id="saved-total" class="text-lg">Loading...</p>
       </div>
     </div>
   </section>
@@ -30,49 +31,43 @@
     <div class="category-card">
       <h3 class="category-heading">Travel</h3>
       <div class="progress-bar">
-        <div class="progress-bar-fill w-[95%]"></div>
+        <div id="travel-progress" class="progress-bar-fill w-[0%]"></div>
       </div>
-      <p class="category-description">95/100</p>
-      <p class="category-description">
-        You have emitted ‘w’ CO2eq out of a possible ‘z’ CO2eq
-      </p>
+      <p id="travel-fraction" class="category-description">0/100</p>
+      <p id="travel-emitted" class="category-description">Loading...</p>
     </div>
 
     <!-- Home -->
     <div class="category-card">
       <h3 class="category-heading">Home</h3>
       <div class="progress-bar">
-        <div class="progress-bar-fill w-[95%]"></div>
+        <div id="home-progress" class="progress-bar-fill w-[0%]"></div>
       </div>
-      <p class="category-description">95/100</p>
-      <p class="category-description">
-        You have emitted ‘w’ CO2eq out of a possible ‘z’ CO2eq
-      </p>
+      <p id="home-fraction" class="category-description">0/100</p>
+      <p id="home-emitted" class="category-description">Loading...</p>
     </div>
 
     <!-- Food -->
     <div class="category-card">
       <h3 class="category-heading">Food</h3>
       <div class="progress-bar">
-        <div class="progress-bar-fill w-[95%]"></div>
+        <div id="food-progress" class="progress-bar-fill w-[0%]"></div>
       </div>
-      <p class="category-description">95/100</p>
-      <p class="category-description">
-        You have emitted ‘w’ CO2eq out of a possible ‘z’ CO2eq
-      </p>
+      <p id="food-fraction" class="category-description">0/100</p>
+      <p id="food-emitted" class="category-description">Loading...</p>
     </div>
 
     <!-- Shopping -->
     <div class="category-card">
       <h3 class="category-heading">Shopping</h3>
       <div class="progress-bar">
-        <div class="progress-bar-fill w-[95%]"></div>
+        <div id="shopping-progress" class="progress-bar-fill w-[0%]"></div>
       </div>
-      <p class="category-description">95/100</p>
-      <p class="category-description">
-        You have emitted ‘w’ CO2eq out of a possible ‘z’ CO2eq
-      </p>
+      <p id="shopping-fraction" class="category-description">0/100</p>
+      <p id="shopping-emitted" class="category-description">Loading...</p>
     </div>
   </section>
 </div>
+
+<script src="{{ url_for('static', filename='js/dashboard.js') }}"></script>
 {% endblock %}

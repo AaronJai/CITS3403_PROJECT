@@ -3,9 +3,9 @@ from app.models import CarbonFootprint, Travel, Vehicle, Home, Food, Shopping, E
 # Emission factors (in kg CO2e)
 EMISSION_FACTORS = {
     'vehicle': {
-        'gasoline': 0.008887,  
-        'diesel': 0.010135,    
-        'electric': 0.066667  
+        'gasoline': 2.34,  # kg CO₂e per litre
+        'diesel': 2.69,    # kg CO₂e per litre
+        'electric': 0   # kg CO₂e per kWh
     },
     'public_transit': {
         'simple': 0.036661,    
@@ -72,11 +72,11 @@ class CarbonFootprintCalculator:
         emissions = {'public_transit': 0.0, 'air_travel': 0.0}
 
         if mode == 'simple':
-            # Simple mode: distances in miles
+            # Simple mode
             emissions['public_transit'] = (travel.public_transit_distance * EMISSION_FACTORS['public_transit']['simple']) / 1000
             emissions['air_travel'] = (travel.air_travel_distance * EMISSION_FACTORS['air_travel']['simple']) / 1000
         else:
-            # Advanced mode: distances in km, convert to miles for public transit emission factors
+            # Advanced mode
             public_transit_emissions = (
                 (travel.bus_kms / 1.60934) * EMISSION_FACTORS['public_transit']['bus'] +
                 (travel.transit_rail_kms / 1.60934) * EMISSION_FACTORS['public_transit']['transit_rail'] +
