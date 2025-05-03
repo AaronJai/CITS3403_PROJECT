@@ -120,6 +120,7 @@
                             <td class="py-3 px-4">{{ user.shared_date }}</td>
                             <td class="py-3 px-4">
                                 <form method="POST" action="/stop_share">
+                                    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
                                     <input type="hidden" name="receiver_email" value="{{ user.email }}">
                                     <button type="submit" class="text-red-500">Stop Sharing</button>
                                 </form>
