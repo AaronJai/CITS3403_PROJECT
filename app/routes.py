@@ -6,7 +6,7 @@ from app.forms import LoginForm, SignupForm, ChangePasswordForm, ShareForm
 from app.forms import VehicleForm, PublicTransitSimpleForm, PublicTransitAdvancedForm
 from app.forms import AirTravelSimpleForm, AirTravelAdvancedForm, HomeEnergyForm
 from app.forms import FoodForm, ShoppingSimpleForm, ShoppingAdvancedForm, CarbonFootprintForm
-from app.models import User, CarbonFootprint, Travel, Vehicle, Home, Food, Shopping, Emissions
+from app.models import User, CarbonFootprint, Travel, Vehicle, Home, Food, Shopping, Emissions, Share
 from app.processing_layer import CarbonFootprintCalculator
 
 @app.route('/')
@@ -265,18 +265,45 @@ def share():
         else:
             flash('User found!', 'success')
     
-    # Placeholder data for shared with me and currently sharing with
-    # This would be replaced with actual database queries in the full implementation
-    shared_with_me = [
-        {'name': 'Jane Doe', 'email': 'jane@example.com', 'carbon_footprint': '120 CO2eq'},
-        {'name': 'John Smith', 'email': 'john@example.com', 'carbon_footprint': '95 CO2eq'},
-    ]
-    
-    sharing_with = [
-        {'name': 'Mike Johnson', 'email': 'mike@example.com', 'shared_date': 'April 22, 2025'},
-        {'name': 'Sarah Williams', 'email': 'sarah@example.com', 'shared_date': 'April 20, 2025'},
-    ]
-    
+    if request.method == 'POST' and 'share_email' in request.form:
+        target_email = request.form.get('share_email')
+        to_user = User.query.filter_by(email=target_email).first()
+
+        if not to_user:
+            flash('User not found', 'warning')
+        elif user.id == to_user.id:
+            flash('Cannot share with yourself.', 'error')
+        else:
+            existing = Share.query.filter_by(from_user_id=user.id, to_user_id=to_user.id).first()
+            if existing:
+                flash('You have already shared with this user.', 'warning')
+            else:
+                new_share = Share(from_user_id=user.id, to_user_id=to_user.id)
+                db.session.add(new_share)
+                db.session.commit()
+                flash('Shared successfully!', 'success')
+
+        return redirect(url_for('share'))
+
+    sharing_records = Share.query.filter_by(from_user_id=user.id).all()
+    sharing_with = []
+    for share in sharing_records:
+        target = User.query.get(share.to_user_id)
+        sharing_with.append({
+            'name': f"{target.first_name} {target.last_name}",
+            'email': target.email,
+            'shared_date': share.shared_date.strftime("%B %d, %Y")
+        })
+    received_records = Share.query.filter_by(to_user_id=user.id).all()
+    shared_with_me = []
+    for share in received_records:
+        sender = User.query.get(share.from_user_id)
+        footprint = CarbonFootprint.query.filter_by(user_id=sender.id).first()
+        shared_with_me.append({
+            'name': f"{sender.first_name} {sender.last_name}",
+            'email': sender.email,
+            'carbon_footprint': f"{footprint.total} CO2eq" if footprint else "N/A"
+        })
     return render_template('share.html', 
                           active_page='share', 
                           nav_items=nav_items,
@@ -287,6 +314,35 @@ def share():
                           search_results=search_results,
                           shared_with_me=shared_with_me,
                           sharing_with=sharing_with)
+
+@app.route('/api/share', methods=['POST'])
+def api_share():
+    if 'user_id' not in session:
+        return jsonify({'error': 'Login required'}), 401
+
+    data = request.get_json()
+    target_email = data.get('email')
+
+    from_user = User.query.get(session['user_id'])
+    to_user = User.query.filter_by(email=target_email).first()
+
+    if not to_user:
+        return jsonify({'error': 'User not found'}), 404
+
+    # Cannot share with yourself
+    if from_user.id == to_user.id:
+        return jsonify({'error': 'Cannot share with yourself'}), 400
+
+    # Check if already shared
+    existing = Share.query.filter_by(from_user_id=from_user.id, to_user_id=to_user.id).first()
+    if existing:
+        flash('You have already shared with this user.', 'warning')
+
+    # Create new share record
+    new_share = Share(from_user_id=from_user.id, to_user_id=to_user.id)
+    db.session.add(new_share)
+    db.session.commit()
+    flash('Shared successfully!', 'success')
 
 @app.route('/facts')
 def facts():

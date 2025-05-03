@@ -121,3 +121,10 @@ class Emissions(db.Model):
     furniture_emissions = db.Column(db.Float, default=0.0)
     other_goods_emissions = db.Column(db.Float, default=0.0)
     services_emissions = db.Column(db.Float, default=0.0)
+
+class Share(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    from_user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
+    to_user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
+    shared_date = db.Column(db.DateTime, default=datetime.utcnow)
+
