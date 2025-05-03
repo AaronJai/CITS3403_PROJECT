@@ -40,7 +40,8 @@ Follow these steps to set up the EcoTrack application:
    ```
 
 4. **Configure Environment variables**
-   Set up a new file named ```.env``` in the root of the project and add the following content:
+   
+   Set up a new file named ```.env``` in the root directory of the project and add the following content:
    ```bash
    FLASK_SECRET_KEY=<your_key>
 
@@ -52,7 +53,8 @@ Follow these steps to set up the EcoTrack application:
    MAIL_DEFAULT_SENDER=EcoTrack <noreply@ecotrack.com>
    ```
    
-   For security, you create an "App Password" with your mail provider rather than your real password
+   For security, you can create an "App Password" with your mail provider rather than your real password.
+
    After succesful setup, your ```.env``` file may look like:
    ```bash
    FLASK_SECRET_KEY=i_love_matcha
@@ -66,14 +68,12 @@ Follow these steps to set up the EcoTrack application:
    ```
 
    Useful links for information on setting up app passwords:
+   - [Gmail](https://support.google.com/accounts/answer/185833?hl=en)
+   - [Outlook](https://support.microsoft.com/en-au/account-billing/how-to-get-and-use-app-passwords-5896ed9b-4263-e681-128a-a6f2979a7944)
+   - [Yahoo](https://help.yahoo.com/kb/SLN15241.html?guccounter=1&guce_referrer=aHR0cHM6Ly93d3cuZ29vZ2xlLmNvbS8&guce_referrer_sig=AQAAACM6bF-WHqshDR69KZBDLQXCaURxkoojDvEOdpxqmLNu-VsfTnqC2d8In7b1vGPgnT_v_3-fEPBZ1ZSmboFUxD1K8g88dhKGp1vcoDlnPtWLzTKu9IkAOQ2dd6s802EEOEhZHSSwQxW7bcIWU5ycr3HeO5KsT7WqYJiLHFHgzEN6)
+   - [Apple](https://support.apple.com/en-au/102654)
 
-   [Gmail](https://support.google.com/accounts/answer/185833?hl=en)
-   
-   [Outlook](https://support.microsoft.com/en-au/account-billing/how-to-get-and-use-app-passwords-5896ed9b-4263-e681-128a-a6f2979a7944)
-   
-   [Yahoo](https://help.yahoo.com/kb/SLN15241.html?guccounter=1&guce_referrer=aHR0cHM6Ly93d3cuZ29vZ2xlLmNvbS8&guce_referrer_sig=AQAAACM6bF-WHqshDR69KZBDLQXCaURxkoojDvEOdpxqmLNu-VsfTnqC2d8In7b1vGPgnT_v_3-fEPBZ1ZSmboFUxD1K8g88dhKGp1vcoDlnPtWLzTKu9IkAOQ2dd6s802EEOEhZHSSwQxW7bcIWU5ycr3HeO5KsT7WqYJiLHFHgzEN6)
-
-5. **Initialize the database:**
+5. **Initialise the database:**
    ```
    flask db upgrade
    ```
@@ -81,7 +81,10 @@ Follow these steps to set up the EcoTrack application:
 6. **Run the application:**
    ```
    flask run
+   or, to open in debug mode:
+   python EcoTrack.py
    ```
+   - _Note: You may need to use ```python3``` or a different command depending on how Python is installed on your system._
 
 7. **Access the application:**
    Open a web browser and go to `http://127.0.0.1:5000/`
@@ -107,17 +110,15 @@ To downgrade to a previous version:
 flask db downgrade
 ```
 
-## Styling
+## Styling - TailwindCSS
 
-### Using TailwindCSS
-
-Install Tailwind CSS
+1. Install Tailwind CSS
 
 ```bash
 npm install tailwindcss @tailwindcss/cli
 ```
 
-Run the CLI tool to scan your source files for classes and build your CSS.
+2. Run the CLI tool to scan your source files for classes and build your CSS.
 
 ```bash
 npx @tailwindcss/cli -i ./app/static/css/styles.css -o ./app/static/css/output.css --watch
