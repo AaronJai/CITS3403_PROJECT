@@ -30,7 +30,7 @@ Follow these steps to set up the EcoTrack application:
    .venv\Scripts\activate
    
    # Mac/Linux
-   python -m venv .venv
+   python3 -m venv .venv
    source .venv/bin/activate
    ```
 
@@ -39,17 +39,51 @@ Follow these steps to set up the EcoTrack application:
    pip install -r requirements.txt
    ```
 
-4. **Initialize the database:**
+4. **Configure Environment variables**
+   Set up a new file named ```.env``` in the root of the project and add the following content:
+   ```bash
+   FLASK_SECRET_KEY=<your_key>
+
+   MAIL_SERVER=smtp.example.com
+   MAIL_PORT=587
+   MAIL_USE_TLS=true
+   MAIL_USERNAME=<your_email>
+   MAIL_PASSWORD=<your_app_password>
+   MAIL_DEFAULT_SENDER=EcoTrack <noreply@ecotrack.com>
+   ```
+   
+   For security, you create an "App Password" with your mail provider rather than your real password
+   After succesful setup, your ```.env``` file may look like:
+   ```bash
+   FLASK_SECRET_KEY=i_love_matcha
+
+   MAIL_SERVER=smtp.gmail.com
+   MAIL_PORT=587
+   MAIL_USE_TLS=true
+   MAIL_USERNAME=test.example1@gmail.com
+   MAIL_PASSWORD=abcd efgh hijk lmno
+   MAIL_DEFAULT_SENDER=EcoTrack <noreply@ecotrack.com>
+   ```
+
+   Useful links for information on setting up app passwords:
+
+   [Gmail](https://support.google.com/accounts/answer/185833?hl=en)
+   
+   [Outlook](https://support.microsoft.com/en-au/account-billing/how-to-get-and-use-app-passwords-5896ed9b-4263-e681-128a-a6f2979a7944)
+   
+   [Yahoo](https://help.yahoo.com/kb/SLN15241.html?guccounter=1&guce_referrer=aHR0cHM6Ly93d3cuZ29vZ2xlLmNvbS8&guce_referrer_sig=AQAAACM6bF-WHqshDR69KZBDLQXCaURxkoojDvEOdpxqmLNu-VsfTnqC2d8In7b1vGPgnT_v_3-fEPBZ1ZSmboFUxD1K8g88dhKGp1vcoDlnPtWLzTKu9IkAOQ2dd6s802EEOEhZHSSwQxW7bcIWU5ycr3HeO5KsT7WqYJiLHFHgzEN6)
+
+5. **Initialize the database:**
    ```
    flask db upgrade
    ```
 
-5. **Run the application:**
+6. **Run the application:**
    ```
    flask run
    ```
 
-6. **Access the application:**
+7. **Access the application:**
    Open a web browser and go to `http://127.0.0.1:5000/`
 
 ## Database Management

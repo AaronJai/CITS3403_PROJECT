@@ -34,28 +34,6 @@ function validatePassword() {
   return true;
 }
 
-// Function to handle signup form submission
-async function handleSignup(event) {
-  event.preventDefault(); // Prevent form submission for now
-
-  if (!validatePassword()) {
-    return; // Stop execution if password validation fails
-  }
-
-  const firstName = document.getElementById("first-name").value;
-  const lastName = document.getElementById("last-name").value;
-  const email = document.getElementById("email").value;
-  const password = document.getElementById("password").value;
-
-  console.log("First Name:", firstName);
-  console.log("Last Name:", lastName);
-  console.log("Email:", email);
-  console.log("Password:", password);
-
-  // Placeholder for signup backend communication
-  // TODO: Add signup server communication logic here
-}
-
 // Function to handle form input validation in real-time
 function setupRealTimeValidation() {
   const passwordInput = document.getElementById("password");
