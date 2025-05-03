@@ -24,9 +24,6 @@ def dashboard():
 @app.route('/add_data', methods=['GET', 'POST'])
 @login_required
 def add_data():
-    if not current_user.is_authenticated:
-        return redirect(url_for('login'))
-
     user = current_user
 
     # Instantiate all forms
@@ -245,14 +242,12 @@ def view_data():
 
 
 @app.route('/api/emissions', methods=['GET'])
+@login_required
 def get_emissions():
     """
     Fetch the latest Emissions record for the logged-in user.
     Returns JSON with emission fields.
     """
-    if not current_user.is_authenticated:
-        return jsonify({'error': 'User not logged in'}), 401
-
     emissions = Emissions.query.filter_by(user_id=current_user.id).order_by(Emissions.calculated_at.desc()).first()
     if not emissions:
         return jsonify({'error': 'No emissions data found'}), 404
