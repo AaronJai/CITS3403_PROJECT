@@ -300,21 +300,21 @@ def share():
 
         if not to_user:
             flash('User not found', 'warning')
-        elif user.id == to_user.id:
+        elif current_user.id == to_user.id:
             flash('Cannot share with yourself.', 'error')
         else:
-            existing = Share.query.filter_by(from_user_id=user.id, to_user_id=to_user.id).first()
+            existing = Share.query.filter_by(from_user_id=current_user.id, to_user_id=to_user.id).first()
             if existing:
                 flash('You have already shared with this user.', 'warning')
             else:
-                new_share = Share(from_user_id=user.id, to_user_id=to_user.id)
+                new_share = Share(from_user_id=current_user.id, to_user_id=to_user.id)
                 db.session.add(new_share)
                 db.session.commit()
                 flash('Shared successfully!', 'success')
 
         return redirect(url_for('share'))
 
-    sharing_records = Share.query.filter_by(from_user_id=user.id).all()
+    sharing_records = Share.query.filter_by(from_user_id=current_user.id).all()
     sharing_with = []
     for share in sharing_records:
         target = User.query.get(share.to_user_id)
@@ -323,7 +323,7 @@ def share():
             'email': target.email,
             'shared_date': share.shared_date.strftime("%B %d, %Y")
         })
-    received_records = Share.query.filter_by(to_user_id=user.id).all()
+    received_records = Share.query.filter_by(to_user_id=current_user.id).all()
     shared_with_me = []
     for share in received_records:
         sender = User.query.get(share.from_user_id)
@@ -344,9 +344,9 @@ def share():
         selected_name = f"{target_user.first_name} {target_user.last_name}"
         selected_email = target_user.email
     else:
-        selected_footprint = CarbonFootprint.query.filter_by(user_id=user.id).first()
-        selected_name = f"{user.first_name} {user.last_name}"
-        selected_email = user.email 
+        selected_footprint = CarbonFootprint.query.filter_by(user_id=current_user.id).first()
+        selected_name = f"{current_user.first_name} {current_user.last_name}"
+        selected_email = current_user.email 
 
     emission = Emissions.query.filter_by(carbon_footprint_id=selected_footprint.id).first() if selected_footprint else None
     if emission:
@@ -405,40 +405,35 @@ def share():
                           total_emission=total_emission)
 
 @app.route('/api/share', methods=['POST'])
+@login_required
 def api_share():
-    if 'user_id' not in session:
-        return jsonify({'error': 'Login required'}), 401
-
     data = request.get_json()
     target_email = data.get('email')
 
-    from_user = User.query.get(session['user_id'])
     to_user = User.query.filter_by(email=target_email).first()
 
     if not to_user:
         return jsonify({'error': 'User not found'}), 404
 
     # Cannot share with yourself
-    if from_user.id == to_user.id:
+    if current_user.id == to_user.id:
         return jsonify({'error': 'Cannot share with yourself'}), 400
 
     # Check if already shared
-    existing = Share.query.filter_by(from_user_id=from_user.id, to_user_id=to_user.id).first()
+    existing = Share.query.filter_by(from_user_id=current_user.id, to_user_id=to_user.id).first()
     if existing:
-        flash('You have already shared with this user.', 'warning')
+        return jsonify({'error': 'Already shared with this user'}), 400
 
     # Create new share record
-    new_share = Share(from_user_id=from_user.id, to_user_id=to_user.id)
+    new_share = Share(from_user_id=current_user.id, to_user_id=to_user.id)
     db.session.add(new_share)
     db.session.commit()
-    flash('Shared successfully!', 'success')
+    
+    return jsonify({'success': True}), 200
 
 @app.route('/stop_share', methods=['POST'])
+@login_required
 def stop_share():
-    if 'user_id' not in session:
-        return redirect(url_for('login'))
-
-    sharer_id = session['user_id']
     receiver_email = request.form['receiver_email']
     receiver = User.query.filter_by(email=receiver_email).first()
 
@@ -446,7 +441,7 @@ def stop_share():
         flash('User not found.', 'warning')
         return redirect(url_for('share'))
 
-    share = Share.query.filter_by(from_user_id=sharer_id, to_user_id=receiver.id).first()
+    share = Share.query.filter_by(from_user_id=current_user.id, to_user_id=receiver.id).first()
     if share:
         db.session.delete(share)
         db.session.commit()
