@@ -4,34 +4,30 @@
 
 {% block content %}
 
-<!-- Background Color -->
-<div class="relative min-h-screen flex" style="background: linear-gradient(to bottom right, #f0fdf4, #f0f9ff);">
+<!-- Background Section -->
+<div class="relative min-h-screen flex">
 
   <!-- Left Side -->
-  <div class="w-2/3 relative rounded-2xl m-4 p-4 flex items-center justify-center overflow-hidden" 
-       style="background: linear-gradient(to bottom, #d6f0ec, #f8fae8)">
-    
+  <div class="w-2/3 relative rounded-2xl m-4 p-4 flex items-center justify-center overflow-hidden"
+    style="background: linear-gradient(to bottom, #d6f0ec, #f8fae8)">
+
     <!-- Grass Background -->
-    <img src="/static/assets/images/grass.png" 
-         class="absolute bottom-0 left-0 w-full object-contain z-0" 
-         alt="Grass Background" />
-    
+    <img src="/static/assets/images/grass.png" class="absolute bottom-0 left-0 w-full object-contain z-0"
+      alt="Grass Background" />
+
     <!-- Small cloud on the left -->
-    <img src="/static/assets/images/cloud1.png"
-         class="absolute top-10 left-8 w-36 opacity-80 float-cloud-small z-10" 
-         alt="Cloud 1" />
+    <img src="/static/assets/images/cloud1.png" class="absolute top-10 left-8 w-36 opacity-80 float-cloud-small z-10"
+      alt="Cloud 1" />
 
     <!-- Small cloud slightly to the right -->
-    <img src="/static/assets/images/cloud2.png"
-         class="absolute top-16 left-25 w-28 opacity-70 float-cloud-small z-10"
-         alt="Cloud 2" />
+    <img src="/static/assets/images/cloud2.png" class="absolute top-16 left-25 w-28 opacity-70 float-cloud-small z-10"
+      alt="Cloud 2" />
 
     <!-- Largest cloud on the right edge -->
-    <img src="/static/assets/images/cloud3.png"
-         class="absolute top-6 right-0 w-60 opacity-90 float-cloud-big z-10"
-         alt="Cloud 3" />
+    <img src="/static/assets/images/cloud3.png" class="absolute top-6 right-0 w-60 opacity-90 float-cloud-big z-10"
+      alt="Cloud 3" />
 
-    <!-- Chart -->
+    <!-- Main Chart -->
     <canvas id="myChart" class="w-full h-full relative z-10"></canvas>
   </div>
 
@@ -39,27 +35,134 @@
   <div class="w-1/3 flex flex-col gap-4 m-4">
 
     <!-- Summary Section -->
-    <div class="flex-1 bg-white/60 backdrop-blur-md rounded-3xl shadow-2xl p-8 flex flex-col items-center justify-center">
+    <div
+      class="flex-1 bg-white/60 backdrop-blur-md rounded-3xl shadow-2xl p-8 flex flex-col items-center justify-center">
       <h2 class="text-3xl font-bold text-[#16372c] text-center">
         Total Emissions
       </h2>
-      <p class="text-[#555555] text-lg mt-2">
-        12.5 metric tons CO₂/year
+      <p id="total-emissions" class="text-[#555555] text-lg mt-2">
+        Loading...
       </p>
     </div>
-  
-    <!-- Share Section -->
-    <div class="flex-1 bg-white/60 backdrop-blur-md rounded-3xl shadow-2xl p-8 flex flex-col items-center justify-center gap-4">
-      <h2 class="text-2xl font-bold text-[#16372c]">Share</h2>
-      <p class="text-gray-600 text-center">
-        Share your results with friends!
-      </p>
-      <div class="flex gap-4">
-        <!-- Placeholder for share buttons -->
-        <div class="w-12 h-12 bg-[#16372c] rounded-full transition transform hover:scale-110"></div>
-        <div class="w-12 h-12 bg-[#2f5c47] rounded-full transition transform hover:scale-110"></div>
-        <div class="w-12 h-12 bg-[#497f66] rounded-full transition transform hover:scale-110"></div>
+
+    <div class="bg-white/60 backdrop-blur-md rounded-3xl shadow-2xl p-8 flex flex-col justify-between h-[400px]">
+
+      <!-- Top Section: Title + Circles + Hover Cards -->
+      <div class="flex flex-col items-center justify-center flex-1 gap-3">
+        <a href="{{ url_for('share') }}">
+          <h2 class="text-2xl font-bold text-[#16372c] hover:underline cursor-pointer transition">Share</h2>
+        </a>
+        <p class="text-gray-600 text-center">Share your results with friends!</p>
+
+        <!-- Circles + Hover Cards -->
+        <div class="flex gap-4 mt-2">
+          <!-- Circle 1 -->
+          <div class="relative group w-12 h-12">
+            <div class="w-full h-full bg-[#16372c] rounded-full transition transform hover:scale-110"></div>
+            <div
+              class="absolute top-full mt-2 left-1/2 -translate-x-1/2 hidden group-hover:flex flex-col items-start bg-white shadow-md p-3 rounded-lg w-44 z-50">
+              <p class="text-sm font-semibold">Jane Doe</p>
+              <p class="text-xs text-gray-500">jane@email.com</p>
+              <p class="text-xs text-gray-500">120kg CO2</p>
+            </div>
+          </div>
+
+          <!-- Circle 2 -->
+          <div class="relative group w-12 h-12">
+            <div class="w-full h-full bg-[#2f5c47] rounded-full transition transform hover:scale-110"></div>
+            <div
+              class="absolute top-full mt-2 left-1/2 -translate-x-1/2 hidden group-hover:flex flex-col items-start bg-white shadow-md p-3 rounded-lg w-44 z-50">
+              <p class="text-sm font-semibold">John Smith</p>
+              <p class="text-xs text-gray-500">john@email.com</p>
+              <p class="text-xs text-gray-500">98kg CO2</p>
+            </div>
+          </div>
+
+          <!-- Circle 3 -->
+          <div class="relative group w-12 h-12">
+            <div class="w-full h-full bg-[#497f66] rounded-full transition transform hover:scale-110"></div>
+            <div
+              class="absolute top-full mt-2 left-1/2 -translate-x-1/2 hidden group-hover:flex flex-col items-start bg-white shadow-md p-3 rounded-lg w-44 z-50">
+              <p class="text-sm font-semibold">Alex Lee</p>
+              <p class="text-xs text-gray-500">alex@email.com</p>
+              <p class="text-xs text-gray-500">105kg CO2</p>
+            </div>
+          </div>
+        </div>
       </div>
+
+      <!-- Divider -->
+      <div class="border-t border-gray-300 my-3 w-full"></div>
+
+      <!-- Icon Sharing Section -->
+      <div class="flex justify-center gap-6">
+        <!-- Facebook -->
+        <a href="https://facebook.com/sharer/sharer.php?u=https://example.com" target="_blank"
+          class="flex items-center gap-2 hover:underline hover:scale-105 transition">
+          <img src="{{ url_for('static', filename='assets/icons/facebook.svg') }}" alt="Facebook" class="w-5 h-5">
+          <span class="text-sm text-blue-600">Facebook</span>
+        </a>
+
+        <!-- Twitter -->
+        <a href="https://twitter.com/intent/tweet?text=Check%20out%20my%20footprint!&url=https://example.com"
+          target="_blank" class="flex items-center gap-2 hover:underline hover:scale-105 transition">
+          <img src="{{ url_for('static', filename='assets/icons/x.svg') }}" alt="Twitter" class="w-5 h-5">
+          <span class="text-sm text-blue-500">Twitter</span>
+        </a>
+
+        <!-- WhatsApp -->
+        <a href="https://api.whatsapp.com/send?text=Check%20out%20my%20footprint!%20https://example.com" target="_blank"
+          class="flex items-center gap-2 hover:underline hover:scale-105 transition">
+          <img src="{{ url_for('static', filename='assets/icons/whatsapp.svg') }}" alt="WhatsApp" class="w-5 h-5">
+          <span class="text-sm text-green-600">WhatsApp</span>
+        </a>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<!-- Charts & Suggestions -->
+<div class="bg-white relative rounded-2xl w-full h-[600px] p-6 shadow-2xl flex flex-row overflow-hidden">
+
+  <div class="relative w-full h-[400px] flex items-center justify-center pt-12">
+    <canvas id="travelPieChart" class="w-full h-full"></canvas>
+    <canvas id="homePieChart" class="w-full h-full hidden"></canvas>
+    <canvas id="foodPieChart" class="w-full h-full hidden"></canvas>
+    <canvas id="shoppingPieChart" class="w-full h-full hidden"></canvas>
+  </div>
+
+  <!-- Right Content -->
+  <div class="flex-[1] flex flex-col bg-white">
+
+    <!-- Buttons -->
+    <div class="flex border-b border-gray-300 space-x-4">
+      <button onclick="showTab(0)" class="tab-btn px-4 py-2 text-sm font-semibold text-[#16372c]">Travel</button>
+      <button onclick="showTab(1)" class="tab-btn px-4 py-2 text-sm font-semibold text-[#16372c]">Home</button>
+      <button onclick="showTab(2)" class="tab-btn px-4 py-2 text-sm font-semibold text-[#16372c]">Food</button>
+      <button onclick="showTab(3)" class="tab-btn px-4 py-2 text-sm font-semibold text-[#16372c]">Shopping</button>
+    </div>
+
+    <!-- Chart Summary -->
+    <div id="tabContent0" class="tab-content">
+      <p>🚌 Travel insights here...</p>
+    </div>
+    <div id="tabContent1" class="tab-content hidden">
+      <p>🏠 Home energy info...</p>
+    </div>
+    <div id="tabContent2" class="tab-content hidden">
+      <p>🍔 Food-related suggestions...</p>
+    </div>
+    <div id="tabContent3" class="tab-content hidden">
+      <p>🛍️ Goods & Services summary...</p>
+    </div>
+
+    <!-- Suggestions -->
+    <div class="bg-green-100 rounded-xl p-4 mt-auto">
+      <h3 class="font-bold text-[#16372c] text-base">What you can do about it</h3>
+      <p class="text-sm text-gray-700 mt-1">
+        Take small actions to offset your footprint or support carbon restoration.
+      </p>
     </div>
 
   </div>
@@ -68,6 +171,7 @@
 
 <!-- Scripts -->
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-<script src="{{ url_for('static', filename='js/view_data.js') }}"></script>
+<script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels"></script> <!-- Load Chart.js Plugin -->
+<script src="{{ url_for('static', filename='js/view_data.js') }}"></script> <!-- Load Custom JS -->
 
 {% endblock %}

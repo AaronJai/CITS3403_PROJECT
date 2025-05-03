@@ -76,646 +76,717 @@
   </div>
   <!-- End Stepper Nav -->
 
-  <!-- Stepper Content -->
-  <!-- Travel Content -->
-  <div data-stepper-content-item="1">
-    <div class="grid grid-cols-1 gap-6">
-      <!-- Your Vehicles Section -->
-      <div class="panel panel-default">
-        <div class="panel-heading flex justify-between items-center">
-          <span>Your Vehicles</span>
-          <button id="travel__add_vehicle"
-            class="flex items-center gap-2 border border-primary bg-primary text-white rounded-full px-4 py-2 hover:bg-primary/90 transition cursor-pointer"
-            onclick="addVehicle()">
-            <i class="icon-[tabler--plus] mr-1"></i>Add Vehicle
+  <form method="POST" action="{{ url_for('add_data') }}">
+    {{ form.csrf_token }}
+    {{ vehicle_form.csrf_token }}
+    {{ public_transit_simple.csrf_token }}
+    {{ public_transit_advanced.csrf_token }}
+    {{ air_travel_simple.csrf_token }}
+    {{ air_travel_advanced.csrf_token }}
+    {{ home_energy.csrf_token }}
+    {{ food.csrf_token }}
+    {{ shopping_simple.csrf_token }}
+    {{ shopping_advanced.csrf_token }}
+
+    <!-- Stepper Content -->
+    <!-- Travel Content -->
+    <div data-stepper-content-item="1">
+      <div class="grid grid-cols-1 gap-6">
+        <!-- Your Vehicles Section -->
+        <div class="panel panel-default">
+          <div class="panel-heading flex justify-between items-center">
+            <span>Your Vehicles</span>
+            <button id="travel__add_vehicle" type="button"
+              class="flex items-center gap-2 border border-primary bg-primary text-white rounded-full px-4 py-2 hover:bg-primary/90 transition cursor-pointer"
+              onclick="addVehicle()">
+              <i class="icon-[tabler--plus] mr-1"></i>Add Vehicle
+            </button>
+          </div>
+          <div class="panel-body space-y-4" id="vehicles-container">
+            <!-- Vehicle template will be added here dynamically -->
+          </div>
+        </div>
+
+        <!-- Public Transit Section -->
+        <div class="flex justify-center gap-3 mb-3 ">
+          <button type="button" id="show-simple"
+            class="flex font-semibold items-center gap-2 border border-primary rounded-full px-4 py-2 cursor-pointer bg-primary text-white hover:bg-primary/90">
+            Simple
+          </button>
+
+          <button type="button" id="show-advanced"
+            class="flex font-semibold items-center gap-2 border border-primary rounded-full px-4 py-2 transition cursor-pointer bg-transparent text-primary hover:bg-primary/10">
+            Advanced
           </button>
         </div>
-        <div class="panel-body space-y-4" id="vehicles-container">
-          <!-- Vehicle template will be added here dynamically -->
+
+        <div id="simple-form" class="space-y-4">
+          <!-- Public Transit -->
+          <div class="panel panel-default">
+            <div class="panel-heading">Public Transit</div>
+            <div class="panel-body">
+              <div class="input-group items-center space-x-2">
+                {{ public_transit_simple.distance(class="form-control input-structure", placeholder="368", min="0") }}
+                <span class="input-group-addon">kms/yr</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Air Travel -->
+          <div class="panel panel-default">
+            <div class="panel-heading">Air Travel</div>
+            <div class="panel-body">
+              <div class="input-group items-center space-x-2">
+                {{ air_travel_simple.distance(class="form-control input-structure", placeholder="3300", min="0") }}
+                <span class="input-group-addon">kms/yr</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Advanced Form -->
+        <div id="advanced-form" class="space-y-4 hidden">
+          <div class="panel panel-default">
+            <div class="panel-heading">Public Transit</div>
+            <div class="panel-body space-y-4">
+              <div class="form-control">
+                <label class="label">
+                  <span class="label-text">Bus</span>
+                </label>
+                <div class="input-group items-center space-x-2">
+                  {{ public_transit_advanced.bus_kms(class="input-structure", placeholder="130", min="0") }}
+                  <span class="input-group-addon">kms/yr</span>
+                </div>
+              </div>
+
+              <div class="form-control">
+                <label class="label">
+                  <span class="label-text">Transit Rail (light & heavy)</span>
+                </label>
+                <div class="input-group items-center space-x-2">
+                  {{ public_transit_advanced.transit_rail_kms(class="input-structure", placeholder="97", min="0") }}
+                  <span class="input-group-addon">kms/yr</span>
+                </div>
+              </div>
+
+              <div class="form-control">
+                <label class="label">
+                  <span class="label-text">Commuter Rail</span>
+                </label>
+                <div class="input-group items-center space-x-2">
+                  {{ public_transit_advanced.commuter_rail_kms(class="input-structure", placeholder="65", min="0") }}
+                  <span class="input-group-addon">kms/yr</span>
+                </div>
+              </div>
+
+              <div class="form-control">
+                <label class="label">
+                  <span class="label-text">Inter-city Rail (Amtrak)</span>
+                </label>
+                <div class="input-group items-center space-x-2">
+                  {{ public_transit_advanced.intercity_rail_kms(class="input-structure", placeholder="32", min="0") }}
+                  <span class="input-group-addon">kms/yr</span>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Air Travel Section -->
+          <div class="panel panel-default">
+            <div class="panel-heading">Air Travel</div>
+            <div class="panel-body space-y-4">
+              <div class="form-control">
+                <label class="label">
+                  <span class="label-text">Short (&lt; 400 kms/yr)</span>
+                </label>
+                <div class="input-group items-center space-x-2">
+                  {{ air_travel_advanced.short_flights(class="input-structure", placeholder="3", min="0") }}
+                  <span class="input-group-addon">flights/year</span>
+                </div>
+              </div>
+
+              <div class="form-control">
+                <label class="label">
+                  <span class="label-text">Medium (400 - 1500 kms/yr)</span>
+                </label>
+                <div class="input-group items-center space-x-2">
+                  {{ air_travel_advanced.medium_flights(class="input-structure", placeholder="2", min="0") }}
+                  <span class="input-group-addon">flights/year</span>
+                </div>
+              </div>
+
+              <div class="form-control">
+                <label class="label">
+                  <span class="label-text">Long (1500 - 3000 kms/yr)</span>
+                </label>
+                <div class="input-group items-center space-x-2">
+                  {{ air_travel_advanced.long_flights(class="input-structure", placeholder="0", min="0") }}
+                  <span class="input-group-addon">flights/year</span>
+                </div>
+              </div>
+
+              <div class="form-control">
+                <label class="label">
+                  <span class="label-text">Extended (&gt; 3000 kms/yr)</span>
+                </label>
+                <div class="input-group items-center space-x-2">
+                  {{ air_travel_advanced.extended_flights(class="input-structure", placeholder="0", min="0") }}
+                  <span class="input-group-addon">flights/year</span>
+                </div>
+              </div>
+            </div>
+          </div>
         </div>
       </div>
+    </div>
 
-      <!-- Public Transit Section -->
-      <div class="flex justify-center gap-3 mb-3 ">
-        <button type="button" id="show-simple"
+    <!-- Home Content -->
+    <div data-stepper-content-item="2" class="hidden">
+      <div class="panel">
+        <div class="panel-heading">
+          Home Energy Usage
+        </div>
+        <div class="panel-body">
+          <div class="grid grid-cols-1 gap-6">
+            <!-- Electricity Section -->
+            <div class="form-control">
+              <label class="label">
+                <span class="label-text font-semibold">Electricity</span>
+                <button type="button" class="btn btn-xs btn-circle btn-ghost">
+                  <i class="icon-[tabler--help]"></i>
+                </button>
+              </label>
+              <div class="flex items-center">
+                <input type="number" name="{{ home_energy.electricity.name }}" class="energy-input" placeholder="1350"
+                  min="0" id="electricity">
+                <select name="{{ home_energy.electricity_unit.name }}" class="energy-select">
+                  {% for value, label in home_energy.electricity_unit.choices %}
+                  <option value="{{ value }}" {% if home_energy.electricity_unit.data==value %}selected{% endif %}>{{
+                    label }}</option>
+                  {% endfor %}
+                </select>
+                <select name="{{ home_energy.electricity_frequency.name }}" class="energy-select">
+                  {% for value, label in home_energy.electricity_frequency.choices %}
+                  <option value="{{ value }}" {% if home_energy.electricity_frequency.data==value %}selected{% endif %}>
+                    {{ label }}</option>
+                  {% endfor %}
+                </select>
+              </div>
+            </div>
+
+            <!-- Clean Energy Percentage -->
+            <div class="form-control clean-energy-slider-container">
+              <div class="flex justify-between items-center mb-1">
+                <span class="font-semibold">Percent purchased from clean energy</span>
+                <span class="font-bold clean-energy-value">31%</span>
+              </div>
+              <input type="range" name="{{ home_energy.clean_energy_percentage.name }}" min="0" max="100" step="0.01"
+                value="31" class="w-full range range-primary clean-energy-slider">
+              <div class="flex justify-between text-xs">
+                <span>0</span>
+                <span>20</span>
+                <span>40</span>
+                <span>60</span>
+                <span>80</span>
+                <span>100</span>
+              </div>
+            </div>
+
+            <!-- Natural Gas Section -->
+            <div class="form-control">
+              <label class="label">
+                <span class="label-text font-semibold">Natural Gas</span>
+                <button type="button" class="btn btn-xs btn-circle btn-ghost">
+                  <i class="icon-[tabler--help]"></i>
+                </button>
+              </label>
+              <div class="flex items-center">
+                <input type="number" name="{{ home_energy.natural_gas.name }}" class="energy-input" placeholder="590"
+                  min="0" id="natural-gas">
+                <select name="{{ home_energy.natural_gas_unit.name }}" class="energy-select">
+                  {% for value, label in home_energy.natural_gas_unit.choices %}
+                  <option value="{{ value }}" {% if home_energy.natural_gas_unit.data==value %}selected{% endif %}>{{
+                    label }}</option>
+                  {% endfor %}
+                </select>
+                <select name="{{ home_energy.natural_gas_frequency.name }}" class="energy-select">
+                  {% for value, label in home_energy.natural_gas_frequency.choices %}
+                  <option value="{{ value }}" {% if home_energy.natural_gas_frequency.data==value %}selected{% endif %}>
+                    {{ label }}</option>
+                  {% endfor %}
+                </select>
+              </div>
+            </div>
+
+            <!-- Heating Oil Section -->
+            <div class="form-control">
+              <label class="label">
+                <span class="label-text font-semibold">Heating Oil & Other Fuels</span>
+                <button type="button" class="btn btn-xs btn-circle btn-ghost">
+                  <i class="icon-[tabler--help]"></i>
+                </button>
+              </label>
+              <div class="flex items-center">
+                <input type="number" name="{{ home_energy.heating_oil.name }}" class="energy-input" placeholder="260"
+                  min="0" id="heating-oil">
+                <select name="{{ home_energy.heating_oil_unit.name }}" class="energy-select">
+                  {% for value, label in home_energy.heating_oil_unit.choices %}
+                  <option value="{{ value }}" {% if home_energy.heating_oil_unit.data==value %}selected{% endif %}>{{
+                    label }}</option>
+                  {% endfor %}
+                </select>
+                <select name="{{ home_energy.heating_oil_frequency.name }}" class="energy-select">
+                  {% for value, label in home_energy.heating_oil_frequency.choices %}
+                  <option value="{{ value }}" {% if home_energy.heating_oil_frequency.data==value %}selected{% endif %}>
+                    {{ label }}</option>
+                  {% endfor %}
+                </select>
+              </div>
+            </div>
+
+            <!-- Living Space Area -->
+            <div class="form-control">
+              <label class="label">
+                <span class="label-text font-semibold">Living space area</span>
+                <button type="button" class="btn btn-xs btn-circle btn-ghost">
+                  <i class="icon-[tabler--help]"></i>
+                </button>
+              </label>
+              <div class="input-group flex items-center space-x-2">
+                <input type="number" name="{{ home_energy.living_space.name }}" class="input input-structure"
+                  placeholder="200" min="0" id="living-space">
+                <span class="input-group-addon">m²</span>
+              </div>
+            </div>
+
+            <!-- Water Usage -->
+            <div class="form-control water-usage-slider-container">
+              <div class="flex justify-between items-center mb-1">
+                <span class="label-text font-semibold">Water Usage</span>
+                <span class="font-bold water-value">100% of similar households</span>
+              </div>
+              <input type="range" name="{{ home_energy.water_usage.name }}" min="0.01" max="300" step="0.01" value="100"
+                class="w-full range range-primary water-usage-slider">
+              <div class="flex justify-between text-xs">
+                <span>0</span>
+                <span>1x</span>
+                <span>2x</span>
+                <span>3x</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Food Content -->
+    <div data-stepper-content-item="3" class="hidden">
+      <div class="grid grid-cols-1 gap-6">
+        <div class="panel panel-default">
+          <div class="panel-heading flex justify-between items-center">
+            <h3>Average food consumption</h3>
+            <button type="button" class="btn btn-xs btn-circle btn-ghost">
+              <i class="icon-[tabler--help]"></i>
+            </button>
+          </div>
+          <div class="panel-body space-y-6">
+            <!-- Food Categories -->
+            <div class="food-category">
+              <h4 class="flex items-center gap-2">
+                <span class="font-semibold">Meat, fish, eggs</span>
+                <button type="button" class="btn btn-xs btn-circle btn-ghost">
+                  <i class="icon-[tabler--help] text-sm"></i>
+                </button>
+              </h4>
+              <div class="food-slider-container">
+                <div class="flex justify-between items-center mb-1">
+                  <span class="text-sm">Servings per person:</span>
+                  <span class="font-bold food-value">1.0x</span>
+                </div>
+                <input type="range" name="{{ food.meat_fish_eggs.name }}" min="0.01" max="3" step="0.01" value="1.0"
+                  class="w-full range range-primary food-slider">
+                <div class="flex justify-between text-xs">
+                  <span>0</span>
+                  <span>Average</span>
+                  <span>2x</span>
+                  <span>3x</span>
+                </div>
+              </div>
+            </div>
+
+            <!-- More food categories -->
+            <div class="food-category">
+              <h4 class="flex items-center gap-2">
+                <span class="font-semibold">Grains & baked goods</span>
+                <button type="button" class="btn btn-xs btn-circle btn-ghost">
+                  <i class="icon-[tabler--help] text-sm"></i>
+                </button>
+              </h4>
+              <div class="food-slider-container">
+                <div class="flex justify-between items-center mb-1">
+                  <span class="text-sm">Servings per person:</span>
+                  <span class="font-bold food-value">1.0x</span>
+                </div>
+                <input type="range" name="{{ food.grains_baked_goods.name }}" min="0.01" max="3" step="0.01" value="1.0"
+                  class="w-full range range-primary food-slider">
+                <div class="flex justify-between text-xs">
+                  <span>0</span>
+                  <span>Average</span>
+                  <span>2x</span>
+                  <span>3x</span>
+                </div>
+              </div>
+            </div>
+
+            <div class="food-category">
+              <h4 class="flex items-center gap-2">
+                <span class="font-semibold">Dairy</span>
+                <button type="button" class="btn btn-xs btn-circle btn-ghost">
+                  <i class="icon-[tabler--help] text-sm"></i>
+                </button>
+              </h4>
+              <div class="food-slider-container">
+                <div class="flex justify-between items-center mb-1">
+                  <span class="text-sm">Servings per person:</span>
+                  <span class="font-bold food-value">1.0x</span>
+                </div>
+                <input type="range" name="{{ food.dairy.name }}" min="0.01" max="3" step="0.01" value="1.0"
+                  class="w-full range range-primary food-slider">
+                <div class="flex justify-between text-xs">
+                  <span>0</span>
+                  <span>Average</span>
+                  <span>2x</span>
+                  <span>3x</span>
+                </div>
+              </div>
+            </div>
+
+            <div class="food-category">
+              <h4 class="flex items-center gap-2">
+                <span class="font-semibold">Fruits and vegetables</span>
+                <button type="button" class="btn btn-xs btn-circle btn-ghost">
+                  <i class="icon-[tabler--help] text-sm"></i>
+                </button>
+              </h4>
+              <div class="food-slider-container">
+                <div class="flex justify-between items-center mb-1">
+                  <span class="text-sm">Servings per person:</span>
+                  <span class="font-bold food-value">1.0x</span>
+                </div>
+                <input type="range" name="{{ food.fruits_vegetables.name }}" min="0.01" max="3" step="0.01" value="1.0"
+                  class="w-full range range-primary food-slider">
+                <div class="flex justify-between text-xs">
+                  <span>0</span>
+                  <span>Average</span>
+                  <span>2x</span>
+                  <span>3x</span>
+                </div>
+              </div>
+            </div>
+
+            <div class="food-category">
+              <h4 class="flex items-center gap-2">
+                <span class="font-semibold">Snacks, drinks, etc...</span>
+                <button type="button" class="btn btn-xs btn-circle btn-ghost">
+                  <i class="icon-[tabler--help] text-sm"></i>
+                </button>
+              </h4>
+              <div class="food-slider-container">
+                <div class="flex justify-between items-center mb-1">
+                  <span class="text-sm">Servings per person:</span>
+                  <span class="font-bold food-value">1.0x</span>
+                </div>
+                <input type="range" name="{{ food.snacks_drinks.name }}" min="0.01" max="3" step="0.01" value="1.0"
+                  class="w-full range range-primary food-slider">
+                <div class="flex justify-between text-xs">
+                  <span>0</span>
+                  <span>Average</span>
+                  <span>2x</span>
+                  <span>3x</span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Shopping Content -->
+    <div data-stepper-content-item="4" class="hidden">
+      <div class="flex justify-center gap-3 mb-3">
+        <button type="button" id="show-simple-shopping"
           class="flex font-semibold items-center gap-2 border border-primary rounded-full px-4 py-2 cursor-pointer bg-primary text-white hover:bg-primary/90">
           Simple
         </button>
-
-        <button type="button" id="show-advanced"
+        <button type="button" id="show-advanced-shopping"
           class="flex font-semibold items-center gap-2 border border-primary rounded-full px-4 py-2 transition cursor-pointer bg-transparent text-primary hover:bg-primary/10">
           Advanced
         </button>
       </div>
 
-      <form id="simple-form" class="space-y-4">
-        <!-- Public Transit -->
-        <div class="panel panel-default">
-          <div class="panel-heading">Public Transit</div>
-          <div class="panel-body">
-            <div class="input-group flex items-center space-x-2">
-              <input type="number" class="form-control input-structure" placeholder="368" min="0">
-              <span class="input-group-addon">kms/yr</span>
+      <div id="shoppingSimple" class="">
+        <div class="space-y-6">
+          <!-- Goods Panel -->
+          <div class="panel panel-default">
+            <div class="panel-heading">
+              On average each month, how much do you spend on goods (e.g., clothing, electronics, etc.)?
             </div>
-          </div>
-        </div>
-
-        <!-- Air Travel -->
-        <div class="panel panel-default">
-          <div class="panel-heading">Air Travel</div>
-          <div class="panel-body">
-            <div class="input-group flex items-center space-x-2">
-              <input type="number" class="form-control input-structure" placeholder="3300" min="0">
-              <span class="input-group-addon">kms/yr</span>
-            </div>
-          </div>
-        </div>
-      </form>
-
-      <!-- Advanced Form -->
-      <form id="advanced-form" class="space-y-4 hidden">
-        <div class="panel panel-default">
-          <div class="panel-heading">Public Transit</div>
-          <div class="panel-body space-y-4">
-            <div class="form-control">
-              <label class="label">
-                <span class="label-text">Bus</span>
-              </label>
-              <div class="input-group">
-                <input type="number" class="input input-bordered w-full" placeholder="130" id="bus-miles" min="0">
-                <span class="input-group-addon">kms/yr</span>
-              </div>
-            </div>
-
-            <div class="form-control">
-              <label class="label">
-                <span class="label-text">Transit Rail (light & heavy)</span>
-              </label>
-              <div class="input-group">
-                <input type="number" class="input input-bordered w-full" placeholder="97" id="transit-rail-miles"
-                  min="0">
-                <span class="input-group-addon">kms/yr</span>
-              </div>
-            </div>
-
-            <div class="form-control">
-              <label class="label">
-                <span class="label-text">Commuter Rail</span>
-              </label>
-              <div class="input-group">
-                <input type="number" class="input input-bordered w-full" placeholder="65" id="commuter-rail-miles"
-                  min="0">
-                <span class="input-group-addon">kms/yr</span>
-              </div>
-            </div>
-
-            <div class="form-control">
-              <label class="label">
-                <span class="label-text">Inter-city Rail (Amtrak)</span>
-              </label>
-              <div class="input-group">
-                <input type="number" class="input input-bordered w-full" placeholder="32" id="intercity-rail-miles"
-                  min="0">
-                <span class="input-group-addon">kms/yr</span>
+            <div class="panel-body">
+              <div class="shopping-category">
+                <h4 class="flex items-center gap-2">
+                  <span class="font-medium">Goods</span>
+                  <button type="button" class="btn btn-xs btn-circle btn-ghost">
+                    <i class="icon-[tabler--help] text-sm"></i>
+                  </button>
+                </h4>
+                <div class="shopping-slider-container">
+                  <div class="flex justify-between items-center mb-1">
+                    <span class="text-sm">Monthly spending:</span>
+                    <span class="font-bold shopping-value">$1,595</span>
+                  </div>
+                  <input type="range" name="{{ shopping_simple.goods_multiplier.name }}" min="0.0001" max="3"
+                    step="0.01" value="1" class="w-full range range-primary shopping-slider">
+                  <div class="flex justify-between text-xs">
+                    <span>0</span>
+                    <span>Average</span>
+                    <span>2x</span>
+                    <span>3x</span>
+                  </div>
+                </div>
               </div>
             </div>
           </div>
-        </div>
 
-        <!-- Air Travel Section -->
-        <div class="panel panel-default">
-          <div class="panel-heading">Air Travel</div>
-          <div class="panel-body space-y-4">
-            <div class="form-control">
-              <label class="label">
-                <span class="label-text">Short (&lt; 400 kms/yr)</span>
-              </label>
-              <div class="input-group">
-                <input type="number" class="input input-bordered w-full" placeholder="3" id="short-flights" min="0">
-                <span class="input-group-addon">flights/year</span>
+          <!-- Services Panel -->
+          <div class="panel panel-default">
+            <div class="panel-heading">
+              On average each month, how much do you spend on services (e.g., streaming, subscriptions, repairs)?"
+            </div>
+            <div class="panel-body">
+              <div class="shopping-category">
+                <h4 class="flex items-center gap-2">
+                  <span class="font-medium">Services</span>
+                  <button type="button" class="btn btn-xs btn-circle btn-ghost">
+                    <i class="icon-[tabler--help] text-sm"></i>
+                  </button>
+                </h4>
+                <div class="shopping-slider-container">
+                  <div class="flex justify-between items-center mb-1">
+                    <span class="text-sm">Monthly spending:</span>
+                    <span class="font-bold shopping-value">$2,929</span>
+                  </div>
+                  <input type="range" name="{{ shopping_simple.services_multiplier.name }}" min="0.0001" max="3"
+                    step="0.01" value="1" class="w-full range range-primary shopping-slider">
+                  <div class="flex justify-between text-xs">
+                    <span>0</span>
+                    <span>Average</span>
+                    <span>2x</span>
+                    <span>3x</span>
+                  </div>
+                </div>
               </div>
-            </div>
-
-            <div class="form-control">
-              <label class="label">
-                <span class="label-text">Medium (400 - 1500 kms/yr)</span>
-              </label>
-              <div class="input-group">
-                <input type="number" class="input input-bordered w-full" placeholder="2" id="medium-flights" min="0">
-                <span class="input-group-addon">flights/year</span>
-              </div>
-            </div>
-
-            <div class="form-control">
-              <label class="label">
-                <span class="label-text">Long (1500 - 3000 kms/yr)</span>
-              </label>
-              <div class="input-group">
-                <input type="number" prediction="off" class="input input-bordered w-full" placeholder="0"
-                  id="long-flights" min="0">
-                <span class="input-group-addon">flights/year</span>
-              </div>
-            </div>
-
-            <div class="form-control">
-              <label class="label">
-                <span class="label-text">Extended (&gt; 3000 kms/yr)</span>
-              </label>
-              <div class="input-group">
-                <input type="number" class="input input-bordered w-full" placeholder="0" id="extended-flights" min="0">
-                <span class="input-group-addon">flights/year</span>
-              </div>
-            </div>
-          </div>
-        </div>
-      </form>
-    </div>
-  </div>
-
-  <!-- Home Content -->
-  <div data-stepper-content-item="2" class="hidden">
-    <div class="panel">
-      <div class="panel-heading">
-        Home Energy Usage
-      </div>
-      <div class="panel-body">
-        <div class="grid grid-cols-1 gap-6">
-          <!-- Electricity Section -->
-          <div class="form-control">
-            <label class="label">
-              <span class="label-text">Electricity</span>
-              <button class="btn btn-xs btn-circle btn-ghost">
-                <i class="icon-[tabler--help]"></i>
-              </button>
-            </label>
-            <div class="input-group">
-              <input type="number" class="input input-structure" placeholder="1,350" id="electricity" min="0">
-              <select class="select select-border">
-                <option>$</option>
-                <option>kWh</option>
-              </select>
-              <select class="select select-border">
-                <option>/yr</option>
-                <option>/mo</option>
-              </select>
-            </div>
-          </div>
-
-          <!-- Clean Energy Percentage -->
-          <div class="form-control clean-energy-slider-container">
-            <div class="flex justify-between items-center mb-1">
-              <span class="text-sm">Percent purchased from clean energy</span>
-              <span class="font-bold clean-energy-value">31%</span>
-            </div>
-            <input type="range" min="0" max="100" step="0.01" value="31"
-              class="w-full range range-primary clean-energy-slider">
-            <div class="flex justify-between text-xs">
-              <span>0</span>
-              <span>20</span>
-              <span>40</span>
-              <span>60</span>
-              <span>80</span>
-              <span>100</span>
-            </div>
-          </div>
-
-          <!-- Natural Gas Section -->
-          <div class="form-control">
-            <label class="label">
-              <span class="label-text">Natural Gas</span>
-              <button class="btn btn-xs btn-circle btn-ghost">
-                <i class="icon-[tabler--help]"></i>
-              </button>
-            </label>
-            <div class="input-group">
-              <input type="number" class="input input-structure" placeholder="590" id="natural-gas" min="0">
-              <select class="select select-border">
-                <option>$</option>
-                <option>therms</option>
-                <option>m³</option>
-              </select>
-              <select class="select select-border">
-                <option>/yr</option>
-                <option>/mo</option>
-              </select>
-            </div>
-          </div>
-
-          <!-- Heating Oil Section -->
-          <div class="form-control">
-            <label class="label">
-              <span class="label-text">Heating Oil & Other Fuels</span>
-              <button class="btn btn-xs btn-circle btn-ghost">
-                <i class="icon-[tabler--help]"></i>
-              </button>
-            </label>
-            <div class="input-group">
-              <input type="number" class="input input-structure" placeholder="260" id="heating-oil" min="0">
-              <select class="select select-border">
-                <option>$</option>
-                <option>litres</option>
-              </select>
-              <select class="select select-border">
-                <option>/yr</option>
-                <option>/mo</option>
-              </select>
-            </div>
-          </div>
-
-          <!-- Living Space Area -->
-          <div class="form-control">
-            <label class="label">
-              <span class="label-text">Living space area</span>
-              <button class="btn btn-xs btn-circle btn-ghost">
-                <i class="icon-[tabler--help]"></i>
-              </button>
-            </label>
-            <div class="input-group flex items-center space-x-2">
-              <input type="number" class="input input-structure" placeholder="1,850" id="living-space" min="0">
-              <span class="input-group-addon">m²</span>
-            </div>
-          </div>
-
-          <!-- Water Usage -->
-          <div class="form-control water-usage-slider-container">
-            <div class="flex justify-between items-center mb-1">
-              <span class="text-sm">Water Usage (Similarities with other households)</span>
-              <span class="font-bold water-value">100%</span>
-            </div>
-            <input type="range" min="0.01" max="300" step="0.01" value="100"
-              class="w-full range range-primary water-usage-slider">
-            <div class="flex justify-between text-xs">
-              <span>0</span>
-              <span>1x</span>
-              <span>2x</span>
-              <span>3x</span>
             </div>
           </div>
         </div>
       </div>
-    </div>
-  </div>
 
-  <!-- Food Content -->
-  <div data-stepper-content-item="3" class="hidden">
-    <div class="grid grid-cols-1 gap-6">
-      <div class="panel panel-default">
-        <div class="panel-heading flex justify-between items-center">
-          <h3>How much does the average person in your household eat?</h3>
-          <button class="btn btn-xs btn-circle btn-ghost">
-            <i class="icon-[tabler--help]"></i>
-          </button>
-        </div>
-        <div class="panel-body space-y-6">
-          <!-- Food Categories -->
-          <div class="food-category">
-            <h4 class="flex items-center gap-2">
-              <span>Meat, fish, eggs</span>
-              <button class="btn btn-xs btn-circle btn-ghost">
-                <i class="icon-[tabler--help] text-sm"></i>
-              </button>
-            </h4>
-            <div class="food-slider-container">
-              <div class="flex justify-between items-center mb-1">
-                <span class="text-sm">Servings per person:</span>
-                <span class="font-bold food-value">2.3x</span>
-              </div>
-              <input type="range" min="0.01" max="3" step="0.01" value="2.3"
-                class="w-full range range-primary food-slider">
-              <div class="flex justify-between text-xs">
-                <span>0</span>
-                <span>Average</span>
-                <span>2x</span>
-                <span>3x</span>
+      <!-- Advanced Shopping Form -->
+      <div id="shoppingAdvanced" class="hidden">
+        <div class="space-y-6">
+          <!-- Goods Panel -->
+          <div class="panel panel-default">
+            <div class="panel-heading">
+              Goods
+            </div>
+            <div class="panel-body">
+              <div class="space-y-4">
+                <div class="space-y-2">
+                  <h4 class="text-sm font-medium">Furniture & Appliances</h4>
+                  <div class="flex items-center space-x-2">
+                    {{ shopping_advanced.furniture_appliances(class="input-structure", placeholder="362", min="0",
+                    id="input_input_footprint_shopping_goods_furnitureappliances") }}
+                    <span class="input-group-addon">$/month</span>
+                  </div>
+                </div>
+
+                <div class="space-y-2">
+                  <h4 class="text-sm font-medium">Clothing</h4>
+                  <div class="flex items-center space-x-2">
+                    {{ shopping_advanced.clothing(class="input-structure", placeholder="391", min="0",
+                    id="input_input_footprint_shopping_goods_clothing") }}
+                    <span class="input-group-addon">$/month</span>
+                  </div>
+                </div>
+
+                <div class="space-y-2">
+                  <h4 class="text-sm font-medium">Entertainment</h4>
+                  <div class="flex items-center space-x-2">
+                    {{ shopping_advanced.entertainment(class="input-structure", placeholder="54", min="0",
+                    id="input_input_footprint_shopping_goods_entertainment") }}
+                    <span class="input-group-addon">$/month</span>
+                  </div>
+                </div>
+
+                <div class="space-y-2">
+                  <h4 class="text-sm font-medium">Office Supplies</h4>
+                  <div class="flex items-center space-x-2">
+                    {{ shopping_advanced.office_supplies(class="input-structure", placeholder="37", min="0",
+                    id="input_input_footprint_shopping_goods_officesupplies") }}
+                    <span class="input-group-addon">$/month</span>
+                  </div>
+                </div>
+
+                <div class="space-y-2">
+                  <h4 class="text-sm font-medium">Personal Care</h4>
+                  <div class="flex items-center space-x-2">
+                    {{ shopping_advanced.personal_care(class="input-structure", placeholder="56", min="0",
+                    id="input_input_footprint_shopping_goods_personalcare") }}
+                    <span class="input-group-addon">$/month</span>
+                  </div>
+                </div>
               </div>
             </div>
           </div>
 
-          <!-- More food categories -->
-          <div class="food-category">
-            <h4 class="flex items-center gap-2">
-              <span>Grains & baked goods</span>
-              <button class="btn btn-xs btn-circle btn-ghost">
-                <i class="icon-[tabler--help] text-sm"></i>
-              </button>
-            </h4>
-            <div class="food-slider-container">
-              <div class="flex justify-between items-center mb-1">
-                <span class="text-sm">Servings per person:</span>
-                <span class="font-bold food-value">3.9x</span>
-              </div>
-              <input type="range" min="0.01" max="3" step="0.01" value="3.9"
-                class="w-full range range-primary food-slider">
-              <div class="flex justify-between text-xs">
-                <span>0</span>
-                <span>Average</span>
-                <span>2x</span>
-                <span>3x</span>
-              </div>
+          <!-- Services Panel -->
+          <div class="panel panel-default">
+            <div class="panel-heading">
+              Services
             </div>
-          </div>
-
-          <div class="food-category">
-            <h4 class="flex items-center gap-2">
-              <span>Dairy</span>
-              <button class="btn btn-xs btn-circle btn-ghost">
-                <i class="icon-[tabler--help] text-sm"></i>
-              </button>
-            </h4>
-            <div class="food-slider-container">
-              <div class="flex justify-between items-center mb-1">
-                <span class="text-sm">Servings per person:</span>
-                <span class="font-bold food-value">2.1x</span>
-              </div>
-              <input type="range" min="0.01" max="3" step="0.01" value="2.1"
-                class="w-full range range-primary food-slider">
-              <div class="flex justify-between text-xs">
-                <span>0</span>
-                <span>Average</span>
-                <span>2x</span>
-                <span>3x</span>
-              </div>
-            </div>
-          </div>
-
-          <div class="food-category">
-            <h4 class="flex items-center gap-2">
-              <span>Fruits and vegetables</span>
-              <button class="btn btn-xs btn-circle btn-ghost">
-                <i class="icon-[tabler--help] text-sm"></i>
-              </button>
-            </h4>
-            <div class="food-slider-container">
-              <div class="flex justify-between items-center mb-1">
-                <span class="text-sm">Servings per person:</span>
-                <span class="font-bold food-value">3.4x</span>
-              </div>
-              <input type="range" min="0.01" max="3" step="0.01" value="3.4"
-                class="w-full range range-primary food-slider">
-              <div class="flex justify-between text-xs">
-                <span>0</span>
-                <span>Average</span>
-                <span>2x</span>
-                <span>3x</span>
-              </div>
-            </div>
-          </div>
-
-          <div class="food-category">
-            <h4 class="flex items-center gap-2">
-              <span>Snacks, drinks, etc...</span>
-              <button class="btn btn-xs btn-circle btn-ghost">
-                <i class="icon-[tabler--help] text-sm"></i>
-              </button>
-            </h4>
-            <div class="food-slider-container">
-              <div class="flex justify-between items-center mb-1">
-                <span class="text-sm">Servings per person:</span>
-                <span class="font-bold food-value">3.2x</span>
-              </div>
-              <input type="range" min="0.01" max="3" step="0.01" value="3.2"
-                class="w-full range range-primary food-slider">
-              <div class="flex justify-between text-xs">
-                <span>0</span>
-                <span>Average</span>
-                <span>2x</span>
-                <span>3x</span>
+            <div class="panel-body">
+              <div class="space-y-4">
+                <div class="space-y-2">
+                  <h4 class="text-sm font-medium">Food</h4>
+                  <div class="flex items-center space-x-2">
+                    {{ shopping_advanced.services_food(class="input-structure", placeholder="196", min="0",
+                    id="input_input_footprint_shopping_services_food") }}
+                    <span class="input-group-addon">$/month</span>
+                  </div>
+                </div>
+                <div class="space-y-2">
+                  <h4 class="text-sm font-medium">Education</h4>
+                  <div class="flex items-center space-x-2">
+                    {{ shopping_advanced.education(class="input-structure", placeholder="22", min="0",
+                    id="input_input_footprint_shopping_services_education") }}
+                    <span class="input-group-addon">$/month</span>
+                  </div>
+                </div>
+                <div class="space-y-2">
+                  <h4 class="text-sm font-medium">Communication</h4>
+                  <div class="flex items-center space-x-2">
+                    {{ shopping_advanced.communication(class="input-structure", placeholder="46", min="0",
+                    id="input_input_footprint_shopping_services_communication") }}
+                    <span class="input-group-addon">$/month</span>
+                  </div>
+                </div>
+                <div class="space-y-2">
+                  <h4 class="text-sm font-medium">Loan</h4>
+                  <div class="flex items-center space-x-2">
+                    {{ shopping_advanced.loan(class="input-structure", placeholder="82", min="0",
+                    id="input_input_footprint_shopping_services_loan") }}
+                    <span class="input-group-addon">$/month</span>
+                  </div>
+                </div>
+                <div class="space-y-2">
+                  <h4 class="text-sm font-medium">Transport</h4>
+                  <div class="flex items-center space-x-2">
+                    {{ shopping_advanced.transport(class="input-structure", placeholder="113", min="0",
+                    id="input_input_footprint_shopping_services_transport") }}
+                    <span class="input-group-addon">$/month</span>
+                  </div>
+                </div>
               </div>
             </div>
           </div>
         </div>
       </div>
     </div>
-  </div>
 
-  <!-- Shopping Content -->
-  <div data-stepper-content-item="4" class="hidden">
-    <div class="flex justify-center gap-3 mb-3">
-      <button type="button" id="show-simple-shopping"
-        class="flex font-semibold items-center gap-2 border border-primary rounded-full px-4 py-2 cursor-pointer bg-primary text-white hover:bg-primary/90">
-        Simple
+    <!-- Final Step Content -->
+    <div data-stepper-content-item="5" class="hidden">
+      <div
+        class="border-base-content/40 bg-base-200/50 flex h-48 items-center justify-center rounded-xl border border-dashed p-4">
+        <h3 class="text-base-content/50 text-2xl">Your Carbon Footprint Calculation is Complete!</h3>
+      </div>
+      <input type="hidden" name="calculate_footprint" value="1">
+    </div>
+
+    <!-- Button Group -->
+    <div class="mt-5 flex items-center justify-between gap-x-4">
+      <button type="button"
+        class="flex items-center font-semibold gap-2 border border-primary text-primary rounded-full px-4 py-2 hover:bg-primary hover:text-white transition cursor-pointer"
+        data-stepper-back-btn="">
+        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7" />
+        </svg>
+        Back
       </button>
-      <button type="button" id="show-advanced-shopping"
-        class="flex font-semibold items-center gap-2 border border-primary rounded-full px-4 py-2 transition cursor-pointer bg-transparent text-primary hover:bg-primary/10">
-        Advanced
+
+      <button type="button"
+        class="ml-auto flex font-semibold items-center gap-2 border border-primary bg-primary text-white rounded-full px-4 py-2 hover:bg-primary/90 transition cursor-pointer"
+        data-stepper-next-btn="">
+        Next
+        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
+        </svg>
+      </button>
+
+      <button type="submit"
+        class="hidden font-semibold ml-auto flex items-center gap-2 border border-primary bg-primary text-white rounded-full px-4 py-2 hover:bg-primary/90 transition cursor-pointer"
+        data-stepper-finish-btn="">
+        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0.0 0 24 24" stroke="currentColor">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
+        </svg>
+        Calculate Footprint
       </button>
     </div>
-
-    <form id="shoppingSimple" class="">
-      <div class="space-y-6">
-        <!-- Goods Panel -->
-        <div class="panel panel-default">
-          <div class="panel-heading">
-            In a usual month, how much money do you allocate toward purchasing goods?
-          </div>
-          <div class="panel-body">
-            <div class="shopping-category">
-              <h4 class="flex items-center gap-2">
-                <span>Goods</span>
-                <button class="btn btn-xs btn-circle btn-ghost">
-                  <i class="icon-[tabler--help] text-sm"></i>
-                </button>
-              </h4>
-              <div class="shopping-slider-container">
-                <div class="flex justify-between items-center mb-1">
-                  <span class="text-sm">Monthly spending:</span>
-                  <span class="font-bold shopping-value">$1,595</span>
-                </div>
-                <input type="range" min="0.0001" max="3" step="0.01" value="1"
-                  class="w-full range range-primary shopping-slider">
-                <div class="flex justify-between text-xs">
-                  <span>0</span>
-                  <span>Average</span>
-                  <span>2x</span>
-                  <span>3x</span>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-
-        <!-- Services Panel -->
-        <div class="panel panel-default">
-          <div class="panel-heading">
-            In a typical month, what’s your estimated spending on services?
-          </div>
-          <div class="panel-body">
-            <div class="shopping-category">
-              <h4 class="flex items-center gap-2">
-                <span>Services</span>
-                <button class="btn btn-xs btn-circle btn-ghost">
-                  <i class="icon-[tabler--help] text-sm"></i>
-                </button>
-              </h4>
-              <div class="shopping-slider-container">
-                <div class="flex justify-between items-center mb-1">
-                  <span class="text-sm">Monthly spending:</span>
-                  <span class="font-bold shopping-value">$2,929</span>
-                </div>
-                <input type="range" min="0.0001" max="3" step="0.01" value="1"
-                  class="w-full range range-primary shopping-slider">
-                <div class="flex justify-between text-xs">
-                  <span>0</span>
-                  <span>Average</span>
-                  <span>2x</span>
-                  <span>3x</span>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-    </form>
-
-    <!-- Advanced Shopping Form -->
-    <form id="shoppingAdvanced" class="hidden">
-      <div class="space-y-6">
-        <!-- Goods Panel -->
-        <div class="panel panel-default">
-          <div class="panel-heading">
-            Goods
-          </div>
-          <div class="panel-body">
-            <div class="space-y-4">
-              <div class="space-y-2">
-                <h4 class="text-sm font-medium">Furniture & Appliances</h4>
-                <div class="flex items-center space-x-2">
-                  <input type="number" class="input-structure"
-                    id="input_input_footprint_shopping_goods_furnitureappliances" placeholder="362" min="0">
-                  <span class="input-group-addon">$/month</span>
-                </div>
-              </div>
-
-              <div class="space-y-2">
-                <h4 class="text-sm font-medium">Clothing</h4>
-                <div class="flex items-center space-x-2">
-                  <input type="number" class="input-structure" id="input_input_footprint_shopping_goods_clothing"
-                    placeholder="391" min="0">
-                  <span class="input-group-addon">$/month</span>
-                </div>
-              </div>
-
-              <div class="space-y-2">
-                <h4 class="text-sm font-medium">Entertainment</h4>
-                <div class="flex items-center space-x-2">
-                  <input type="number" class="input-structure" id="input_input_footprint_shopping_goods_entertainment"
-                    placeholder="54" min="0">
-                  <span class="input-group-addon">$/month</span>
-                </div>
-              </div>
-
-              <div class="space-y-2">
-                <h4 class="text-sm font-medium">Office Supplies</h4>
-                <div class="flex items-center space-x-2">
-                  <input type="number" class="input-structure" id="input_input_footprint_shopping_goods_officesupplies"
-                    placeholder="37" min="0">
-                  <span class="input-group-addon">$/month</span>
-                </div>
-              </div>
-
-              <div class="space-y-2">
-                <h4 class="text-sm font-medium">Personal Care</h4>
-                <div class="flex items-center space-x-2">
-                  <input type="number" class="input-structure" id="input_input_footprint_shopping_goods_personalcare"
-                    placeholder="56" min="0">
-                  <span class="input-group-addon">$/month</span>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-
-        <!-- Services Panel -->
-        <div class="panel panel-default">
-          <div class="panel-heading">
-            Services
-          </div>
-          <div class="panel-body">
-            <div class="space-y-4">
-              <div class="space-y-2">
-                <h4 class="text-sm font-medium">Food</h4>
-                <div class="flex items-center space-x-2">
-                  <input type="number" class="input-structure" id="input_input_footprint_shopping_services_food"
-                    placeholder="196" min="0">
-                  <span class="input-group-addon">$/month</span>
-                </div>
-              </div>
-              <div class="space-y-2">
-                <h4 class="text-sm font-medium">Education</h4>
-                <div class="flex items-center space-x-2">
-                  <input type="number" class="input-structure" id="input_input_footprint_shopping_services_education"
-                    placeholder="22" min="0">
-                  <span class="input-group-addon">$/month</span>
-                </div>
-              </div>
-              <div class="space-y-2">
-                <h4 class="text-sm font-medium">Communication</h4>
-                <div class="flex items-center space-x-2">
-                  <input type="number" class="input-structure"
-                    id="input_input_footprint_shopping_services_communication" placeholder="46" min="0">
-                  <span class="input-group-addon">$/month</span>
-                </div>
-              </div>
-              <div class="space-y-2">
-                <h4 class="text-sm font-medium">Loan</h4>
-                <div class="flex items-center space-x-2">
-                  <input type="number" class="input-structure" id="input_input_footprint_shopping_services_loan"
-                    placeholder="82" min="0">
-                  <span class="input-group-addon">$/month</span>
-                </div>
-              </div>
-              <div class="space-y-2">
-                <h4 class="text-sm font-medium">Transport</h4>
-                <div class="flex items-center space-x-2">
-                  <input type="number" class="input-structure" id="input_input_footprint_shopping_services_transport"
-                    placeholder="113" min="0">
-                  <span class="input-group-addon">$/month</span>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-    </form>
-  </div>
-
-  <!-- Final Step Content -->
-  <div data-stepper-content-item="5" class="hidden">
-    <div
-      class="border-base-content/40 bg-base-200/50 flex h-48 items-center justify-center rounded-xl border border-dashed p-4">
-      <h3 class="text-base-content/50 text-2xl">Your Carbon Footprint Calculation is Complete!</h3>
-    </div>
-  </div>
-
-  <!-- Button Group -->
-  <div class="mt-5 flex items-center justify-between gap-x-4">
-    <button type="button"
-      class="flex items-center font-semibold gap-2 border border-primary text-primary rounded-full px-4 py-2 hover:bg-primary hover:text-white transition cursor-pointer"
-      data-stepper-back-btn="">
-      <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7" />
-      </svg>
-      Back
-    </button>
-
-    <button type="button"
-      class="ml-auto flex font-semibold items-center gap-2 border border-primary bg-primary text-white rounded-full px-4 py-2 hover:bg-primary/90 transition cursor-pointer"
-      data-stepper-next-btn="">
-      Next
-      <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
-      </svg>
-    </button>
-
-    <button type="button"
-      class="hidden font-semibold ml-auto flex items-center gap-2 border border-primary bg-primary text-white rounded-full px-4 py-2 hover:bg-primary/90 transition cursor-pointer"
-      data-stepper-finish-btn="">
-      <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0.0 0 24 24" stroke="currentColor">
-        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
-      </svg>
-      Calculate Footprint
-    </button>
-  </div>
+  </form>
 </div>
 <!-- End Stepper -->
+
+<script type="text/javascript">
+  // Vehicle Template (hidden)
+  const vehicleTemplate = document.createElement('template');
+  vehicleTemplate.innerHTML = `
+    <div class="vehicle-mpg-container vehicle-item space-y-2 pb-4 border-b border-gray-300 last:border-b-0">
+        <div class="flex justify-between gap-2">
+          <select name="{{ vehicle_form.fuel_type.name }}" class="select select-bordered vehicle-fuel-type">
+            {% for value, label in vehicle_form.fuel_type.choices %}
+            <option value="{{ value }}" {% if vehicle_form.fuel_type.data==value %}selected{% endif %}>{{
+              label }}</option>
+            {% endfor %}
+          </select>
+        <button type="button" class="focus:outline-none cursor-pointer text-white bg-red-700 hover:bg-red-800 focus:ring-4 focus:ring-red-300 font-medium rounded-lg text-sm px-2 py-1 me-2 mb-2 dark:bg-red-600 dark:hover:bg-red-700 dark:focus:ring-red-900" 
+            onclick="deleteVehicle(this.closest('div.vehicle-item'))"
+        >
+            X
+        </button>
+        </div>
+        
+        <div class="input-group flex items-center space-x-2">
+          {{vehicle_form.distance(class= "input-structure", placeholder = "12100", min = "0")}}
+        <span class="input-group-addon">kms/yr</span>
+        </div>
+        
+        <div class="space-y-1">
+        <div class="flex justify-between text-sm">
+            <span>Fuel Efficiency (L/100km or kWh/100km)</span>
+            <span class="vehicle-mpg-value">7</span>
+        </div>
+           {{vehicle_form.fuel_efficiency(class= "w-full range range-primary vehicle-mpg", type="range", placeholder = "7", value="7", min = "0", max="35", step="0.1")}}
+
+    <div class="flex justify-between text-xs">
+      <span>0</span>
+      <span>5</span>
+      <span>10</span>
+      <span>15</span>
+      <span>20</span>
+      <span>25</span>
+      <span>30</span>
+      <span>35</span>
+    </div>
+  </div>
+    </div >
+    `;
+</script>
 {% endblock %}

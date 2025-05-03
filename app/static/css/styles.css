@@ -190,6 +190,7 @@
 .button-sm {
   @apply py-2 px-4 text-sm font-semibold bg-primary text-white rounded-md hover:bg-green-900 transition cursor-pointer;
 }
+
 /* Animation for header background image */
 .header-image-container {
   background-size: cover;
@@ -282,6 +283,24 @@
 
 .input-group {
   display: flex;
+}
+
+.energy-input, .energy-select {
+  height: 2.5rem;
+  padding: 0 0.75rem;
+  font-size: 1rem;
+  border: 1px solid #ccc; 
+  border-radius: 0.5rem;
+  background-color: white;
+}
+
+.energy-input {
+  flex-grow: 1;
+  min-width: 0;
+}
+
+.energy-select {
+  width: 5rem;
 }
 
 .input-structure {
@@ -380,15 +399,31 @@ ul[class*="flex flex-row gap-x-2"] {
 /* View Data*/
 /* Clouds Animation*/
 @keyframes floatSmall {
-  0% { transform: translateX(0px); }
-  50% { transform: translateX(10px); }
-  100% { transform: translateX(0px); }
+  0% {
+    transform: translateX(0px);
+  }
+
+  50% {
+    transform: translateX(10px);
+  }
+
+  100% {
+    transform: translateX(0px);
+  }
 }
 
 @keyframes floatBig {
-  0% { transform: translateX(0px); }
-  50% { transform: translateX(10px); }
-  100% { transform: translateX(0px); }
+  0% {
+    transform: translateX(0px);
+  }
+
+  50% {
+    transform: translateX(10px);
+  }
+
+  100% {
+    transform: translateX(0px);
+  }
 }
 
 .float-cloud-small {
@@ -398,3 +433,4 @@ ul[class*="flex flex-row gap-x-2"] {
 .float-cloud-big {
   animation: floatBig 6s ease-in-out infinite;
 }
+
