@@ -10,16 +10,14 @@ function shareWith(email) {
       location.reload();
     });
   }
-  function shareWith(email) {
+function shareWith(email) {
     fetch('/api/share', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ email: email })
     })
     .then(res => res.json())
-    .then(data => {
-      window.location.href = '/share';
-    });
+    .then(() => {
+        window.location.href = '/share';
+      });
   }
-  
-  

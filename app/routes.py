@@ -299,11 +299,63 @@ def share():
     for share in received_records:
         sender = User.query.get(share.from_user_id)
         footprint = CarbonFootprint.query.filter_by(user_id=sender.id).first()
+        if footprint:
+            emission = Emissions.query.filter_by(carbon_footprint_id=footprint.id).first()
+        else:
+            emission = None
         shared_with_me.append({
-            'name': f"{sender.first_name} {sender.last_name}",
-            'email': sender.email,
-            'carbon_footprint': f"{footprint.total} CO2eq" if footprint else "N/A"
-        })
+        'name': f"{sender.first_name} {sender.last_name}",
+        'email': sender.email,
+        'carbon_footprint': f"{emission.total_emissions:.2f} CO2eq" if emission is not None else "N/A"
+    })
+    view_email = request.args.get('view_email')
+    if view_email:
+        target_user = User.query.filter_by(email=view_email).first()
+        selected_footprint = CarbonFootprint.query.filter_by(user_id=target_user.id).first()
+        selected_name = f"{target_user.first_name} {target_user.last_name}"
+        selected_email = target_user.email
+    else:
+        selected_footprint = CarbonFootprint.query.filter_by(user_id=user.id).first()
+        selected_name = f"{user.first_name} {user.last_name}"
+        selected_email = user.email 
+
+    emission = Emissions.query.filter_by(carbon_footprint_id=selected_footprint.id).first() if selected_footprint else None
+    if emission:
+        travel = (
+            (emission.car_emissions or 0) +
+            (emission.air_travel_emissions or 0) +
+            (emission.public_transit_emissions or 0)
+        )
+        food = (
+            (emission.meat_emissions or 0) +
+            (emission.dairy_emissions or 0) +
+            (emission.fruits_vegetables_emissions or 0) +
+            (emission.cereals_emissions or 0) +
+            (emission.snacks_emissions or 0)
+        )
+        home = (
+            (emission.electricity_emissions or 0) +
+            (emission.natural_gas_emissions or 0) +
+            (emission.heating_fuels_emissions or 0) +
+            (emission.water_emissions or 0)
+        )
+        shopping = (
+            (emission.clothing_emissions or 0) +
+            (emission.furniture_emissions or 0) +
+            (emission.other_goods_emissions or 0) +
+            (emission.services_emissions or 0)
+        )
+
+        total = travel + food + home + shopping
+        total_emission = round(total, 2)
+        travel_pct = round((travel / total) * 100) if total else 0
+        food_pct = round((food / total) * 100) if total else 0
+        home_pct = round((home / total) * 100) if total else 0
+        shopping_pct = round((shopping / total) * 100) if total else 0
+    else:
+        travel_pct = food_pct = home_pct = shopping_pct = 0
+        total_emission = 0 
+
     return render_template('share.html', 
                           active_page='share', 
                           nav_items=nav_items,
@@ -313,7 +365,15 @@ def share():
                           form=form,
                           search_results=search_results,
                           shared_with_me=shared_with_me,
-                          sharing_with=sharing_with)
+                          sharing_with=sharing_with,
+                          selected_footprint=selected_footprint,
+                          selected_name=selected_name,  
+                          selected_email = selected_email,
+                          travel_pct=travel_pct,
+                          food_pct=food_pct,
+                          home_pct=home_pct,
+                          shopping_pct=shopping_pct,
+                          total_emission=total_emission)
 
 @app.route('/api/share', methods=['POST'])
 def api_share():
@@ -343,6 +403,29 @@ def api_share():
     db.session.add(new_share)
     db.session.commit()
     flash('Shared successfully!', 'success')
+
+@app.route('/stop_share', methods=['POST'])
+def stop_share():
+    if 'user_id' not in session:
+        return redirect(url_for('login'))
+
+    sharer_id = session['user_id']
+    receiver_email = request.form['receiver_email']
+    receiver = User.query.filter_by(email=receiver_email).first()
+
+    if not receiver:
+        flash('User not found.', 'warning')
+        return redirect(url_for('share'))
+
+    share = Share.query.filter_by(from_user_id=sharer_id, to_user_id=receiver.id).first()
+    if share:
+        db.session.delete(share)
+        db.session.commit()
+        flash('Stopped sharing successfully.', 'success')
+    else:
+        flash('Sharing record not found.', 'warning')
+
+    return redirect(url_for('share'))
 
 @app.route('/facts')
 def facts():
