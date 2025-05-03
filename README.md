@@ -30,7 +30,7 @@ Follow these steps to set up the EcoTrack application:
    .venv\Scripts\activate
    
    # Mac/Linux
-   python -m venv .venv
+   python3 -m venv .venv
    source .venv/bin/activate
    ```
 
