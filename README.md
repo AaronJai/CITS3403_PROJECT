@@ -39,17 +39,23 @@ Follow these steps to set up the EcoTrack application:
    pip install -r requirements.txt
    ```
 
-4. **Initialize the database:**
+4. **Configure Environment variables**
+   Set up a new file named ```.env``` in the root of the project and add the following content:
+   ```bash
+   FLASK_SECRET_KEY=""
+   ```
+
+5. **Initialize the database:**
    ```
    flask db upgrade
    ```
 
-5. **Run the application:**
+6. **Run the application:**
    ```
    flask run
    ```
 
-6. **Access the application:**
+7. **Access the application:**
    Open a web browser and go to `http://127.0.0.1:5000/`
 
 ## Database Management
