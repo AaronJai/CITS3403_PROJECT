@@ -24,10 +24,10 @@ def dashboard():
 @app.route('/add_data', methods=['GET', 'POST'])
 @login_required
 def add_data():
-    if 'user_id' not in session:
+    if not current_user.is_authenticated:
         return redirect(url_for('login'))
 
-    user = User.query.get(session['user_id'])
+    user = current_user
 
     # Instantiate all forms
     form = CarbonFootprintForm()
@@ -250,10 +250,10 @@ def get_emissions():
     Fetch the latest Emissions record for the logged-in user.
     Returns JSON with emission fields.
     """
-    if 'user_id' not in session:
+    if not current_user.is_authenticated:
         return jsonify({'error': 'User not logged in'}), 401
 
-    emissions = Emissions.query.filter_by(user_id=session['user_id']).order_by(Emissions.calculated_at.desc()).first()
+    emissions = Emissions.query.filter_by(user_id=current_user.id).order_by(Emissions.calculated_at.desc()).first()
     if not emissions:
         return jsonify({'error': 'No emissions data found'}), 404
 
