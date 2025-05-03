@@ -1,9 +1,10 @@
 from app import app, db
-from flask import redirect, render_template, request, url_for, flash, session, flash
+from flask import redirect, render_template, request, url_for, flash, session
 import re
 from app.constants import nav_items
-from app.forms import LoginForm, SignupForm, ChangePasswordForm, ShareForm
+from app.forms import LoginForm, SignupForm, ChangePasswordForm, ShareForm, ResetPasswordRequestForm, ResetPasswordForm
 from app.models import User
+from app.email_utils import send_confirmation_email, send_password_reset_email
 
 @app.route('/')
 def dashboard():
@@ -128,6 +129,11 @@ def login():
         
         # Verify password if user exists
         if user and user.check_password(password):
+            # Check if user has confirmed their email
+            if not user.confirmed:
+                flash('Please confirm your email address before logging in.', 'warning')
+                return redirect(url_for('inactive', email=user.email))
+            
             # Store user ID in session
             session['user_id'] = user.id
             flash('Logged in successfully!', 'success')
@@ -157,7 +163,8 @@ def signup():
             new_user = User(
                 first_name=form.first_name.data,
                 last_name=form.last_name.data,
-                email=form.email.data
+                email=form.email.data,
+                confirmed=False
             )
             new_user.set_password(form.password.data)
             
@@ -165,8 +172,11 @@ def signup():
             db.session.add(new_user)
             db.session.commit()
             
-            flash('Account created successfully! Please login.', 'success')
-            return redirect(url_for('login'))
+            # Send confirmation email
+            send_confirmation_email(new_user)
+            
+            flash('Thanks for registering! Please check your email to confirm your account.', 'success')
+            return redirect(url_for('inactive', email=new_user.email))
             
     # If form validation failed, redirect with errors
     if form.errors:
@@ -218,3 +228,73 @@ def delete_account():
     print("Deleting user account")
     flash('Your account has been deleted.', 'success')
     return redirect(url_for('login'))
+
+# New routes for email verification
+@app.route('/inactive')
+def inactive():
+    email = request.args.get('email', '')
+    return render_template('auth/inactive.html', email=email)
+
+@app.route('/resend_confirmation', methods=['POST'])
+def resend_confirmation():
+    email = request.form.get('email')
+    if not email:
+        email = request.args.get('email')
+    
+    if email:
+        user = User.query.filter_by(email=email).first()
+        if user and not user.confirmed:
+            send_confirmation_email(user)
+            flash('A new confirmation email has been sent.', 'success')
+        else:
+            flash('Email could not be sent.', 'error')
+    
+    return redirect(url_for('inactive', email=email))
+
+@app.route('/confirm_email/<token>')
+def confirm_email(token):
+    user = User.verify_email_token(token)
+    if not user:
+        flash('The confirmation link is invalid or has expired.', 'error')
+        return redirect(url_for('login'))
+    
+    user.confirmed = True
+    db.session.commit()
+    flash('Account confirmed! Please log in.', 'success')
+    return redirect(url_for('login'))
+
+# Password reset functionality
+@app.route('/confirm_email', methods=['GET', 'POST'])
+def request_password_reset():
+    if 'user_id' in session:
+        return redirect(url_for('dashboard'))
+    
+    form = ResetPasswordRequestForm()
+    if form.validate_on_submit():
+        user = User.query.filter_by(email=form.email.data).first()
+        if user:
+            send_password_reset_email(user)
+        # Always show the same message whether the email exists or not
+        flash('If the email exists, a password reset link has been sent.', 'info')
+        return redirect(url_for('login'))
+    
+    return render_template('auth/confirm_email.html', form=form)
+
+@app.route('/reset_password/<token>', methods=['GET', 'POST'])
+def reset_password(token):
+    if 'user_id' in session:
+        return redirect(url_for('dashboard'))
+    
+    user = User.verify_reset_password_token(token)
+    if not user:
+        flash('The reset link is invalid or has expired.', 'error')
+        return redirect(url_for('login'))
+    
+    form = ResetPasswordForm()
+    if form.validate_on_submit():
+        user.set_password(form.new_password.data)
+        db.session.commit()
+        flash('Your password has been reset. Please log in.', 'success')
+        return redirect(url_for('login'))
+    
+    return render_template('auth/change_password.html', form=form)

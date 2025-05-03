@@ -1,0 +1,47 @@
+{% extends 'base_auth.html' %}
+
+{% block title %}Confirm Email | EcoTrack{% endblock %}
+
+{% block content %}
+<div class="grid grid-cols-3 h-full">
+    <!-- Left Section -->
+    <div class="col-span-3 md:col-span-2 flex flex-col justify-center items-center p-8">
+        {% include 'components/auth/logo.html' %}
+        <div class="w-full max-w-md">
+            <h1 class="subtitle">Confirm Email</h1>
+            <p class="text-gray mb-6">
+                Please enter your email address. If the email exists in our system, we'll send a password reset link.
+            </p>
+            <form method="POST" class="space-y-6">
+                {{ form.hidden_tag() }}
+
+                <!-- Email -->
+                <div class="relative">
+                    {{ form.email(class="input-field floating-input", id="email", placeholder="") }}
+                    {{ form.email.label(class="floating-label", for="email") }}
+                    {% if form.email.errors %}
+                    <div class="text-red-600 text-sm mt-1">
+                        {% for error in form.email.errors %}
+                        <span>{{ error }}</span>
+                        {% endfor %}
+                    </div>
+                    {% endif %}
+                </div>
+
+                <!-- Submit -->
+                {{ form.submit(class="button-primary") }}
+            </form>
+
+            <!-- Return to login -->
+            <div class="text-center mt-4 text-sm">
+                <a href="{{ url_for('login') }}" class="link">
+                    Return to login
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <!-- Right Section -->
+    {% include 'components/auth/appinfo.html' %}
+</div>
+{% endblock %}

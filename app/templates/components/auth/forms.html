@@ -61,6 +61,14 @@
                 {% endfor %}
             </div>
             {% endif %}
+
+            {% if active_page == 'login' %}
+            <div class="text-right mt-1">
+                <a href="{{ url_for('request_password_reset') }}" class="text-sm text-primary hover:underline">
+                    Forgot password?
+                </a>
+            </div>
+            {% endif %}
         </div>
 
         {% if active_page == 'signup' %}
