@@ -231,3 +231,5 @@ class ResetPasswordForm(FlaskForm):
     ])
     submit = SubmitField('Reset Password')
 
+class DeleteAccountForm(FlaskForm):
+    submit = SubmitField('Delete Account')

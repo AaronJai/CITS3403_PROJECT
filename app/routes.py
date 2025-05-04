@@ -8,7 +8,7 @@ from app.forms import FoodForm, ShoppingSimpleForm, ShoppingAdvancedForm, Carbon
 from app.models import User, CarbonFootprint, Travel, Vehicle, Home, Food, Shopping, Emissions, Share
 from app.processing_layer import CarbonFootprintCalculator
 from flask_login import login_user, logout_user, current_user, login_required
-from app.forms import LoginForm, SignupForm, ChangePasswordForm, ShareForm, ResetPasswordRequestForm, ResetPasswordForm
+from app.forms import LoginForm, SignupForm, ChangePasswordForm, ShareForm, ResetPasswordRequestForm, ResetPasswordForm, DeleteAccountForm
 from app.email_utils import send_confirmation_email, send_password_reset_email
 
 @app.route('/')
@@ -460,13 +460,15 @@ def facts():
 @login_required
 def profile():
     form = ChangePasswordForm()
+    delete_form = DeleteAccountForm()
     
     return render_template('profile.html', 
                           nav_items=nav_items,
                           first_name=current_user.first_name,
                           last_name=current_user.last_name,
                           email=current_user.email,
-                          form=form)
+                          form=form,
+                          delete_form=delete_form,)
 
 @app.route('/login', methods=['GET', 'POST'])
 def login():
@@ -582,15 +584,12 @@ def change_password():
 @app.route('/delete_account', methods=['POST'])
 @login_required
 def delete_account():
-    # Delete user from database
-    db.session.delete(current_user._get_current_object())
-    db.session.commit()
-    
-    # Logout user
-    logout_user()
-    
-    print("Deleting user account")
-    flash('Your account has been deleted.', 'success')
+    form = DeleteAccountForm()
+    if form.validate_on_submit():
+        db.session.delete(current_user._get_current_object())
+        db.session.commit()
+        logout_user()
+        flash('Your account has been deleted.', 'success')
     return redirect(url_for('login'))
 
 # New routes for email verification
