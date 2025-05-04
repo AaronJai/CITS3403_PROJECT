@@ -3,6 +3,18 @@
 {% block title %}Profile | EcoTrack{% endblock %}
 
 {% block content %}
+
+<style>
+    /* Zoom effect for news cards */
+    .zoom {
+      transition: transform 0.2s;
+    }
+  
+    .zoom:hover {
+      transform: scale(1.01);
+    }
+</style>
+
 <div class="font-sans antialiased text-gray-900 leading-normal tracking-wider bg-gray-100 min-h-screen">
 
     <div class="w-full flex items-center h-auto flex-wrap mx-auto my-32 lg:my-0">
@@ -26,7 +38,7 @@
                 <!-- Logout Button -->
                 <div class="mt-4">
                     <a href="{{ url_for('logout') }}"
-                        class="inline-flex items-center px-4 py-2 bg-primary hover:bg-green-900 text-white font-semibold rounded-md transition">
+                        class="zoom inline-flex items-center px-4 py-2 bg-primary hover:bg-green-900 text-white font-semibold rounded-md transition">
                         <img src="{{ url_for('static', filename='assets/icons/logout.svg') }}" alt="Logout"
                             class="h-5 w-5 mr-2 filter invert" />
                         <span>Logout</span>
@@ -51,7 +63,7 @@
                     {{ render_password_fields(form, include_current=True) }}
 
                     <div>
-                        {{ form.submit(class="button-sm") }}
+                        {{ form.submit(class="zoom button-sm") }}
                     </div>
                 </form>
             </div>
@@ -64,15 +76,17 @@
                 <div>
                     <h2 class="text-xl font-semibold mb-2">Delete account</h2>
                     <p class="text-gray-600">
-                        No longer want to use our service? You can delete your account here. This action is not
-                        reversible. All information related to this account will be deleted permanently.
+                        No longer want to use our service? You can delete your account here. 
+                        This action is <span class="font-bold text-red-600">NOT REVERSIBLE</span>. 
+                        All information related to this account will be 
+                        <span class="font-bold text-red-600">DELETED PERMANENTLY</span>.
                     </p>
                 </div>
                 <div class="flex items-start justify-start">
                     <form method="POST" action="/delete_account"
                         onsubmit="return confirm('Confirm account deletion. This cannot be undone.');">
                         <button type="submit"
-                            class="bg-red-600 hover:bg-red-800 text-white font-bold py-2 px-4 rounded-md cursor-pointer">
+                            class="zoom bg-red-600 hover:bg-red-800 text-white font-bold py-2 px-4 rounded-md cursor-pointer">
                             Delete Account
                         </button>
                     </form>
