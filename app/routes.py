@@ -581,15 +581,49 @@ def change_password():
         
         return redirect(url_for('profile'))
 
+#helper function to delete any related data to user 
+def delete_user_and_data(user):
+    # Delete emissions and footprint-related models
+    footprints = CarbonFootprint.query.filter_by(user_id=user.id).all()
+    for fp in footprints:
+        # Delete emissions first
+        Emissions.query.filter_by(carbon_footprint_id=fp.id).delete()
+
+        # Delete linked travel and vehicles
+        if fp.travel_id:
+            Vehicle.query.filter_by(travel_id=fp.travel_id).delete()
+            Travel.query.filter_by(id=fp.travel_id).delete()
+
+        # Delete other linked models
+        if fp.home_id:
+            Home.query.filter_by(id=fp.home_id).delete()
+        if fp.food_id:
+            Food.query.filter_by(id=fp.food_id).delete()
+        if fp.shopping_id:
+            Shopping.query.filter_by(id=fp.shopping_id).delete()
+
+    # Delete the footprints
+    CarbonFootprint.query.filter_by(user_id=user.id).delete()
+
+    # Delete share records (both sent and received)
+    Share.query.filter(
+        (Share.from_user_id == user.id) |
+        (Share.to_user_id == user.id)
+    ).delete()
+
+    # Finally, delete the user
+    db.session.delete(user)
+    db.session.commit()
+
 @app.route('/delete_account', methods=['POST'])
 @login_required
 def delete_account():
     form = DeleteAccountForm()
     if form.validate_on_submit():
-        db.session.delete(current_user._get_current_object())
-        db.session.commit()
+        user = current_user._get_current_object()
         logout_user()
-        flash('Your account has been deleted.', 'success')
+        delete_user_and_data(user)
+        flash('Your account and all related data has been deleted.', 'success')
     return redirect(url_for('login'))
 
 # New routes for email verification
