@@ -83,10 +83,10 @@
                     </p>
                 </div>
                 <div class="flex items-start justify-start">
-                    <form method="POST" action="/delete_account"
-                        onsubmit="return confirm('Confirm account deletion. This cannot be undone.');">
-                        <button type="submit"
-                            class="zoom bg-red-600 hover:bg-red-800 text-white font-bold py-2 px-4 rounded-md cursor-pointer">
+                    <form method="POST" action="/delete_account" id = "delete_account_form">
+                        <button type = "button"
+                            class="zoom bg-red-600 hover:bg-red-800 text-white font-bold py-2 px-4 rounded-md cursor-pointer"
+                            onclick = "confirmDeletion()">
                             Delete Account
                         </button>
                     </form>
@@ -116,5 +116,21 @@
             confirmPassword.addEventListener("input", validatePassword);
         }
     });
+
+    function confirmDeletion() {
+    const confirmation = prompt("To confirm deletion, type DELETE ACCOUNT");
+
+    if (confirmation && confirmation.trim() === "DELETE ACCOUNT") {
+        const feedback = document.createElement("div");
+        feedback.textContent = "DELETING YOUR ACCOUNT...";
+        feedback.className = "fixed top-6 left-1/2 transform -translate-x-1/2 bg-red-100 text-red-800 font-bold py-2 px-6 rounded-md shadow z-50";
+        document.body.appendChild(feedback);
+        setTimeout(() => {
+            document.getElementById("delete_account_form").submit();
+        }, 2000); // Remove after 2 seconds
+    } else if (confirmation !== null) {
+        alert("Incorrect confirmation. Account was not deleted.");
+    }
+}
 </script>
 {% endblock %}
