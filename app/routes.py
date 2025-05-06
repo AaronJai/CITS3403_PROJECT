@@ -26,6 +26,11 @@ def dashboard():
 def add_data():
     user = current_user
 
+    user_data = CarbonFootprint.query.filter_by(user_id=current_user.id).first()
+    
+    if user_data is None:
+        flash('Welcome, new user! Please input your data to calculate your carbon footprint.', 'info')
+        
     # Instantiate all forms
     form = CarbonFootprintForm()
     vehicle_form = VehicleForm(prefix='vehicle')
