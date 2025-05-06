@@ -66,8 +66,8 @@ document.addEventListener('DOMContentLoaded', () => {
         const prefix = `${category}-`;
         updateProgressBar(`${prefix}progress`, metrics.percentage, metrics.isBelow);
         document.getElementById(`${prefix}fraction`).innerHTML = `${metrics.isBelow
-            ? `You've used ${metrics.percentage}% of your annual goal! <br> Great work!`
-            : `You've used ${metrics.percentage}% of your annual goal (${metrics.percentage - 100}% over) <br> Keep reducing your emissions!`}`;
+            ? `You've used <strong> ${metrics.percentage}%</strong> of your annual goal! <br> Great work!`
+            : `You've used <strong>${metrics.percentage}%</strong> of your annual goal <strong>(${metrics.percentage - 100}%</strong> over) <br> Keep reducing your emissions!`}`;
         document.getElementById(`${prefix}emitted`).innerHTML = `
             <span style="font-weight: bold">Current emitted: </span>${metrics.emitted} CO₂eq<br>
             <span style="font-weight: bold">Annual goal: </span>${goal.toFixed(2)} CO₂eq`;
