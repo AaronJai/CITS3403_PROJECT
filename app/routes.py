@@ -14,23 +14,32 @@ from app.email_utils import send_confirmation_email, send_password_reset_email
 @app.route('/')
 @login_required
 def dashboard():
+    user_data = CarbonFootprint.query.filter_by(user_id=current_user.id).first()
+    is_new_user = user_data is None  # User is new if no data exists
+    locked = is_new_user  # Lock the page if the user is new
+
+    if locked:
+        return redirect(url_for('add_data', new_user='true'))
+
     return render_template('dashboard.html', 
                           active_page='dashboard', 
                           nav_items=nav_items,
                           first_name=current_user.first_name,
                           last_name=current_user.last_name,
-                          email=current_user.email)
+                          email=current_user.email,
+                          is_new_user=is_new_user,
+                          locked=locked)
 
 @app.route('/add_data', methods=['GET', 'POST'])
 @login_required
 def add_data():
     user = current_user
 
-    user_data = CarbonFootprint.query.filter_by(user_id=current_user.id).first()
-    
-    if user_data is None:
+    is_new_user = request.args.get('new_user', 'false') == 'true'
+
+    if is_new_user:
         flash('Welcome, new user! Please input your data to calculate your carbon footprint.', 'info')
-        
+
     # Instantiate all forms
     form = CarbonFootprintForm()
     vehicle_form = VehicleForm(prefix='vehicle')
@@ -238,12 +247,19 @@ def process_shopping_data(mode, simple_form:ShoppingSimpleForm, advanced_form:Sh
 @app.route('/view_data')
 @login_required
 def view_data():
+    user_data = CarbonFootprint.query.filter_by(user_id=current_user.id).first()
+    locked = user_data is None  # Lock the page if the user is new
+
+    if locked:
+        return redirect(url_for('add_data', new_user='true'))
+
     return render_template('view_data.html', 
                           active_page='view_data', 
                           nav_items=nav_items,
                           first_name=current_user.first_name,
                           last_name=current_user.last_name,
-                          email=current_user.email)
+                          email=current_user.email,
+                          locked=locked)
 
 
 @app.route('/api/emissions', methods=['GET'])

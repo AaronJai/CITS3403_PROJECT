@@ -66,13 +66,6 @@ document.addEventListener('DOMContentLoaded', function () {
     let currentIndex = 1;
     const totalSteps = navItems.length;
 
-    // Read the step parameter from the URL and set the initial step
-    const urlParams = new URLSearchParams(window.location.search);
-    const stepParam = urlParams.get('step');
-    if (stepParam && !isNaN(stepParam) && stepParam >= 1 && stepParam <= totalSteps) {
-        currentIndex = parseInt(stepParam);
-    }
-
     // Initialize stepper with the correct step
     updateStepper();
     // Initialize stepper
