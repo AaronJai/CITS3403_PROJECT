@@ -136,7 +136,7 @@
 }
 
 .category-description {
-  @apply text-base text-gray-600 my-4;
+  @apply text-base text-gray-600 my-2;
 }
 
 .progress-bar {
