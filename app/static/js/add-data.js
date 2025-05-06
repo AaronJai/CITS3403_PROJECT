@@ -9,7 +9,7 @@ document.addEventListener('DOMContentLoaded', function () {
     const form = document.querySelector('form');
 
     // Prevent form submission on Enter key press
-    form.addEventListener('keypress', function(e) {
+    form.addEventListener('keypress', function (e) {
         // Check if Enter key is pressed
         if (e.key === 'Enter') {
             // Prevent default form submission
@@ -66,6 +66,15 @@ document.addEventListener('DOMContentLoaded', function () {
     let currentIndex = 1;
     const totalSteps = navItems.length;
 
+    // Read the step parameter from the URL and set the initial step
+    const urlParams = new URLSearchParams(window.location.search);
+    const stepParam = urlParams.get('step');
+    if (stepParam && !isNaN(stepParam) && stepParam >= 1 && stepParam <= totalSteps) {
+        currentIndex = parseInt(stepParam);
+    }
+
+    // Initialize stepper with the correct step
+    updateStepper();
     // Initialize stepper
     updateStepper();
 

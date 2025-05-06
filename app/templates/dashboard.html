@@ -88,18 +88,17 @@
 
 <script src="{{ url_for('static', filename='js/dashboard.js') }}"></script>
 <script>
-  document.addEventListener('DOMContentLoaded', function () {
-    // Click handler for emission goal card
-    document.getElementById('emission-goal-card').addEventListener('click', function () {
-      window.location.href = "{{ url_for('view_data') }}";
-    });
-
-    // Click handler for category cards
-    const categoryCards = document.querySelectorAll('.category-card');
-    categoryCards.forEach(card => {
-      card.addEventListener('click', function () {
-        const tabIndex = this.dataset.tab;
-        window.location.href = "{{ url_for('view_data') }}?tab=" + tabIndex;
+  document.addEventListener('DOMContentLoaded', () => {
+    document.querySelectorAll('.category-card').forEach(card => { // Select all category cards
+      card.addEventListener('click', () => {
+        const category = card.dataset.category?.toLowerCase() ?? 'travel';
+        const stepIndex = {
+          'travel': 1,
+          'home': 2,
+          'food': 3,
+          'shopping': 4
+        }[category] || 1;
+        window.location.href = "{{ url_for('add_data') }}?step=" + stepIndex; // Redirect to the add data page with the step parameter
       });
     });
   });
