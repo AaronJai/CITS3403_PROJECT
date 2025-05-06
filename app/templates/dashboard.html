@@ -5,7 +5,7 @@
 {% block content %}
 <div>
   <!-- Emission Goal -->
-  <section class="emission-goal"
+  <section class="emission-goal" id="emission-goal-card"
     style="background-image: url('{{ url_for('static', filename='assets/images/dashboard_image.png') }}'); background-size: cover; background-position: center;">
     <div class="emission-content">
       <div class="progress-circle relative w-[150px] h-[75px] mx-auto mb-4">
@@ -44,7 +44,7 @@
   <!-- Category Cards -->
   <section class="category-cards">
     <!-- Travel -->
-    <div class="category-card">
+    <div class="category-card" data-category="travel" data-tab="0">
       <h3 class="category-heading">🚌 Travel</h3>
       <div class="progress-bar">
         <div id="travel-progress" class="progress-bar-fill w-[0%]"></div>
@@ -54,7 +54,7 @@
     </div>
 
     <!-- Home -->
-    <div class="category-card">
+    <div class="category-card" data-category="home" data-tab="1">
       <h3 class="category-heading">🏠 Home</h3>
       <div class="progress-bar">
         <div id="home-progress" class="progress-bar-fill w-[0%]"></div>
@@ -64,7 +64,7 @@
     </div>
 
     <!-- Food -->
-    <div class="category-card">
+    <div class="category-card" data-category="food" data-tab="2">
       <h3 class="category-heading">🍔 Food</h3>
       <div class="progress-bar">
         <div id="food-progress" class="progress-bar-fill w-[0%]"></div>
@@ -74,7 +74,7 @@
     </div>
 
     <!-- Shopping -->
-    <div class="category-card">
+    <div class="category-card" data-category="shopping" data-tab="3">
       <h3 class="category-heading">🛍️ Shopping</h3>
       <div class="progress-bar">
         <div id="shopping-progress" class="progress-bar-fill w-[0%]"></div>
@@ -86,4 +86,21 @@
 </div>
 
 <script src="{{ url_for('static', filename='js/dashboard.js') }}"></script>
+<script>
+  document.addEventListener('DOMContentLoaded', function () {
+    // Click handler for emission goal card
+    document.getElementById('emission-goal-card').addEventListener('click', function () {
+      window.location.href = "{{ url_for('view_data') }}";
+    });
+
+    // Click handler for category cards
+    const categoryCards = document.querySelectorAll('.category-card');
+    categoryCards.forEach(card => {
+      card.addEventListener('click', function () {
+        const tabIndex = this.dataset.tab;
+        window.location.href = "{{ url_for('view_data') }}?tab=" + tabIndex;
+      });
+    });
+  });
+</script>
 {% endblock %}

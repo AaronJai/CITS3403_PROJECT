@@ -79,6 +79,13 @@
 .emission-goal {
   @apply bg-primary text-white p-10 rounded-2xl shadow-md flex items-center justify-center mb-10;
   animation: moveInCircle 10s linear infinite;
+  transition: transform 0.2s, box-shadow 0.2s;
+  cursor: pointer;
+}
+
+.emission-goal:hover {
+  transform: scale(1.01);
+  box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.2), 0 4px 6px -2px rgba(0, 0, 0, 0.15);
 }
 
 @keyframes moveInCircle {
@@ -129,6 +136,13 @@
 
 .category-card {
   @apply bg-white p-6 h-54 rounded-xl shadow-md space-y-2;
+  transition: transform 0.2s;
+  cursor: pointer;
+}
+
+.category-card:hover {
+  transform: scale(1.02);
+  box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
 }
 
 .category-heading {
