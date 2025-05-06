@@ -1,15 +1,15 @@
 document.addEventListener('DOMContentLoaded', () => {
     const GOALS = {
-        total: 2.2,
-        travel: 0.7,
-        home: 0.5,
-        food: 0.5,
-        shopping: 0.5
+        total: 12.3,
+        travel: 2.9,
+        home: 3.5,
+        food: 3.1,
+        shopping: 2.8
     };
     // Calculate the percentage of emissions saved and emitted
     function calculateMetrics(actual, goal) {
-        const percentage = Math.min((goal / actual) * 100, 100);
-        const saved = Math.max(15.01 - actual, 0);
+        const percentage = Math.min(((goal - actual) / goal) * 100, 100);
+        const saved = Math.max(15.01 - actual, 0); //compared to the average Australian household
         return {
             percentage: percentage.toFixed(0),
             saved: saved.toFixed(2),
@@ -33,20 +33,25 @@ document.addEventListener('DOMContentLoaded', () => {
     // Update the progress bar and text
     function updateProgressBar(elementId, percentage) {
         const bar = document.getElementById(elementId);
-        if (bar) {
-            bar.className = 'progress-bar-fill';
-            bar.style.width = `${percentage}%`;
-            bar.classList.remove('bg-red-500', 'bg-yellow-400', 'bg-green-700');
+        if (!bar || isNaN(percentage)) return;
 
-            if (percentage < 20) {
-                bar.classList.add('bg-red-500');
-            } else if (percentage < 50) {
-                bar.classList.add('bg-yellow-400');
-            } else {
-                bar.classList.add('bg-green-700');
-            }
+        const safePercentage = Math.max(0, parseFloat(percentage));
+
+        bar.className = 'progress-bar-fill';
+        bar.style.width = `${safePercentage}%`;
+        bar.classList.remove('bg-red-500', 'bg-yellow-400', 'bg-green-700', 'bg-transparent');
+
+        if (percentage < 0) {
+            bar.classList.add('bg-transparent'); // No fill for negative
+        } else if (percentage <= 20) {
+            bar.classList.add('bg-red-500');
+        } else if (percentage < 50) {
+            bar.classList.add('bg-yellow-400');
+        } else {
+            bar.classList.add('bg-green-700');
         }
     }
+
 
     // Update the dashboard with the fetched data
     function updateDashboard(data) {
@@ -88,20 +93,24 @@ document.addEventListener('DOMContentLoaded', () => {
         document.getElementById('saved-total').textContent = `${totalMetrics.saved} metric tons CO₂eq saved compared to Australian average households`;
 
         updateProgressBar('travel-progress', travelMetrics.percentage);
-        document.getElementById('travel-fraction').textContent = `${travelMetrics.percentage}%`;
-        document.getElementById('travel-emitted').textContent = `You have emitted ${travelMetrics.emitted} CO2eq so far, compared to the annual goal of ${GOALS.travel.toFixed(2)} CO₂eq`;
+        document.getElementById('travel-fraction').textContent = `Achieved ${travelMetrics.percentage}% for this year's goal`;
+        document.getElementById('travel-emitted').innerHTML =
+            `<strong>Current emitted: </strong>${travelMetrics.emitted} CO₂eq<br> <strong> Annual goal: </strong> ${GOALS.travel.toFixed(2)} CO₂eq`;
 
         updateProgressBar('home-progress', homeMetrics.percentage);
-        document.getElementById('home-fraction').textContent = `${homeMetrics.percentage}%`;
-        document.getElementById('home-emitted').textContent = `You have emitted ${homeMetrics.emitted} CO₂eq so far, compared to the annual goal of ${GOALS.home.toFixed(2)} CO₂eq`;
+        document.getElementById('home-fraction').textContent = `Achieved ${homeMetrics.percentage}% for this year's goal`;
+        document.getElementById('home-emitted').innerHTML =
+            `<strong>Current emitted:</strong> ${homeMetrics.emitted} CO₂eq<br> <strong> Annual goal: </strong> ${GOALS.home.toFixed(2)} CO₂eq`;
 
         updateProgressBar('food-progress', foodMetrics.percentage);
-        document.getElementById('food-fraction').textContent = `${foodMetrics.percentage}%`;
-        document.getElementById('food-emitted').textContent = `You have emitted ${foodMetrics.emitted} CO₂eq so far, compared to the annual goal of ${GOALS.food.toFixed(2)} CO₂eq`;
+        document.getElementById('food-fraction').textContent = `Achieved ${foodMetrics.percentage}% for this year's goal`;
+        document.getElementById('food-emitted').innerHTML =
+            `<strong>Current emitted:</strong> ${foodMetrics.emitted} CO₂eq<br> <strong> Annual goal: </strong> ${GOALS.food.toFixed(2)} CO₂eq`;
 
         updateProgressBar('shopping-progress', shoppingMetrics.percentage);
-        document.getElementById('shopping-fraction').textContent = `${shoppingMetrics.percentage}%`;
-        document.getElementById('shopping-emitted').textContent = `You have emitted ${shoppingMetrics.emitted} CO₂eq so far, compared to the annual goal of ${GOALS.shopping.toFixed(2)} CO₂eq`;
+        document.getElementById('shopping-fraction').textContent = `Achieved ${shoppingMetrics.percentage}% for this year's goal`;
+        document.getElementById('shopping-emitted').innerHTML =
+            `<strong>Current emitted:</strong> ${shoppingMetrics.emitted} CO₂eq<br> <strong> Annual goal:</strong> ${GOALS.shopping.toFixed(2)} CO₂eq`;
     }
 
     fetch('/api/emissions', {
