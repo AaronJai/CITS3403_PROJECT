@@ -151,7 +151,7 @@
 
 /* Sidebar */
 .sidebar {
-  @apply hidden h-screen w-[80px] flex-col overflow-auto pl-5 py-7 sm:flex lg:w-[240px] xl:w-[300px];
+  @apply hidden sm:flex flex-col py-7 pl-5 w-[80px] lg:w-[265px] xl:w-[300px] overflow-y-auto sticky top-0 left-0 h-screen;
 }
 
 .sidebar-nav {
