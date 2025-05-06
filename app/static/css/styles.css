@@ -75,8 +75,32 @@
   @apply bg-gray-100 p-10 my-15 mx-5 rounded-2xl;
 }
 
+/* Emission Goal Dashboard Animation Design*/
 .emission-goal {
   @apply bg-primary text-white p-10 rounded-2xl shadow-md flex items-center justify-center mb-10;
+  animation: moveInCircle 10s linear infinite;
+}
+
+@keyframes moveInCircle {
+  0% {
+    background-position: 0 0;
+  }
+
+  25% {
+    background-position: 50px 0;
+  }
+
+  50% {
+    background-position: 0 50px;
+  }
+
+  75% {
+    background-position: -50px 0;
+  }
+
+  100% {
+    background-position: 0 0;
+  }
 }
 
 .emission-content {
@@ -108,11 +132,11 @@
 }
 
 .category-heading {
-  @apply text-xl font-semibold;
+  @apply text-2xl font-semibold;
 }
 
 .category-description {
-  @apply text-sm text-gray-600 my-4;
+  @apply text-base text-gray-600 my-4;
 }
 
 .progress-bar {
@@ -120,7 +144,7 @@
 }
 
 .progress-bar-fill {
-  @apply h-2 bg-primary rounded-full;
+  @apply h-2 rounded-full transition-all duration-2000 ease-in-out;
 }
 
 /* __________________________________ */
@@ -285,11 +309,12 @@
   display: flex;
 }
 
-.energy-input, .energy-select {
+.energy-input,
+.energy-select {
   height: 2.5rem;
   padding: 0 0.75rem;
   font-size: 1rem;
-  border: 1px solid #ccc; 
+  border: 1px solid #ccc;
   border-radius: 0.5rem;
   background-color: white;
 }
@@ -433,4 +458,3 @@ ul[class*="flex flex-row gap-x-2"] {
 .float-cloud-big {
   animation: floatBig 6s ease-in-out infinite;
 }
-
