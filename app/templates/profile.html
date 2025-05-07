@@ -13,16 +13,6 @@
     .zoom:hover {
       transform: scale(1.01);
     }
-
-    /*Placeholder styles*/
-    .input-field::placeholder {
-        color: #dfe1e4; /* Tailwind's text-gray-400 */
-        opacity: 1;
-    }
-
-    .input-field {
-        color: #d6d6d6; /* Tailwind's text-gray-700 */
-    }
 </style>
 
 <div class="font-sans antialiased text-gray-900 leading-normal tracking-wider bg-gray-100 min-h-screen">
@@ -55,6 +45,32 @@
                     </a>
                 </div>
             </div>
+
+            <!-- Dividing Line -->
+            <div class="w-full border-t border-gray-300 my-8"></div>
+
+            <!-- Edit Email Section -->
+            <div class="w-full grid grid-cols-1 lg:grid-cols-2 gap-8 items-start px-4 lg:px-12 pb-8">
+                <div>
+                    <h2 class="text-xl font-semibold mb-2">Change email</h2>
+                    <p class="text-gray-600">We'll send a confirmation link to your new email address.</p>
+                </div>
+
+                <form method="POST" action="{{ url_for('profile') }}" class="space-y-4 w-full">
+                    {{ email_form.hidden_tag() }}
+                    <div>
+                        {{ email_form.email.label(class="block font-medium mb-1") }}
+                        {{ email_form.email(class="input-field w-full") }}
+                    </div>
+                    {{ email_form.original_email }}
+                    <div>
+                        {{ email_form.submit(class="zoom button-sm") }}
+                    </div>
+                </form>
+            </div>
+
+            <!-- Dividing Line -->
+            <div class="w-full border-t border-gray-300 my-8"></div>
 
             <!-- Edit Name Section -->
             <div class="w-full grid grid-cols-1 lg:grid-cols-2 gap-8 items-start px-4 lg:px-12 pb-8">

@@ -8,7 +8,7 @@ from app.forms import FoodForm, ShoppingSimpleForm, ShoppingAdvancedForm, Carbon
 from app.models import User, CarbonFootprint, Travel, Vehicle, Home, Food, Shopping, Emissions, Share
 from app.processing_layer import CarbonFootprintCalculator
 from flask_login import login_user, logout_user, current_user, login_required
-from app.forms import LoginForm, SignupForm, ChangePasswordForm, ShareForm, ResetPasswordRequestForm, ResetPasswordForm, DeleteAccountForm, EditNameForm
+from app.forms import LoginForm, SignupForm, ChangePasswordForm, ShareForm, ResetPasswordRequestForm, ResetPasswordForm, DeleteAccountForm, EditNameForm, EditEMailForm
 from app.email_utils import send_confirmation_email, send_password_reset_email
 
 @app.route('/')
@@ -461,7 +461,27 @@ def facts():
 def profile():
     form = ChangePasswordForm()
     delete_form = DeleteAccountForm()
-    name_form = EditNameForm(obj = current_user)
+    name_form = EditNameForm()
+    email_form = EditEMailForm()
+
+    email_form.original_email.data = current_user.email
+
+    if email_form.submit.data and email_form.validate_on_submit():
+        if email_form.email.data != current_user.email:
+            current_user.email = email_form.email.data
+            current_user.confirmed = False
+            db.session.commit()
+            send_confirmation_email(current_user)
+            flash('Email updated. Please confirm your new email address.', 'info')
+        else:
+            flash("Please enter a valid Email address", "error")
+        return redirect(url_for('profile'))
+    
+    if email_form.submit.data and not email_form.validate.validate():
+        for field, errors in email_form.errors.items():
+            for error in errors:
+                flash(f"{email_form[field].label.text}: {error}", "error")
+        return redirect(url_for('profile'))
     
     if name_form.validate_on_submit():
         current_user.first_name = name_form.first_name.data
@@ -477,7 +497,8 @@ def profile():
                           email=current_user.email,
                           form=form,
                           delete_form=delete_form,
-                          name_form = name_form)
+                          name_form = name_form,
+                          email_form = email_form)
 
 @app.route('/login', methods=['GET', 'POST'])
 def login():
