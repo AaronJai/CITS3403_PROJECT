@@ -31,6 +31,20 @@
       <div class="main-container">{% block content %} {% endblock %}</div>
     </div>
   </main>
+
+  <script>
+    // Handle locked navigation items
+    document.addEventListener('DOMContentLoaded', function () {
+      // Handle sidebar locked items
+      const lockedItems = document.querySelectorAll('.sidebar-nav-item.locked a, .mobile-nav-item.locked');
+      lockedItems.forEach(item => {
+        item.addEventListener('click', function (e) {
+          e.preventDefault(); // Prevent navigation
+          // We don't need to do anything else as the server will redirect to the add_data route
+        });
+      });
+    });
+  </script>
 </body>
 
 </html>

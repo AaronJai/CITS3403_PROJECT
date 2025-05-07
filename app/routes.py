@@ -34,11 +34,14 @@ def dashboard():
 @login_required
 def add_data():
     user = current_user
+    
+    # Check if user is new (has no data)
+    user_data = CarbonFootprint.query.filter_by(user_id=current_user.id).first()
+    is_new_user = user_data is None
 
-    is_new_user = request.args.get('new_user', 'false') == 'true'
-
-    if is_new_user:
-        flash('Welcome, new user! Please input your data to calculate your carbon footprint.', 'info')
+    # Show message for new users
+    if is_new_user or request.args.get('new_user') == 'true':
+        flash("Please add your data to unlock the Dashboard and View Data features.", "info")
 
     # Instantiate all forms
     form = CarbonFootprintForm()
@@ -89,7 +92,8 @@ def add_data():
                     home_energy=home_energy,
                     food=food,
                     shopping_simple=shopping_simple,
-                    shopping_advanced=shopping_advanced
+                    shopping_advanced=shopping_advanced,
+                    is_new_user=is_new_user
                 )
 
             calc = CarbonFootprintCalculator(Emissions())
@@ -159,7 +163,8 @@ def add_data():
         home_energy=home_energy,
         food=food,
         shopping_simple=shopping_simple,
-        shopping_advanced=shopping_advanced
+        shopping_advanced=shopping_advanced,
+        is_new_user=is_new_user
     )
 
 def process_travel_data(mode, pts:PublicTransitSimpleForm, pta:PublicTransitAdvancedForm, ats:AirTravelSimpleForm, ata:AirTravelAdvancedForm):
@@ -299,6 +304,10 @@ def get_emissions():
 @app.route('/share', methods=['GET', 'POST'])
 @login_required
 def share():
+    # Check if user is new (has no data)
+    user_data = CarbonFootprint.query.filter_by(user_id=current_user.id).first()
+    is_new_user = user_data is None
+    
     form = ShareForm()
     search_results = None
     
@@ -418,7 +427,8 @@ def share():
                           food_pct=food_pct,
                           home_pct=home_pct,
                           shopping_pct=shopping_pct,
-                          total_emission=total_emission)
+                          total_emission=total_emission,
+                          is_new_user=is_new_user)
 
 @app.route('/api/share', methods=['POST'])
 @login_required
@@ -470,16 +480,25 @@ def stop_share():
 @app.route('/facts')
 @login_required
 def facts():
+    # Check if user is new (has no data)
+    user_data = CarbonFootprint.query.filter_by(user_id=current_user.id).first()
+    is_new_user = user_data is None
+    
     return render_template('facts.html', 
                           active_page='facts', 
                           nav_items=nav_items,
                           first_name=current_user.first_name,
                           last_name=current_user.last_name,
-                          email=current_user.email)
+                          email=current_user.email,
+                          is_new_user=is_new_user)
 
 @app.route('/profile')
 @login_required
 def profile():
+    # Check if user is new (has no data)
+    user_data = CarbonFootprint.query.filter_by(user_id=current_user.id).first()
+    is_new_user = user_data is None
+    
     form = ChangePasswordForm()
     
     return render_template('profile.html', 
@@ -487,7 +506,8 @@ def profile():
                           first_name=current_user.first_name,
                           last_name=current_user.last_name,
                           email=current_user.email,
-                          form=form)
+                          form=form,
+                          is_new_user=is_new_user)
 
 @app.route('/login', methods=['GET', 'POST'])
 def login():

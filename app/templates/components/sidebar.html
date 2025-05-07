@@ -12,8 +12,11 @@
   <nav class="sidebar-nav">
     <ul class="flex flex-1 flex-col gap-5">
       {% for item in nav_items %}
-      <li class="sidebar-nav-item {% if active_page == item.endpoint %}shad-active{% endif %}">
-        <a href="{{ url_for(item.endpoint) }}" class="sidebar-nav-link">
+      {% set is_locked = (is_new_user and item.endpoint in ['dashboard', 'view_data']) %}
+      <li
+        class="sidebar-nav-item {% if active_page == item.endpoint %}shad-active{% endif %} {% if is_locked %}locked{% endif %}">
+        <a href="{{ url_for(item.endpoint) }}" class="sidebar-nav-link" {% if is_locked
+          %}title="Please add data to unlock this feature" {% endif %}>
           <img src="{{ url_for('static', filename='assets/icons/' + item.icon) }}" alt="{{ item.name }}"
             class="{% if active_page == item.endpoint %}nav-icon-active{% else %}nav-icon{% endif %}" />
           <p class="hidden lg:block">{{ item.name }}</p>
