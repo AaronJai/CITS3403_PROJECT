@@ -43,7 +43,7 @@ def add_data():
     if is_new_user and request.method == 'GET':
         flash("Please add your data to unlock the Dashboard and View Data features.", "info")
 
-    # Instantiate all forms
+    # Instantiate all forms - do this only once
     form = CarbonFootprintForm()
     vehicle_form = VehicleForm(prefix='vehicle')
     public_transit_simple = PublicTransitSimpleForm(prefix='public_transit_simple')
@@ -57,75 +57,86 @@ def add_data():
     
     # Process POST request
     if request.method == 'POST' and 'calculate_footprint' in request.form:
-        # Get the active mode for travel and shopping sections
-        travel_mode = request.form.get('travel_mode', 'simple')
-        shopping_mode = request.form.get('shopping_mode', 'simple')
+        try:
+            # Get the active mode for travel and shopping sections
+            travel_mode = request.form.get('travel_mode', 'simple')
+            shopping_mode = request.form.get('shopping_mode', 'simple')
 
-        # Process form submission
-        is_valid = home_energy.validate() and food.validate()
-        if travel_mode == 'simple':
-            is_valid &= public_transit_simple.validate() and air_travel_simple.validate()
-        else:
-            is_valid &= public_transit_advanced.validate() and air_travel_advanced.validate()
+            # Validate forms based on which mode is active
+            forms_to_validate = [home_energy, food]
+            if travel_mode == 'simple':
+                forms_to_validate.extend([public_transit_simple, air_travel_simple])
+            else:
+                forms_to_validate.extend([public_transit_advanced, air_travel_advanced])
 
-        if shopping_mode == 'simple':
-            is_valid &= shopping_simple.validate()
-        else:
-            is_valid &= shopping_advanced.validate()
+            if shopping_mode == 'simple':
+                forms_to_validate.append(shopping_simple)
+            else:
+                forms_to_validate.append(shopping_advanced)
+                
+            # Check if all forms are valid
+            is_valid = all(form.validate() for form in forms_to_validate)
 
-        if is_valid:
-            calc = CarbonFootprintCalculator(Emissions())
+            if is_valid:
+                calc = CarbonFootprintCalculator(Emissions())
 
-            # Process and save data
-            travel = process_travel_data(
-                travel_mode,
-                public_transit_simple,
-                public_transit_advanced,
-                air_travel_simple,
-                air_travel_advanced
-            )
-            calc.calculate_travel(travel_mode, travel)
+                # Process and save data
+                travel = process_travel_data(
+                    travel_mode,
+                    public_transit_simple,
+                    public_transit_advanced,
+                    air_travel_simple,
+                    air_travel_advanced
+                )
+                calc.calculate_travel(travel_mode, travel)
 
-            db.session.add(travel)
-            db.session.flush()
+                db.session.add(travel)
+                db.session.flush()
 
-            vehicles = process_vehicles_data(travel.id)
-            for vehicle in vehicles:
-                db.session.add(vehicle)
-            calc.calculate_vehicles(vehicles)
+                vehicles = process_vehicles_data(travel.id)
+                for vehicle in vehicles:
+                    db.session.add(vehicle)
+                calc.calculate_vehicles(vehicles)
 
-            home = process_home_data(home_energy)
-            calc.calculate_home(home)
+                home = process_home_data(home_energy)
+                calc.calculate_home(home)
 
-            food_data = process_food_data(food)
-            calc.calculate_food(food_data)
+                food_data = process_food_data(food)
+                calc.calculate_food(food_data)
 
-            shopping = process_shopping_data(shopping_mode, shopping_simple, shopping_advanced)
-            calc.calculate_shopping(shopping_mode, shopping)
+                shopping = process_shopping_data(shopping_mode, shopping_simple, shopping_advanced)
+                calc.calculate_shopping(shopping_mode, shopping)
 
-            db.session.add_all([home, food_data, shopping])
-            db.session.flush()
+                db.session.add_all([home, food_data, shopping])
+                db.session.flush()
 
-            footprint = CarbonFootprint(
-                user_id=user.id,
-                travel_id=travel.id,
-                home_id=home.id,
-                food_id=food_data.id,
-                shopping_id=shopping.id
-            )
-            db.session.add(footprint)
-            db.session.flush()
+                footprint = CarbonFootprint(
+                    user_id=user.id,
+                    travel_id=travel.id,
+                    home_id=home.id,
+                    food_id=food_data.id,
+                    shopping_id=shopping.id
+                )
+                db.session.add(footprint)
+                db.session.flush()
 
-            calc.calculate_total_emissions()
-            calc.emission.carbon_footprint_id = footprint.id
-            calc.emission.user_id = user.id
-            db.session.add(calc.emission)
-            db.session.commit()
+                calc.calculate_total_emissions()
+                calc.emission.carbon_footprint_id = footprint.id
+                calc.emission.user_id = user.id
+                db.session.add(calc.emission)
+                db.session.commit()
 
-            flash('Your carbon footprint has been calculated and saved!', 'success')
-            return redirect(url_for('view_data'))
-        else:
-            flash("There were errors in your submission. Please correct them and try again.", "danger")
+                flash('Your carbon footprint has been calculated and saved!', 'success')
+                return redirect(url_for('view_data'))
+            else:
+                # Show form validation errors
+                for form in forms_to_validate:
+                    for field, errors in form.errors.items():
+                        for error in errors:
+                            flash(f"{field}: {error}", "danger")
+                flash("There were errors in your submission. Please correct them and try again.", "danger")
+        except Exception as e:
+            flash(f"An error occurred: {str(e)}", "danger")
 
     # Render the template with forms (for both GET and failed POST)
     return render_template(

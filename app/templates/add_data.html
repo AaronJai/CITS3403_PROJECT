@@ -126,7 +126,8 @@
             <div class="panel-heading">Public Transit</div>
             <div class="panel-body">
               <div class="input-group items-center space-x-2">
-                {{ public_transit_simple.distance(class="form-control input-structure", placeholder="368", min="0") }}
+                {{ public_transit_simple.distance(class="form-control input-structure", placeholder="368", min="0",
+                step="any") }}
                 <span class="input-group-addon">kms/yr</span>
               </div>
             </div>
@@ -137,7 +138,8 @@
             <div class="panel-heading">Air Travel</div>
             <div class="panel-body">
               <div class="input-group items-center space-x-2">
-                {{ air_travel_simple.distance(class="form-control input-structure", placeholder="3300", min="0") }}
+                {{ air_travel_simple.distance(class="form-control input-structure", placeholder="3300", min="0",
+                step="any") }}
                 <span class="input-group-addon">kms/yr</span>
               </div>
             </div>
@@ -154,7 +156,7 @@
                   <span class="label-text">Bus</span>
                 </label>
                 <div class="input-group items-center space-x-2">
-                  {{ public_transit_advanced.bus_kms(class="input-structure", placeholder="130", min="0") }}
+                  {{ public_transit_advanced.bus_kms(class="input-structure", placeholder="130", min="0", step="any") }}
                   <span class="input-group-addon">kms/yr</span>
                 </div>
               </div>
@@ -164,7 +166,8 @@
                   <span class="label-text">Transit Rail (light & heavy)</span>
                 </label>
                 <div class="input-group items-center space-x-2">
-                  {{ public_transit_advanced.transit_rail_kms(class="input-structure", placeholder="97", min="0") }}
+                  {{ public_transit_advanced.transit_rail_kms(class="input-structure", placeholder="97", min="0",
+                  step="any") }}
                   <span class="input-group-addon">kms/yr</span>
                 </div>
               </div>
@@ -174,7 +177,8 @@
                   <span class="label-text">Commuter Rail</span>
                 </label>
                 <div class="input-group items-center space-x-2">
-                  {{ public_transit_advanced.commuter_rail_kms(class="input-structure", placeholder="65", min="0") }}
+                  {{ public_transit_advanced.commuter_rail_kms(class="input-structure", placeholder="65", min="0",
+                  step="any") }}
                   <span class="input-group-addon">kms/yr</span>
                 </div>
               </div>
@@ -184,7 +188,8 @@
                   <span class="label-text">Inter-city Rail (Amtrak)</span>
                 </label>
                 <div class="input-group items-center space-x-2">
-                  {{ public_transit_advanced.intercity_rail_kms(class="input-structure", placeholder="32", min="0") }}
+                  {{ public_transit_advanced.intercity_rail_kms(class="input-structure", placeholder="32", min="0",
+                  step="any") }}
                   <span class="input-group-addon">kms/yr</span>
                 </div>
               </div>
@@ -200,7 +205,7 @@
                   <span class="label-text">Short (&lt; 400 kms/yr)</span>
                 </label>
                 <div class="input-group items-center space-x-2">
-                  {{ air_travel_advanced.short_flights(class="input-structure", placeholder="3", min="0") }}
+                  {{ air_travel_advanced.short_flights(class="input-structure", placeholder="3", min="0", step="any") }}
                   <span class="input-group-addon">flights/year</span>
                 </div>
               </div>
@@ -210,7 +215,8 @@
                   <span class="label-text">Medium (400 - 1500 kms/yr)</span>
                 </label>
                 <div class="input-group items-center space-x-2">
-                  {{ air_travel_advanced.medium_flights(class="input-structure", placeholder="2", min="0") }}
+                  {{ air_travel_advanced.medium_flights(class="input-structure", placeholder="2", min="0", step="any")
+                  }}
                   <span class="input-group-addon">flights/year</span>
                 </div>
               </div>
@@ -220,7 +226,7 @@
                   <span class="label-text">Long (1500 - 3000 kms/yr)</span>
                 </label>
                 <div class="input-group items-center space-x-2">
-                  {{ air_travel_advanced.long_flights(class="input-structure", placeholder="0", min="0") }}
+                  {{ air_travel_advanced.long_flights(class="input-structure", placeholder="0", min="0", step="any") }}
                   <span class="input-group-addon">flights/year</span>
                 </div>
               </div>
@@ -230,7 +236,8 @@
                   <span class="label-text">Extended (&gt; 3000 kms/yr)</span>
                 </label>
                 <div class="input-group items-center space-x-2">
-                  {{ air_travel_advanced.extended_flights(class="input-structure", placeholder="0", min="0") }}
+                  {{ air_travel_advanced.extended_flights(class="input-structure", placeholder="0", min="0", step="any")
+                  }}
                   <span class="input-group-addon">flights/year</span>
                 </div>
               </div>
@@ -257,8 +264,8 @@
                 </button>
               </label>
               <div class="flex items-center">
-                <input type="number" name="{{ home_energy.electricity.name }}" class="energy-input" placeholder="1350"
-                  min="0" id="electricity">
+                <input type="number" step="any" name="{{ home_energy.electricity.name }}" class="energy-input"
+                  placeholder="1350" min="0" id="electricity">
                 <select name="{{ home_energy.electricity_unit.name }}" class="energy-select">
                   {% for value, label in home_energy.electricity_unit.choices %}
                   <option value="{{ value }}" {% if home_energy.electricity_unit.data==value %}selected{% endif %}>{{
@@ -301,8 +308,8 @@
                 </button>
               </label>
               <div class="flex items-center">
-                <input type="number" name="{{ home_energy.natural_gas.name }}" class="energy-input" placeholder="590"
-                  min="0" id="natural-gas">
+                <input type="number" step="any" name="{{ home_energy.natural_gas.name }}" class="energy-input"
+                  placeholder="590" min="0" id="natural-gas">
                 <select name="{{ home_energy.natural_gas_unit.name }}" class="energy-select">
                   {% for value, label in home_energy.natural_gas_unit.choices %}
                   <option value="{{ value }}" {% if home_energy.natural_gas_unit.data==value %}selected{% endif %}>{{
@@ -327,8 +334,8 @@
                 </button>
               </label>
               <div class="flex items-center">
-                <input type="number" name="{{ home_energy.heating_oil.name }}" class="energy-input" placeholder="260"
-                  min="0" id="heating-oil">
+                <input type="number" step="any" name="{{ home_energy.heating_oil.name }}" class="energy-input"
+                  placeholder="260" min="0" id="heating-oil">
                 <select name="{{ home_energy.heating_oil_unit.name }}" class="energy-select">
                   {% for value, label in home_energy.heating_oil_unit.choices %}
                   <option value="{{ value }}" {% if home_energy.heating_oil_unit.data==value %}selected{% endif %}>{{
@@ -353,7 +360,7 @@
                 </button>
               </label>
               <div class="input-group flex items-center space-x-2">
-                <input type="number" name="{{ home_energy.living_space.name }}" class="input input-structure"
+                <input type="number" step="any" name="{{ home_energy.living_space.name }}" class="input input-structure"
                   placeholder="200" min="0" id="living-space">
                 <span class="input-group-addon">m²</span>
               </div>
@@ -604,6 +611,7 @@
                   <h4 class="text-sm font-medium">Furniture & Appliances</h4>
                   <div class="flex items-center space-x-2">
                     {{ shopping_advanced.furniture_appliances(class="input-structure", placeholder="362", min="0",
+                    step="any",
                     id="input_input_footprint_shopping_goods_furnitureappliances") }}
                     <span class="input-group-addon">$/month</span>
                   </div>
@@ -612,7 +620,7 @@
                 <div class="space-y-2">
                   <h4 class="text-sm font-medium">Clothing</h4>
                   <div class="flex items-center space-x-2">
-                    {{ shopping_advanced.clothing(class="input-structure", placeholder="391", min="0",
+                    {{ shopping_advanced.clothing(class="input-structure", placeholder="391", min="0", step="any",
                     id="input_input_footprint_shopping_goods_clothing") }}
                     <span class="input-group-addon">$/month</span>
                   </div>
@@ -621,7 +629,7 @@
                 <div class="space-y-2">
                   <h4 class="text-sm font-medium">Entertainment</h4>
                   <div class="flex items-center space-x-2">
-                    {{ shopping_advanced.entertainment(class="input-structure", placeholder="54", min="0",
+                    {{ shopping_advanced.entertainment(class="input-structure", placeholder="54", min="0", step="any",
                     id="input_input_footprint_shopping_goods_entertainment") }}
                     <span class="input-group-addon">$/month</span>
                   </div>
@@ -630,7 +638,7 @@
                 <div class="space-y-2">
                   <h4 class="text-sm font-medium">Office Supplies</h4>
                   <div class="flex items-center space-x-2">
-                    {{ shopping_advanced.office_supplies(class="input-structure", placeholder="37", min="0",
+                    {{ shopping_advanced.office_supplies(class="input-structure", placeholder="37", min="0", step="any",
                     id="input_input_footprint_shopping_goods_officesupplies") }}
                     <span class="input-group-addon">$/month</span>
                   </div>
@@ -639,7 +647,7 @@
                 <div class="space-y-2">
                   <h4 class="text-sm font-medium">Personal Care</h4>
                   <div class="flex items-center space-x-2">
-                    {{ shopping_advanced.personal_care(class="input-structure", placeholder="56", min="0",
+                    {{ shopping_advanced.personal_care(class="input-structure", placeholder="56", min="0", step="any",
                     id="input_input_footprint_shopping_goods_personalcare") }}
                     <span class="input-group-addon">$/month</span>
                   </div>
@@ -658,7 +666,7 @@
                 <div class="space-y-2">
                   <h4 class="text-sm font-medium">Food</h4>
                   <div class="flex items-center space-x-2">
-                    {{ shopping_advanced.services_food(class="input-structure", placeholder="196", min="0",
+                    {{ shopping_advanced.services_food(class="input-structure", placeholder="196", min="0", step="any",
                     id="input_input_footprint_shopping_services_food") }}
                     <span class="input-group-addon">$/month</span>
                   </div>
@@ -666,7 +674,7 @@
                 <div class="space-y-2">
                   <h4 class="text-sm font-medium">Education</h4>
                   <div class="flex items-center space-x-2">
-                    {{ shopping_advanced.education(class="input-structure", placeholder="22", min="0",
+                    {{ shopping_advanced.education(class="input-structure", placeholder="22", min="0", step="any",
                     id="input_input_footprint_shopping_services_education") }}
                     <span class="input-group-addon">$/month</span>
                   </div>
@@ -674,7 +682,7 @@
                 <div class="space-y-2">
                   <h4 class="text-sm font-medium">Communication</h4>
                   <div class="flex items-center space-x-2">
-                    {{ shopping_advanced.communication(class="input-structure", placeholder="46", min="0",
+                    {{ shopping_advanced.communication(class="input-structure", placeholder="46", min="0", step="any",
                     id="input_input_footprint_shopping_services_communication") }}
                     <span class="input-group-addon">$/month</span>
                   </div>
@@ -682,7 +690,7 @@
                 <div class="space-y-2">
                   <h4 class="text-sm font-medium">Loan</h4>
                   <div class="flex items-center space-x-2">
-                    {{ shopping_advanced.loan(class="input-structure", placeholder="82", min="0",
+                    {{ shopping_advanced.loan(class="input-structure", placeholder="82", min="0", step="any",
                     id="input_input_footprint_shopping_services_loan") }}
                     <span class="input-group-addon">$/month</span>
                   </div>
@@ -690,7 +698,7 @@
                 <div class="space-y-2">
                   <h4 class="text-sm font-medium">Transport</h4>
                   <div class="flex items-center space-x-2">
-                    {{ shopping_advanced.transport(class="input-structure", placeholder="113", min="0",
+                    {{ shopping_advanced.transport(class="input-structure", placeholder="113", min="0", step="any",
                     id="input_input_footprint_shopping_services_transport") }}
                     <span class="input-group-addon">$/month</span>
                   </div>
@@ -764,7 +772,7 @@
         </div>
         
         <div class="input-group flex items-center space-x-2">
-          {{vehicle_form.distance(class= "input-structure", placeholder = "12100", min = "0")}}
+          {{vehicle_form.distance(class= "input-structure", placeholder = "12100", min = "0", step="any")}}
         <span class="input-group-addon">kms/yr</span>
         </div>
         
