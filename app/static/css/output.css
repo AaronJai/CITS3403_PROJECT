@@ -1513,6 +1513,12 @@
   box-shadow: var(--tw-inset-shadow), var(--tw-inset-ring-shadow), var(--tw-ring-offset-shadow), var(--tw-ring-shadow), var(--tw-shadow);
   animation: moveInCircle 10s linear infinite;
   transition: transform 0.2s, box-shadow 0.2s;
+  transition: transform 0.2s, box-shadow 0.2s;
+  cursor: pointer;
+}
+.emission-goal:hover {
+  transform: scale(1.01);
+  box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.2), 0 4px 6px -2px rgba(0, 0, 0, 0.15);
 }
 @keyframes moveInCircle {
   0% {
@@ -1650,7 +1656,6 @@
   margin-top: calc(var(--spacing) * 9);
   flex: 1;
   gap: calc(var(--spacing) * 1);
-  color: var(--color-primary);
 }
 .sidebar-nav-item {
   display: flex;

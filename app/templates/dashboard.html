@@ -5,7 +5,7 @@
 {% block content %}
 <div>
   <!-- Emission Goal -->
-  <section class="emission-goal"
+  <section class="emission-goal" id="emission-goal-card"
     style="background-image: url('{{ url_for('static', filename='assets/images/dashboard_image.png') }}'); background-size: cover; background-position: center;">
     <div class="emission-content">
       <div class="progress-circle relative w-[150px] h-[75px] mx-auto mb-4">
@@ -89,6 +89,27 @@
 <script src="{{ url_for('static', filename='js/dashboard.js') }}"></script>
 <script>
   document.addEventListener('DOMContentLoaded', function () {
+    const tooltipTrigger = document.getElementById('tooltip-trigger');
+    const tooltipText = document.getElementById('tooltip-text');
+    const tooltipContainer = document.getElementById('tooltip-container');
+
+    // Toggle tooltip on click
+    tooltipTrigger.addEventListener('click', function (event) {
+      event.stopPropagation();  // Prevent click bubbling
+      tooltipText.classList.toggle('hidden');
+    });
+
+    document.addEventListener('click', function (event) {
+      if (!tooltipContainer.contains(event.target)) {
+        tooltipText.classList.add('hidden');
+      }
+    });
+
+    // Click handler for emission goal card
+    document.getElementById('emission-goal-card').addEventListener('click', function () {
+      window.location.href = "{{ url_for('view_data') }}";
+    });
+
     // Click handler for category cards
     const categoryCards = document.querySelectorAll('.category-card');
     categoryCards.forEach(card => {
@@ -98,5 +119,6 @@
       });
     });
   });
+
 </script>
 {% endblock %}
