@@ -39,8 +39,8 @@ def add_data():
     user_data = CarbonFootprint.query.filter_by(user_id=current_user.id).first()
     is_new_user = user_data is None
 
-    # Show message for new users
-    if is_new_user or request.args.get('new_user') == 'true':
+    # Show message for new users only on GET requests
+    if is_new_user and request.method == 'GET':
         flash("Please add your data to unlock the Dashboard and View Data features.", "info")
 
     # Instantiate all forms
@@ -54,48 +54,26 @@ def add_data():
     food = FoodForm(prefix='food')
     shopping_simple = ShoppingSimpleForm(prefix='shopping_simple')
     shopping_advanced = ShoppingAdvancedForm(prefix='shopping_advanced')
-
-    if request.method == 'POST':
+    
+    # Process POST request
+    if request.method == 'POST' and 'calculate_footprint' in request.form:
         # Get the active mode for travel and shopping sections
         travel_mode = request.form.get('travel_mode', 'simple')
         shopping_mode = request.form.get('shopping_mode', 'simple')
 
         # Process form submission
-        if 'calculate_footprint' in request.form:
+        is_valid = home_energy.validate() and food.validate()
+        if travel_mode == 'simple':
+            is_valid &= public_transit_simple.validate() and air_travel_simple.validate()
+        else:
+            is_valid &= public_transit_advanced.validate() and air_travel_advanced.validate()
 
-            is_valid = home_energy.validate() and food.validate()
-            if travel_mode == 'simple':
-                is_valid &= public_transit_simple.validate() and air_travel_simple.validate()
-            else:
-                is_valid &= public_transit_advanced.validate() and air_travel_advanced.validate()
+        if shopping_mode == 'simple':
+            is_valid &= shopping_simple.validate()
+        else:
+            is_valid &= shopping_advanced.validate()
 
-            if shopping_mode == 'simple':
-                is_valid &= shopping_simple.validate()
-            else:
-                is_valid &= shopping_advanced.validate()
-
-            if not is_valid:
-                flash("There were errors in your submission. Please correct them and try again.", "danger")
-                return render_template(
-                    'add_data.html',
-                    active_page='add_data',
-                    nav_items=nav_items,
-                    first_name=user.first_name,
-                    last_name=user.last_name,
-                    email=user.email,
-                    form=form,
-                    vehicle_form=vehicle_form,
-                    public_transit_simple=public_transit_simple,
-                    public_transit_advanced=public_transit_advanced,
-                    air_travel_simple=air_travel_simple,
-                    air_travel_advanced=air_travel_advanced,
-                    home_energy=home_energy,
-                    food=food,
-                    shopping_simple=shopping_simple,
-                    shopping_advanced=shopping_advanced,
-                    is_new_user=is_new_user
-                )
-
+        if is_valid:
             calc = CarbonFootprintCalculator(Emissions())
 
             # Process and save data
@@ -146,7 +124,10 @@ def add_data():
 
             flash('Your carbon footprint has been calculated and saved!', 'success')
             return redirect(url_for('view_data'))
+        else:
+            flash("There were errors in your submission. Please correct them and try again.", "danger")
 
+    # Render the template with forms (for both GET and failed POST)
     return render_template(
         'add_data.html',
         active_page='add_data',
