@@ -8,7 +8,7 @@ from app.forms import FoodForm, ShoppingSimpleForm, ShoppingAdvancedForm, Carbon
 from app.models import User, CarbonFootprint, Travel, Vehicle, Home, Food, Shopping, Emissions, Share
 from app.processing_layer import CarbonFootprintCalculator
 from flask_login import login_user, logout_user, current_user, login_required
-from app.forms import LoginForm, SignupForm, ChangePasswordForm, ShareForm, ResetPasswordRequestForm, ResetPasswordForm, DeleteAccountForm
+from app.forms import LoginForm, SignupForm, ChangePasswordForm, ShareForm, ResetPasswordRequestForm, ResetPasswordForm, DeleteAccountForm, EditNameForm
 from app.email_utils import send_confirmation_email, send_password_reset_email
 
 @app.route('/')
@@ -456,11 +456,19 @@ def facts():
                           last_name=current_user.last_name,
                           email=current_user.email)
 
-@app.route('/profile')
+@app.route('/profile', methods=['GET', 'POST'])
 @login_required
 def profile():
     form = ChangePasswordForm()
     delete_form = DeleteAccountForm()
+    name_form = EditNameForm(obj = current_user)
+    
+    if name_form.validate_on_submit():
+        current_user.first_name = name_form.first_name.data
+        current_user.last_name = name_form.last_name.data
+        db.session.commit()
+        flash('Name updated successfully!', 'success')
+        return redirect(url_for('profile'))
     
     return render_template('profile.html', 
                           nav_items=nav_items,
@@ -468,7 +476,8 @@ def profile():
                           last_name=current_user.last_name,
                           email=current_user.email,
                           form=form,
-                          delete_form=delete_form,)
+                          delete_form=delete_form,
+                          name_form = name_form)
 
 @app.route('/login', methods=['GET', 'POST'])
 def login():

@@ -231,5 +231,10 @@ class ResetPasswordForm(FlaskForm):
     ])
     submit = SubmitField('Reset Password')
 
+class EditNameForm(FlaskForm):
+    first_name = StringField('First Name',render_kw={"placeholder":"First Name"}, validators=[DataRequired(), Length(min=1, max=50)])
+    last_name = StringField('Last Name', render_kw={"placeholder":"Last Name"}, validators=[DataRequired(), Length(min=1, max=50)])
+    submit = SubmitField('Save')
+
 class DeleteAccountForm(FlaskForm):
     submit = SubmitField('Delete Account')
