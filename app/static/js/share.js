@@ -22,10 +22,17 @@ function shareWith(email) {
       });
   }
 
+  
   function togglePreview(email) {
-    document.querySelectorAll('[id^="preview-"]').forEach(row => row.classList.add('hidden'));
+    // 隐藏所有
+    document.querySelectorAll('[id^="preview-"]').forEach(row => {
+      row.classList.add('hidden');
+    });
+  
+    // 显示目标
     const target = document.getElementById(`preview-${email}`);
     if (target) {
-        target.classList.remove('hidden');
+      target.classList.remove('hidden');
     }
-}
+  }
+  

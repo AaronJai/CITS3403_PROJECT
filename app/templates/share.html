@@ -74,7 +74,11 @@
                     </thead>
                     <tbody>
                         {% for user in shared_with_me %}
-                        <tr class="border-b">
+                        <tr 
+                        class="border-b cursor-pointer {% if user.email == current_user.email %}bg-green-50{% endif %}" 
+                        data-email="{{ user.email }}" 
+                        onclick="togglePreview('{{ user.email }}')">
+
                             <td class="py-3 px-4">
                                 {% if user.rank == 1 %}
                                     🥇

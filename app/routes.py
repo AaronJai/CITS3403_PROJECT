@@ -364,7 +364,27 @@ def share():
                 'carbon_footprint_value': float('inf'),
                 'carbon_footprint': "N/A"
             })
+            
+    footprint = CarbonFootprint.query.filter_by(user_id=current_user.id).first()
+    if footprint:
+        emission = Emissions.query.filter_by(carbon_footprint_id=footprint.id).first()
+    else:
+        emission = None
 
+    if emission:
+        shared_with_me_raw.append({
+            'name': f"{current_user.first_name} {current_user.last_name}",
+            'email': current_user.email,
+            'carbon_footprint_value': float(emission.total_emissions),
+            'carbon_footprint': f"{emission.total_emissions:.2f} CO2eq"
+        })
+    else:
+        shared_with_me_raw.append({
+            'name': f"{current_user.first_name} {current_user.last_name}",
+            'email': current_user.email,
+            'carbon_footprint_value': float('inf'),
+            'carbon_footprint': "N/A"
+        })
     shared_with_me_sorted = sorted(shared_with_me_raw, key=lambda x: x['carbon_footprint_value'])
 
     for i, user in enumerate(shared_with_me_sorted, start=1):
@@ -378,10 +398,20 @@ def share():
         selected_footprint = CarbonFootprint.query.filter_by(user_id=target_user.id).first()
         selected_name = f"{target_user.first_name} {target_user.last_name}"
         selected_email = target_user.email
+
+        emission = Emissions.query.filter_by(carbon_footprint_id=selected_footprint.id).first() if selected_footprint else None
+        if emission:
+            travel = ...
+            #TODO: Add the logic to calculate travel, food, home, and shopping emissions here
+        else:
+            travel_pct = food_pct = home_pct = shopping_pct = 0
+            total_emission = 0
     else:
-        selected_footprint = CarbonFootprint.query.filter_by(user_id=current_user.id).first()
-        selected_name = f"{current_user.first_name} {current_user.last_name}"
-        selected_email = current_user.email 
+        selected_footprint = None
+        selected_name = None
+        selected_email = None
+        travel_pct = food_pct = home_pct = shopping_pct = total_emission = 0
+
 
     emission = Emissions.query.filter_by(carbon_footprint_id=selected_footprint.id).first() if selected_footprint else None
     if emission:
