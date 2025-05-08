@@ -65,6 +65,7 @@
                 <table class="w-full">
                     <thead class="border-b">
                         <tr>
+                            <th class="text-left py-3 px-4">Rank</th>
                             <th class="text-left py-3 px-4">Name</th>
                             <th class="text-left py-3 px-4 hidden md:table-cell">Email</th>
                             <th class="text-left py-3 px-4">Carbon Footprint</th>
@@ -74,6 +75,17 @@
                     <tbody>
                         {% for user in shared_with_me %}
                         <tr class="border-b">
+                            <td class="py-3 px-4">
+                                {% if user.rank == 1 %}
+                                  🥇
+                                {% elif user.rank == 2 %}
+                                  🥈
+                                {% elif user.rank == 3 %}
+                                  🥉
+                                {% else %}
+                                  {{ user.rank }}
+                                {% endif %}
+                              </td>
                             <td class="py-3 px-4">{{ user.name }}</td>
                             <td class="py-3 px-4 hidden md:table-cell">{{ user.email }}</td>
                             <td class="py-3 px-4">{{ user.carbon_footprint }}</td>

@@ -341,7 +341,7 @@ def share():
             'shared_date': share.shared_date.strftime("%B %d, %Y")
         })
     received_records = Share.query.filter_by(to_user_id=current_user.id).all()
-    shared_with_me = []
+    shared_with_me_raw = []
     for share in received_records:
         sender = User.query.get(share.from_user_id)
         footprint = CarbonFootprint.query.filter_by(user_id=sender.id).first()
@@ -349,11 +349,29 @@ def share():
             emission = Emissions.query.filter_by(carbon_footprint_id=footprint.id).first()
         else:
             emission = None
-        shared_with_me.append({
-        'name': f"{sender.first_name} {sender.last_name}",
-        'email': sender.email,
-        'carbon_footprint': f"{emission.total_emissions:.2f} CO2eq" if emission is not None else "N/A"
-    })
+
+        if emission:
+            shared_with_me_raw.append({
+                'name': f"{sender.first_name} {sender.last_name}",
+                'email': sender.email,
+                'carbon_footprint_value': float(emission.total_emissions),
+                'carbon_footprint': f"{emission.total_emissions:.2f} CO2eq"
+            })
+        else:
+            shared_with_me_raw.append({
+                'name': f"{sender.first_name} {sender.last_name}",
+                'email': sender.email,
+                'carbon_footprint_value': float('inf'),
+                'carbon_footprint': "N/A"
+            })
+
+    shared_with_me_sorted = sorted(shared_with_me_raw, key=lambda x: x['carbon_footprint_value'])
+
+    for i, user in enumerate(shared_with_me_sorted, start=1):
+        user['rank'] = i
+
+    shared_with_me = shared_with_me_sorted
+
     view_email = request.args.get('view_email')
     if view_email:
         target_user = User.query.filter_by(email=view_email).first()
