@@ -21,3 +21,11 @@ function shareWith(email) {
         window.location.href = '/share';
       });
   }
+
+  function togglePreview(email) {
+    document.querySelectorAll('[id^="preview-"]').forEach(row => row.classList.add('hidden'));
+    const target = document.getElementById(`preview-${email}`);
+    if (target) {
+        target.classList.remove('hidden');
+    }
+}

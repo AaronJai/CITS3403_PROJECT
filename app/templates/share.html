@@ -58,7 +58,7 @@
     <!-- Shared with Me Section -->
     <section class="mb-8">
         <div class="bg-white p-6 rounded-xl shadow-md">
-            <h2 class="text-xl font-semibold mb-4">Shared with Me</h2>
+            <h2 class="text-xl font-semibold mb-4">Shared Footprints Leaderboard</h2>
 
             {% if shared_with_me %}
             <div class="overflow-x-auto">
@@ -77,15 +77,15 @@
                         <tr class="border-b">
                             <td class="py-3 px-4">
                                 {% if user.rank == 1 %}
-                                  🥇
+                                    🥇
                                 {% elif user.rank == 2 %}
-                                  🥈
+                                    🥈
                                 {% elif user.rank == 3 %}
-                                  🥉
+                                    🥉
                                 {% else %}
-                                  {{ user.rank }}
+                                    {{ user.rank }}
                                 {% endif %}
-                              </td>
+                            </td>
                             <td class="py-3 px-4">{{ user.name }}</td>
                             <td class="py-3 px-4 hidden md:table-cell">{{ user.email }}</td>
                             <td class="py-3 px-4">{{ user.carbon_footprint }}</td>
@@ -98,6 +98,64 @@
                                 </form>
                             </td>
                         </tr>
+                        {% if selected_email == user.email %}
+                        <tr>
+                            <td colspan="5">
+                                <section class="mt-2">
+                                    <div class="bg-white p-4 rounded-md">
+                                        <div class="bg-gray-50 p-4 rounded-lg border border-gray-200">
+                                            <div class="flex items-center mb-4">
+                                                <img src="{{ url_for('static', filename='assets/images/avatar.png') }}" alt="Avatar"
+                                                    class="w-10 h-10 rounded-full mr-3" />
+                                                <div>
+                                                    <p class="font-semibold">{{ selected_name }}</p>
+                                                    <p class="text-gray-500 text-sm hidden md:block">{{ selected_email }}</p>
+                                                </div>
+                                            </div>
+                    
+                                            <div class="grid grid-cols-2 gap-4">
+                                                <div class="bg-white p-3 rounded-md shadow-sm">
+                                                    <h3 class="font-semibold">Travel</h3>
+                                                    <div class="mt-2 h-2 bg-gray-200 rounded-full">
+                                                        <div class="h-2 bg-primary rounded-full" style="width: {{ travel_pct }}%"></div>
+                                                    </div>
+                                                    <p class="text-sm text-gray-600 mt-1">{{ travel_pct }}% of your carbon budget</p>
+                                                </div>
+                    
+                                                <div class="bg-white p-3 rounded-md shadow-sm">
+                                                    <h3 class="font-semibold">Food</h3>
+                                                    <div class="mt-2 h-2 bg-gray-200 rounded-full">
+                                                        <div class="h-2 bg-primary rounded-full" style="width: {{ food_pct }}%"></div>
+                                                    </div>
+                                                    <p class="text-sm text-gray-600 mt-1">{{ food_pct }}% of your carbon budget</p>
+                                                </div>
+                    
+                                                <div class="bg-white p-3 rounded-md shadow-sm">
+                                                    <h3 class="font-semibold">Home</h3>
+                                                    <div class="mt-2 h-2 bg-gray-200 rounded-full">
+                                                        <div class="h-2 bg-primary rounded-full" style="width: {{ home_pct }}%"></div>
+                                                    </div>
+                                                    <p class="text-sm text-gray-600 mt-1">{{ home_pct }}% of your carbon budget</p>
+                                                </div>
+                    
+                                                <div class="bg-white p-3 rounded-md shadow-sm">
+                                                    <h3 class="font-semibold">Shopping</h3>
+                                                    <div class="mt-2 h-2 bg-gray-200 rounded-full">
+                                                        <div class="h-2 bg-primary rounded-full" style="width: {{ shopping_pct }}%"></div>
+                                                    </div>
+                                                    <p class="text-sm text-gray-600 mt-1">{{ shopping_pct }}% of your carbon budget</p>
+                                                </div>
+                                            </div>
+                    
+                                            <p class="mt-4 text-sm font-semibold text-center">
+                                                Total: <span class="text-primary">{{ total_emission }}kg CO2eq</span> this month
+                                            </p>
+                                        </div>
+                                    </div>
+                                </section>
+                            </td>
+                        </tr>
+                        {% endif %}
                         {% endfor %}
                     </tbody>
                 </table>
