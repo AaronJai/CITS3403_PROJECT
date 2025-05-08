@@ -94,13 +94,18 @@
                             <td class="py-3 px-4 hidden md:table-cell">{{ user.email }}</td>
                             <td class="py-3 px-4">{{ user.carbon_footprint }}</td>
                             <td class="py-3 px-4">
+                                {% if user.email != current_user.email %}
                                 <form method="GET" action="{{ url_for('share') }}">
                                     <input type="hidden" name="view_email" value="{{ user.email }}">
                                     <button type="submit" class="text-blue-500 hover:underline cursor-pointer">
                                         View Details
                                     </button>
                                 </form>
+                                {% else %}
+                                <!--  current user, no action needed -->
+                                {% endif %}
                             </td>
+                            
                         </tr>
                         {% if selected_email == user.email %}
                         <tr>
