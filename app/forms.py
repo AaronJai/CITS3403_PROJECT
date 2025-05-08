@@ -85,23 +85,23 @@ class VehicleForm(FlaskForm):
         ('diesel', 'Diesel'),
         ('electric', 'Electric')
     ])
-    distance = FloatField('Distance', validators=[NumberRange(min=0), Optional()])
+    distance = IntegerField('Distance', validators=[NumberRange(min=0), Optional()])
     fuel_efficiency = FloatField('Fuel Efficiency', validators=[NumberRange(min=0, max=35), Optional()])
 
 class PublicTransitSimpleForm(FlaskForm):
     """Simple form for public transit"""
-    distance = FloatField('Distance', validators=[NumberRange(min=0), Optional()])
+    distance = IntegerField('Distance', validators=[NumberRange(min=0), Optional()])
 
 class PublicTransitAdvancedForm(FlaskForm):
     """Advanced form for public transit"""
-    bus_kms = FloatField('Bus', validators=[NumberRange(min=0), Optional()])
-    transit_rail_kms = FloatField('Transit Rail', validators=[NumberRange(min=0), Optional()])
-    commuter_rail_kms = FloatField('Commuter Rail', validators=[NumberRange(min=0), Optional()])
-    intercity_rail_kms = FloatField('Inter-city Rail', validators=[NumberRange(min=0), Optional()])
+    bus_kms = IntegerField('Bus', validators=[NumberRange(min=0), Optional()])
+    transit_rail_kms = IntegerField('Transit Rail', validators=[NumberRange(min=0), Optional()])
+    commuter_rail_kms = IntegerField('Commuter Rail', validators=[NumberRange(min=0), Optional()])
+    intercity_rail_kms = IntegerField('Inter-city Rail', validators=[NumberRange(min=0), Optional()])
 
 class AirTravelSimpleForm(FlaskForm):
     """Simple form for air travel"""
-    distance = FloatField('Distance', validators=[NumberRange(min=0), Optional()])
+    distance = IntegerField('Distance', validators=[NumberRange(min=0), Optional()])
 
 class AirTravelAdvancedForm(FlaskForm):
     """Advanced form for air travel"""
@@ -112,7 +112,7 @@ class AirTravelAdvancedForm(FlaskForm):
 
 class HomeEnergyForm(FlaskForm):
     """Form for home energy usage"""
-    electricity = FloatField('Electricity', validators=[NumberRange(min=0), Optional()])
+    electricity = IntegerField('Electricity', validators=[NumberRange(min=0), Optional()])
     electricity_unit = SelectField('Unit', choices=[('$', '$'), ('kWh', 'kWh')])
     electricity_frequency = SelectField('Frequency', choices=[('/yr', '/yr'), ('/mo', '/mo')])
     clean_energy_percentage = FloatField('Clean Energy %', validators=[NumberRange(min=0, max=100)], default=31)
@@ -144,18 +144,18 @@ class ShoppingSimpleForm(FlaskForm):
 class ShoppingAdvancedForm(FlaskForm):
     """Advanced form for shopping data"""
     # Goods
-    furniture_appliances = FloatField('Furniture & Appliances', validators=[NumberRange(min=0), Optional()])
-    clothing = FloatField('Clothing', validators=[NumberRange(min=0), Optional()])
-    entertainment = FloatField('Entertainment', validators=[NumberRange(min=0), Optional()])
-    office_supplies = FloatField('Office Supplies', validators=[NumberRange(min=0), Optional()])
-    personal_care = FloatField('Personal Care', validators=[NumberRange(min=0), Optional()])
+    furniture_appliances = IntegerField('Furniture & Appliances', validators=[NumberRange(min=0), Optional()])
+    clothing = IntegerField('Clothing', validators=[NumberRange(min=0), Optional()])
+    entertainment = IntegerField('Entertainment', validators=[NumberRange(min=0), Optional()])
+    office_supplies = IntegerField('Office Supplies', validators=[NumberRange(min=0), Optional()])
+    personal_care = IntegerField('Personal Care', validators=[NumberRange(min=0), Optional()])
     
     # Services
-    services_food = FloatField('Food', validators=[NumberRange(min=0), Optional()])
-    education = FloatField('Education', validators=[NumberRange(min=0), Optional()])
-    communication = FloatField('Communication', validators=[NumberRange(min=0), Optional()])
-    loan = FloatField('Loan', validators=[NumberRange(min=0), Optional()])
-    transport = FloatField('Transport', validators=[NumberRange(min=0), Optional()])
+    services_food = IntegerField('Food', validators=[NumberRange(min=0), Optional()])
+    education = IntegerField('Education', validators=[NumberRange(min=0), Optional()])
+    communication = IntegerField('Communication', validators=[NumberRange(min=0), Optional()])
+    loan = IntegerField('Loan', validators=[NumberRange(min=0), Optional()])
+    transport = IntegerField('Transport', validators=[NumberRange(min=0), Optional()])
 
 # Dictionary of default values for fields, to be used when placeholders are needed
 DEFAULT_VALUES = {

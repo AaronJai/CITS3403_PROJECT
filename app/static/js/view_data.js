@@ -4,6 +4,28 @@ document.addEventListener('DOMContentLoaded', () => {
   const chartInstances = {};
   let emissionsData = null;
 
+  // Handle URL parameter for tab selection
+  function getTabFromUrl() {
+    const urlParams = new URLSearchParams(window.location.search);
+    const tabParam = urlParams.get('tab');
+    return tabParam ? parseInt(tabParam) : 0; // Default to first tab if not specified
+  }
+  
+  // Scroll to charts section if tab parameter is present
+  function scrollToChartsIfNeeded() {
+    const urlParams = new URLSearchParams(window.location.search);
+    if (urlParams.has('tab')) {
+      // Find the charts section element
+      const chartsSection = document.querySelector('.bg-white.relative.rounded-2xl.w-full');
+      if (chartsSection) {
+        // Slight delay to ensure everything is loaded
+        setTimeout(() => {
+          chartsSection.scrollIntoView({ behavior: 'smooth' });
+        }, 0);
+      }
+    }
+  }
+
   const barChartConfig = {
     type: 'bar',
     data: {
@@ -304,7 +326,9 @@ document.addEventListener('DOMContentLoaded', () => {
       }
 
       updateCharts(data);
-      showTab(0);
+      showTab(getTabFromUrl());
+      // Scroll to charts section after tab is shown
+      scrollToChartsIfNeeded();
     })
     .catch(error => {
       const totalElement = document.getElementById('total-emissions');
@@ -312,7 +336,9 @@ document.addEventListener('DOMContentLoaded', () => {
         totalElement.textContent = 'Error loading emissions data';
       }
       console.error('Error fetching emissions:', error);
-      showTab(0);
+      showTab(getTabFromUrl());
+      // Still attempt to scroll even if there's an error
+      scrollToChartsIfNeeded();
     });
 
   window.showTab = showTab;

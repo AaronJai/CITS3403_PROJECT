@@ -14,19 +14,36 @@ from app.email_utils import send_confirmation_email, send_password_reset_email
 @app.route('/')
 @login_required
 def dashboard():
+    user_data = CarbonFootprint.query.filter_by(user_id=current_user.id).first()
+    is_new_user = user_data is None  # User is new if no data exists
+    locked = is_new_user  # Lock the page if the user is new
+
+    if locked:
+        return redirect(url_for('add_data', new_user='true'))
+
     return render_template('dashboard.html', 
                           active_page='dashboard', 
                           nav_items=nav_items,
                           first_name=current_user.first_name,
                           last_name=current_user.last_name,
-                          email=current_user.email)
+                          email=current_user.email,
+                          is_new_user=is_new_user,
+                          locked=locked)
 
 @app.route('/add_data', methods=['GET', 'POST'])
 @login_required
 def add_data():
     user = current_user
+    
+    # Check if user is new (has no data)
+    user_data = CarbonFootprint.query.filter_by(user_id=current_user.id).first()
+    is_new_user = user_data is None
 
-    # Instantiate all forms
+    # Show message for new users only on GET requests
+    if is_new_user and request.method == 'GET':
+        flash("Please add your data to unlock the Dashboard and View Data features.", "info")
+
+    # Instantiate all forms - do this only once
     form = CarbonFootprintForm()
     vehicle_form = VehicleForm(prefix='vehicle')
     public_transit_simple = PublicTransitSimpleForm(prefix='public_transit_simple')
@@ -37,98 +54,91 @@ def add_data():
     food = FoodForm(prefix='food')
     shopping_simple = ShoppingSimpleForm(prefix='shopping_simple')
     shopping_advanced = ShoppingAdvancedForm(prefix='shopping_advanced')
+    
+    # Process POST request
+    if request.method == 'POST' and 'calculate_footprint' in request.form:
+        try:
+            # Get the active mode for travel and shopping sections
+            travel_mode = request.form.get('travel_mode', 'simple')
+            shopping_mode = request.form.get('shopping_mode', 'simple')
 
-    if request.method == 'POST':
-        # Get the active mode for travel and shopping sections
-        travel_mode = request.form.get('travel_mode', 'simple')
-        shopping_mode = request.form.get('shopping_mode', 'simple')
-
-        # Process form submission
-        if 'calculate_footprint' in request.form:
-
-            is_valid = home_energy.validate() and food.validate()
+            # Validate forms based on which mode is active
+            forms_to_validate = [home_energy, food]
             if travel_mode == 'simple':
-                is_valid &= public_transit_simple.validate() and air_travel_simple.validate()
+                forms_to_validate.extend([public_transit_simple, air_travel_simple])
             else:
-                is_valid &= public_transit_advanced.validate() and air_travel_advanced.validate()
+                forms_to_validate.extend([public_transit_advanced, air_travel_advanced])
 
             if shopping_mode == 'simple':
-                is_valid &= shopping_simple.validate()
+                forms_to_validate.append(shopping_simple)
             else:
-                is_valid &= shopping_advanced.validate()
+                forms_to_validate.append(shopping_advanced)
+                
+            # Check if all forms are valid
+            is_valid = all(form.validate() for form in forms_to_validate)
 
-            if not is_valid:
-                flash("There were errors in your submission. Please correct them and try again.", "danger")
-                return render_template(
-                    'add_data.html',
-                    active_page='add_data',
-                    nav_items=nav_items,
-                    first_name=user.first_name,
-                    last_name=user.last_name,
-                    email=user.email,
-                    form=form,
-                    vehicle_form=vehicle_form,
-                    public_transit_simple=public_transit_simple,
-                    public_transit_advanced=public_transit_advanced,
-                    air_travel_simple=air_travel_simple,
-                    air_travel_advanced=air_travel_advanced,
-                    home_energy=home_energy,
-                    food=food,
-                    shopping_simple=shopping_simple,
-                    shopping_advanced=shopping_advanced
+            if is_valid:
+                calc = CarbonFootprintCalculator(Emissions())
+
+                # Process and save data
+                travel = process_travel_data(
+                    travel_mode,
+                    public_transit_simple,
+                    public_transit_advanced,
+                    air_travel_simple,
+                    air_travel_advanced
                 )
+                calc.calculate_travel(travel_mode, travel)
 
-            calc = CarbonFootprintCalculator(Emissions())
+                db.session.add(travel)
+                db.session.flush()
 
-            # Process and save data
-            travel = process_travel_data(
-                travel_mode,
-                public_transit_simple,
-                public_transit_advanced,
-                air_travel_simple,
-                air_travel_advanced
-            )
-            calc.calculate_travel(travel_mode, travel)
+                vehicles = process_vehicles_data(travel.id)
+                for vehicle in vehicles:
+                    db.session.add(vehicle)
+                calc.calculate_vehicles(vehicles)
 
-            db.session.add(travel)
-            db.session.flush()
+                home = process_home_data(home_energy)
+                calc.calculate_home(home)
 
-            vehicles = process_vehicles_data(travel.id)
-            for vehicle in vehicles:
-                db.session.add(vehicle)
-            calc.calculate_vehicles(vehicles)
+                food_data = process_food_data(food)
+                calc.calculate_food(food_data)
 
-            home = process_home_data(home_energy)
-            calc.calculate_home(home)
+                shopping = process_shopping_data(shopping_mode, shopping_simple, shopping_advanced)
+                calc.calculate_shopping(shopping_mode, shopping)
 
-            food_data = process_food_data(food)
-            calc.calculate_food(food_data)
+                db.session.add_all([home, food_data, shopping])
+                db.session.flush()
 
-            shopping = process_shopping_data(shopping_mode, shopping_simple, shopping_advanced)
-            calc.calculate_shopping(shopping_mode, shopping)
+                footprint = CarbonFootprint(
+                    user_id=user.id,
+                    travel_id=travel.id,
+                    home_id=home.id,
+                    food_id=food_data.id,
+                    shopping_id=shopping.id
+                )
+                db.session.add(footprint)
+                db.session.flush()
 
-            db.session.add_all([home, food_data, shopping])
-            db.session.flush()
+                calc.calculate_total_emissions()
+                calc.emission.carbon_footprint_id = footprint.id
+                calc.emission.user_id = user.id
+                db.session.add(calc.emission)
+                db.session.commit()
 
-            footprint = CarbonFootprint(
-                user_id=user.id,
-                travel_id=travel.id,
-                home_id=home.id,
-                food_id=food_data.id,
-                shopping_id=shopping.id
-            )
-            db.session.add(footprint)
-            db.session.flush()
+                flash('Your carbon footprint has been calculated and saved!', 'success')
+                return redirect(url_for('view_data'))
+            else:
+                # Show form validation errors
+                for form in forms_to_validate:
+                    for field, errors in form.errors.items():
+                        for error in errors:
+                            flash(f"{field}: {error}", "danger")
+                flash("There were errors in your submission. Please correct them and try again.", "danger")
+        except Exception as e:
+            flash(f"An error occurred: {str(e)}", "danger")
 
-            calc.calculate_total_emissions()
-            calc.emission.carbon_footprint_id = footprint.id
-            calc.emission.user_id = user.id
-            db.session.add(calc.emission)
-            db.session.commit()
-
-            flash('Your carbon footprint has been calculated and saved!', 'success')
-            return redirect(url_for('view_data'))
-
+    # Render the template with forms (for both GET and failed POST)
     return render_template(
         'add_data.html',
         active_page='add_data',
@@ -145,7 +155,8 @@ def add_data():
         home_energy=home_energy,
         food=food,
         shopping_simple=shopping_simple,
-        shopping_advanced=shopping_advanced
+        shopping_advanced=shopping_advanced,
+        is_new_user=is_new_user
     )
 
 def process_travel_data(mode, pts:PublicTransitSimpleForm, pta:PublicTransitAdvancedForm, ats:AirTravelSimpleForm, ata:AirTravelAdvancedForm):
@@ -233,12 +244,19 @@ def process_shopping_data(mode, simple_form:ShoppingSimpleForm, advanced_form:Sh
 @app.route('/view_data')
 @login_required
 def view_data():
+    user_data = CarbonFootprint.query.filter_by(user_id=current_user.id).first()
+    locked = user_data is None  # Lock the page if the user is new
+
+    if locked:
+        return redirect(url_for('add_data', new_user='true'))
+
     return render_template('view_data.html', 
                           active_page='view_data', 
                           nav_items=nav_items,
                           first_name=current_user.first_name,
                           last_name=current_user.last_name,
-                          email=current_user.email)
+                          email=current_user.email,
+                          locked=locked)
 
 
 @app.route('/api/emissions', methods=['GET'])
@@ -278,6 +296,10 @@ def get_emissions():
 @app.route('/share', methods=['GET', 'POST'])
 @login_required
 def share():
+    # Check if user is new (has no data)
+    user_data = CarbonFootprint.query.filter_by(user_id=current_user.id).first()
+    is_new_user = user_data is None
+    
     form = ShareForm()
     search_results = None
     
@@ -397,7 +419,8 @@ def share():
                           food_pct=food_pct,
                           home_pct=home_pct,
                           shopping_pct=shopping_pct,
-                          total_emission=total_emission)
+                          total_emission=total_emission,
+                          is_new_user=is_new_user)
 
 @app.route('/api/share', methods=['POST'])
 @login_required
@@ -449,16 +472,25 @@ def stop_share():
 @app.route('/facts')
 @login_required
 def facts():
+    # Check if user is new (has no data)
+    user_data = CarbonFootprint.query.filter_by(user_id=current_user.id).first()
+    is_new_user = user_data is None
+    
     return render_template('facts.html', 
                           active_page='facts', 
                           nav_items=nav_items,
                           first_name=current_user.first_name,
                           last_name=current_user.last_name,
-                          email=current_user.email)
+                          email=current_user.email,
+                          is_new_user=is_new_user)
 
 @app.route('/profile')
 @login_required
 def profile():
+    # Check if user is new (has no data)
+    user_data = CarbonFootprint.query.filter_by(user_id=current_user.id).first()
+    is_new_user = user_data is None
+    
     form = ChangePasswordForm()
     
     return render_template('profile.html', 
@@ -466,7 +498,8 @@ def profile():
                           first_name=current_user.first_name,
                           last_name=current_user.last_name,
                           email=current_user.email,
-                          form=form)
+                          form=form,
+                          is_new_user=is_new_user)
 
 @app.route('/login', methods=['GET', 'POST'])
 def login():
