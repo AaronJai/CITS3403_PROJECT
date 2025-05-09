@@ -93,12 +93,16 @@
                             <td class="py-3 px-4 hidden md:table-cell">{{ user.email }}</td>
                             <td class="py-3 px-4">{{ user.carbon_footprint }}</td>
                             <td class="py-3 px-4">
+                                {% if user.email != current_user.email %}
                                 <button 
-                                    type="button"
-                                    onclick="loadSharedUserEmissions('{{ user.email }}')"
-                                    class="text-blue-500 hover:underline">
+                                    onclick="loadSharedUserEmissions('{{ user.email }}', 'preview-{{ user.email }}')"
+                                    class="text-blue-500 hover:underline cursor-pointer">
                                     View Details
                                 </button>
+                                <div id="preview-{{ user.email }}"></div>
+                                {% else %}
+                                <!-- current user: no View Details -->
+                                {% endif %}
                             </td>
                         </tr>
                         {% if selected_email == user.email %}
@@ -152,7 +156,7 @@
                                             </div>
 
                                             <p class="mt-4 text-sm font-semibold text-center">
-                                                Total: <span class="text-primary">{{ total_emission }}kg CO2eq</span> this month
+                                                Total: <span class="text-primary">{{ total_emission | round(2) }}kg CO2eq</span> this month
                                             </p>
                                         </div>
                                     </div>
