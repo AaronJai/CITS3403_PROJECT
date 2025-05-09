@@ -289,30 +289,29 @@ def get_emissions():
         'other_goods_emissions': emissions.other_goods_emissions or 0.0,
         'services_emissions': emissions.services_emissions or 0.0,
         'total_emissions': emissions.total_emissions or 0.0
-    })
+    }) 
 
 
 
 @app.route('/share', methods=['GET', 'POST'])
 @login_required
 def share():
-    # Check if user is new (has no data)
     user_data = CarbonFootprint.query.filter_by(user_id=current_user.id).first()
     is_new_user = user_data is None
-    
+
     form = ShareForm()
     search_results = None
-    
+
     if form.validate_on_submit():
-        search_email = form.search_email.data
+        search_email = form.search_email.data.strip()
         search_results = User.query.filter_by(email=search_email).first()
         if not search_results:
             flash('No user found with that email address.', 'warning')
         else:
             flash('User found!', 'success')
-    
+
     if request.method == 'POST' and 'share_email' in request.form:
-        target_email = request.form.get('share_email')
+        target_email = request.form.get('share_email').strip()
         to_user = User.query.filter_by(email=target_email).first()
 
         if not to_user:
@@ -331,144 +330,124 @@ def share():
 
         return redirect(url_for('share'))
 
+    # Users current_user shared to
     sharing_records = Share.query.filter_by(from_user_id=current_user.id).all()
     sharing_with = []
-    for share in sharing_records:
-        target = User.query.get(share.to_user_id)
+    for share_record in sharing_records:
+        target = User.query.get(share_record.to_user_id)
         sharing_with.append({
             'name': f"{target.first_name} {target.last_name}",
             'email': target.email,
-            'shared_date': share.shared_date.strftime("%B %d, %Y")
+            'shared_date': share_record.shared_date.strftime("%B %d, %Y")
         })
+
+    # Users who shared with current_user
     received_records = Share.query.filter_by(to_user_id=current_user.id).all()
     shared_with_me_raw = []
     for share in received_records:
         sender = User.query.get(share.from_user_id)
-        footprint = CarbonFootprint.query.filter_by(user_id=sender.id).first()
-        if footprint:
-            emission = Emissions.query.filter_by(carbon_footprint_id=footprint.id).first()
-        else:
-            emission = None
-
-        if emission:
-            shared_with_me_raw.append({
-                'name': f"{sender.first_name} {sender.last_name}",
-                'email': sender.email,
-                'carbon_footprint_value': float(emission.total_emissions),
-                'carbon_footprint': f"{emission.total_emissions:.2f} CO2eq"
-            })
-        else:
-            shared_with_me_raw.append({
-                'name': f"{sender.first_name} {sender.last_name}",
-                'email': sender.email,
-                'carbon_footprint_value': float('inf'),
-                'carbon_footprint': "N/A"
-            })
-            
-    footprint = CarbonFootprint.query.filter_by(user_id=current_user.id).first()
-    if footprint:
-        emission = Emissions.query.filter_by(carbon_footprint_id=footprint.id).first()
-    else:
-        emission = None
-
-    if emission:
+        emission = Emissions.query.filter_by(user_id=sender.id).order_by(Emissions.calculated_at.desc()).first()
         shared_with_me_raw.append({
-            'name': f"{current_user.first_name} {current_user.last_name}",
-            'email': current_user.email,
-            'carbon_footprint_value': float(emission.total_emissions),
-            'carbon_footprint': f"{emission.total_emissions:.2f} CO2eq"
+            'name': f"{sender.first_name} {sender.last_name}",
+            'email': sender.email,
+            'carbon_footprint_value': float(emission.total_emissions) if emission else float('inf'),
+            'carbon_footprint': f"{emission.total_emissions:.2f} CO2eq" if emission else "N/A"
         })
-    else:
-        shared_with_me_raw.append({
-            'name': f"{current_user.first_name} {current_user.last_name}",
-            'email': current_user.email,
-            'carbon_footprint_value': float('inf'),
-            'carbon_footprint': "N/A"
-        })
+
+    # Add self
+    emission = Emissions.query.filter_by(user_id=current_user.id).order_by(Emissions.calculated_at.desc()).first()
+    shared_with_me_raw.append({
+        'name': f"{current_user.first_name} {current_user.last_name}",
+        'email': current_user.email,
+        'carbon_footprint_value': float(emission.total_emissions) if emission else float('inf'),
+        'carbon_footprint': f"{emission.total_emissions:.2f} CO2eq" if emission else "N/A"
+    })
+
     shared_with_me_sorted = sorted(shared_with_me_raw, key=lambda x: x['carbon_footprint_value'])
-
     for i, user in enumerate(shared_with_me_sorted, start=1):
         user['rank'] = i
 
-    shared_with_me = shared_with_me_sorted
-
+    # If viewing someone’s footprint
     view_email = request.args.get('view_email')
+    selected_name = selected_email = None
+    travel_pct = food_pct = home_pct = shopping_pct = total_emission = 0
+
     if view_email:
         target_user = User.query.filter_by(email=view_email).first()
-        selected_footprint = CarbonFootprint.query.filter_by(user_id=target_user.id).first()
-        selected_name = f"{target_user.first_name} {target_user.last_name}"
-        selected_email = target_user.email
+        if target_user:
+            selected_name = f"{target_user.first_name} {target_user.last_name}"
+            selected_email = target_user.email
+            emission = Emissions.query.filter_by(user_id=target_user.id).order_by(Emissions.calculated_at.desc()).first()
 
-        emission = Emissions.query.filter_by(carbon_footprint_id=selected_footprint.id).first() if selected_footprint else None
-        if emission:
-            travel = ...
-            #TODO: Add the logic to calculate travel, food, home, and shopping emissions here
-        else:
-            travel_pct = food_pct = home_pct = shopping_pct = 0
-            total_emission = 0
-    else:
-        selected_footprint = None
-        selected_name = None
-        selected_email = None
-        travel_pct = food_pct = home_pct = shopping_pct = total_emission = 0
+            if emission and emission.total_emissions:
+                total_emission = emission.total_emissions
+                travel = (emission.car_emissions or 0) + (emission.air_travel_emissions or 0) + (emission.public_transit_emissions or 0)
+                food = (emission.meat_emissions or 0) + (emission.dairy_emissions or 0) + (emission.fruits_vegetables_emissions or 0) + \
+                       (emission.cereals_emissions or 0) + (emission.snacks_emissions or 0)
+                home = (emission.electricity_emissions or 0) + (emission.natural_gas_emissions or 0) + (emission.heating_fuels_emissions or 0) + \
+                       (emission.water_emissions or 0) + (emission.construction_emissions or 0)
+                shopping = (emission.clothing_emissions or 0) + (emission.furniture_emissions or 0) + (emission.other_goods_emissions or 0) + \
+                           (emission.services_emissions or 0)
+                travel_pct = round((travel / total_emission) * 100) if total_emission else 0
+                food_pct = round((food / total_emission) * 100) if total_emission else 0
+                home_pct = round((home / total_emission) * 100) if total_emission else 0
+                shopping_pct = round((shopping / total_emission) * 100) if total_emission else 0
+
+    return render_template('share.html',
+                           active_page='share',
+                           nav_items=nav_items,
+                           first_name=current_user.first_name,
+                           last_name=current_user.last_name,
+                           email=current_user.email,
+                           form=form,
+                           search_results=search_results,
+                           shared_with_me=shared_with_me_sorted,
+                           sharing_with=sharing_with,
+                           selected_name=selected_name,
+                           selected_email=selected_email,
+                           travel_pct=travel_pct,
+                           food_pct=food_pct,
+                           home_pct=home_pct,
+                           shopping_pct=shopping_pct,
+                           total_emission=total_emission,
+                           is_new_user=is_new_user)
 
 
-    emission = Emissions.query.filter_by(carbon_footprint_id=selected_footprint.id).first() if selected_footprint else None
-    if emission:
-        travel = (
-            (emission.car_emissions or 0) +
-            (emission.air_travel_emissions or 0) +
-            (emission.public_transit_emissions or 0)
-        )
-        food = (
-            (emission.meat_emissions or 0) +
-            (emission.dairy_emissions or 0) +
-            (emission.fruits_vegetables_emissions or 0) +
-            (emission.cereals_emissions or 0) +
-            (emission.snacks_emissions or 0)
-        )
-        home = (
-            (emission.electricity_emissions or 0) +
-            (emission.natural_gas_emissions or 0) +
-            (emission.heating_fuels_emissions or 0) +
-            (emission.water_emissions or 0)
-        )
-        shopping = (
-            (emission.clothing_emissions or 0) +
-            (emission.furniture_emissions or 0) +
-            (emission.other_goods_emissions or 0) +
-            (emission.services_emissions or 0)
-        )
+@app.route('/api/emissions/<email>', methods=['GET'])
+@login_required
+def get_user_emissions(email):
+    user = User.query.filter_by(email=email).first()
+    if not user:
+        return jsonify({'error': 'User not found'}), 404
 
-        total = travel + food + home + shopping
-        total_emission = round(total, 2)
-        travel_pct = round((travel / total) * 100) if total else 0
-        food_pct = round((food / total) * 100) if total else 0
-        home_pct = round((home / total) * 100) if total else 0
-        shopping_pct = round((shopping / total) * 100) if total else 0
-    else:
-        travel_pct = food_pct = home_pct = shopping_pct = 0
-        total_emission = 0 
+    emissions = Emissions.query.filter_by(user_id=user.id).order_by(Emissions.calculated_at.desc()).first()
+    if not emissions:
+        return jsonify({'error': 'No emissions data'}), 404
 
-    return render_template('share.html', 
-                          active_page='share', 
-                          nav_items=nav_items,
-                          first_name=current_user.first_name,
-                          last_name=current_user.last_name,
-                          email=current_user.email,
-                          form=form,
-                          search_results=search_results,
-                          shared_with_me=shared_with_me,
-                          sharing_with=sharing_with,
-                          selected_footprint=selected_footprint,
-                          selected_name=selected_name,  
-                          selected_email = selected_email,
-                          travel_pct=travel_pct,
-                          food_pct=food_pct,
-                          home_pct=home_pct,
-                          shopping_pct=shopping_pct,
-                          total_emission=total_emission,
-                          is_new_user=is_new_user)
+    total = emissions.total_emissions or 0.0
+
+    travel = (emissions.car_emissions or 0.0) + (emissions.public_transit_emissions or 0.0) + (emissions.air_travel_emissions or 0.0)
+    food = (emissions.meat_emissions or 0.0) + (emissions.dairy_emissions or 0.0) + \
+           (emissions.fruits_vegetables_emissions or 0.0) + (emissions.cereals_emissions or 0.0) + (emissions.snacks_emissions or 0.0)
+    home = (emissions.electricity_emissions or 0.0) + (emissions.natural_gas_emissions or 0.0) + \
+           (emissions.heating_fuels_emissions or 0.0) + (emissions.water_emissions or 0.0) + (emissions.construction_emissions or 0.0)
+    shopping = (emissions.furniture_emissions or 0.0) + (emissions.clothing_emissions or 0.0) + \
+               (emissions.other_goods_emissions or 0.0) + (emissions.services_emissions or 0.0)
+
+    travel_pct = round((travel / total) * 100) if total else 0
+    food_pct = round((food / total) * 100) if total else 0
+    home_pct = round((home / total) * 100) if total else 0
+    shopping_pct = round((shopping / total) * 100) if total else 0
+
+    return jsonify({
+        'name': f'{user.first_name} {user.last_name}',
+        'email': user.email,
+        'travel_pct': travel_pct,
+        'food_pct': food_pct,
+        'home_pct': home_pct,
+        'shopping_pct': shopping_pct,
+        'total_emissions': total
+    })
 
 @app.route('/api/share', methods=['POST'])
 @login_required
