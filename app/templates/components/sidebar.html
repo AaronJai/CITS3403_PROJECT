@@ -30,9 +30,9 @@
     <div class="sidebar-user-info">
       <image src="{{ url_for('static', filename='assets/images/avatar.png') }}" alt="avatar"
         class="sidebar-user-avatar" />
-      <div class="hidden lg:block">
+      <div class="hidden lg:block w-[200px] overflow-hidden">
         <p class="font-semibold">{{ first_name }} {{ last_name }}</p>
-        <p class="text-gray-500">{{ email }}</p>
+        <p class="text-gray-500 w-[200px] truncate whitespace-nowrap overflow-hidden">{{ email }}</p>
       </div>
     </div>
   </a>
