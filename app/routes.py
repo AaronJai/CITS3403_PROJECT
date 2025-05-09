@@ -5,7 +5,7 @@ from app.constants import nav_items
 from app.forms import VehicleForm, PublicTransitSimpleForm, PublicTransitAdvancedForm
 from app.forms import AirTravelSimpleForm, AirTravelAdvancedForm, HomeEnergyForm
 from app.forms import FoodForm, ShoppingSimpleForm, ShoppingAdvancedForm, CarbonFootprintForm
-from app.models import User, CarbonFootprint, Travel, Vehicle, Home, Food, Shopping, Emissions, Share
+from app.models import User, CarbonFootprint, Travel, Vehicle, Home, Food, Shopping, Emissions, Share, Message
 from app.processing_layer import CarbonFootprintCalculator
 from flask_login import login_user, logout_user, current_user, login_required
 from app.forms import LoginForm, SignupForm, ChangePasswordForm, ShareForm, ResetPasswordRequestForm, ResetPasswordForm
@@ -507,6 +507,58 @@ def stop_share():
         flash('Sharing record not found.', 'warning')
 
     return redirect(url_for('share'))
+
+@app.route('/chat', methods=['POST'])
+def chat():
+    print("Received POST /chat request")
+    print("Headers:", dict(request.headers))
+    print("Raw body:", request.data)
+
+    try:
+        data = request.get_json(force=True)
+        print("Parsed JSON:", data)
+    except Exception as e:
+        print("Failed to parse JSON:", str(e))
+        return jsonify(success=False, error="Failed to parse JSON"), 400
+
+    # Extract recipient email and message content
+    to_email = data.get('to')
+    content = data.get('message')
+    print("To:", to_email)
+    print("Message:", content)
+
+    # Validate the presence of required fields
+    if not to_email or not content:
+        print("Incomplete data")
+        return jsonify(success=False, error="Missing data"), 400
+
+    # Save the new message to the database
+    new_msg = Message(
+        sender_id=current_user.email,
+        receiver_id=to_email,
+        content=content
+    )
+    db.session.add(new_msg)
+    db.session.commit()
+
+    print("Message saved successfully!")
+    return jsonify(success=True)
+
+@app.route('/chat/<email>', methods=['GET'])
+def chat_history(email):
+    # Retrieve chat history between the current user and the specified email
+    messages = Message.query.filter(
+        ((Message.sender_id == current_user.email) & (Message.receiver_id == email)) |
+        ((Message.sender_id == email) & (Message.receiver_id == current_user.email))
+    ).order_by(Message.timestamp).all()
+    
+    return jsonify([
+        {
+            'sender': msg.sender_id,
+            'content': msg.content,
+            'timestamp': msg.timestamp.strftime('%Y-%m-%d %H:%M')
+        } for msg in messages
+    ])
 
 @app.route('/facts')
 @login_required
