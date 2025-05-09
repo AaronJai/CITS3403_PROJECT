@@ -687,7 +687,7 @@ def confirm_email(token):
         flash('The confirmation link is invalid or has expired.', 'error')
         return redirect(url_for('login'))
     
-    user = User.query.get(data.get('update_email'))
+    user = User.query.get(data.get('user_id'))
     if not user:
         flash('The confirmation link is invalid or has expired.', 'error')
         return redirect(url_for('login'))
@@ -697,10 +697,12 @@ def confirm_email(token):
         flash('This email is already in use.', 'error')
         return redirect(url_for('profile'))
     
-    user.email = new_email
-    user.unconfirmed_email = None
-    user.confirmed = True
-    db.session.commit()
+    if user.email != new_email:
+        user.email = new_email
+        user.unconfirmed_email = None
+        user.confirmed = True
+        db.session.commit()
+
     flash('Account confirmed! Please log in.', 'success')
     return redirect(url_for('login'))
 
