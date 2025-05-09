@@ -9,7 +9,7 @@ from app.models import User, CarbonFootprint, Travel, Vehicle, Home, Food, Shopp
 from app.processing_layer import CarbonFootprintCalculator
 from flask_login import login_user, logout_user, current_user, login_required
 from app.forms import LoginForm, SignupForm, ChangePasswordForm, ShareForm, ResetPasswordRequestForm, ResetPasswordForm, DeleteAccountForm, EditNameForm, EditEMailForm
-from app.email_utils import send_confirmation_email, send_password_reset_email
+from app.email_utils import send_confirmation_email, send_password_reset_email, send_email_update_confirmation
 
 @app.route('/')
 @login_required
@@ -466,12 +466,13 @@ def profile():
 
     email_form.original_email.data = current_user.email
 
-    if "email_form.submit_email.data" and email_form.validate_on_submit():
+    if email_form.submit_email.data and email_form.validate_on_submit():
+        submitted_original_email = request.form.get('original_email')
         if email_form.email.data != current_user.email:
-            current_user.email = email_form.email.data
-            current_user.confirmed = False
+            current_user.unconfirmed_email = email_form.email.data #stores email temporarily 
+            # current_user.confirmed = False
             db.session.commit()
-            send_confirmation_email(current_user)
+            send_email_update_confirmation(current_user, email_form.email.data)
             flash('Email updated. Please confirm your new email address.', 'info')
         else:
             flash("Please enter a valid Email address", "error")
@@ -680,11 +681,24 @@ def resend_confirmation():
 
 @app.route('/confirm_email/<token>')
 def confirm_email(token):
-    user = User.verify_email_token(token)
-    if not user:
+    data = User.verify_email_update_token(token)
+    
+    if not data:
         flash('The confirmation link is invalid or has expired.', 'error')
         return redirect(url_for('login'))
     
+    user = User.query.get(data.get('update_email'))
+    if not user:
+        flash('The confirmation link is invalid or has expired.', 'error')
+        return redirect(url_for('login'))
+
+    new_email = data.get('new_email')
+    if User.query.filter_by(email=new_email).first():
+        flash('This email is already in use.', 'error')
+        return redirect(url_for('profile'))
+    
+    user.email = new_email
+    user.unconfirmed_email = None
     user.confirmed = True
     db.session.commit()
     flash('Account confirmed! Please log in.', 'success')

@@ -21,6 +21,7 @@ class User(UserMixin, db.Model):
     first_name = db.Column(db.String(50), nullable=False)
     last_name = db.Column(db.String(50), nullable=False)
     email = db.Column(db.String(120), unique=True, nullable=False)
+    unconfirmed_email = db.Column(db.String(120), nullable=True)
     # store password_hash instead of plain text password for security
     password_hash = db.Column(db.String(128), nullable=False)
     confirmed = db.Column(db.Boolean, default=False)
@@ -61,7 +62,20 @@ class User(UserMixin, db.Model):
             return None
         return User.query.get(id)
 
+    def get_email_update_token(self, new_email, expires_in=3600):
+        return jwt.encode(
+            {'user_id': self.id, 'new_email': new_email, 'exp': time() + expires_in},
+            app.config['SECRET_KEY'],
+            algorithm='HS256'
+        )
 
+    @staticmethod
+    def verify_email_update_token(token):
+        try:
+            return jwt.decode(token, app.config['SECRET_KEY'], algorithms=['HS256'])
+        except:
+            return None
+    
 class CarbonFootprint(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
