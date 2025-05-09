@@ -466,7 +466,7 @@ def profile():
 
     email_form.original_email.data = current_user.email
 
-    if email_form.submit.data and email_form.validate_on_submit():
+    if "email_form.submit_email.data" and email_form.validate_on_submit():
         if email_form.email.data != current_user.email:
             current_user.email = email_form.email.data
             current_user.confirmed = False
@@ -477,13 +477,13 @@ def profile():
             flash("Please enter a valid Email address", "error")
         return redirect(url_for('profile'))
     
-    if email_form.submit.data and not email_form.validate.validate():
+    if email_form.submit_email.data and not email_form.validate():
         for field, errors in email_form.errors.items():
             for error in errors:
                 flash(f"{email_form[field].label.text}: {error}", "error")
         return redirect(url_for('profile'))
     
-    if name_form.validate_on_submit():
+    if name_form.submit_name.data and name_form.validate_on_submit():
         current_user.first_name = name_form.first_name.data
         current_user.last_name = name_form.last_name.data
         db.session.commit()

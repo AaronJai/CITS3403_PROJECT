@@ -238,7 +238,7 @@ class EditEMailForm(FlaskForm):
         Email(message="Please enter a valid email address")
     ])
     original_email = HiddenField()
-    submit = SubmitField('Update Email')
+    submit_email = SubmitField('Update Email')
 
     def validate_email(self, field):
         if field.data != self.original_email.data:
@@ -248,7 +248,7 @@ class EditEMailForm(FlaskForm):
 class EditNameForm(FlaskForm):
     first_name = StringField('First Name',render_kw={"placeholder":"First Name"}, validators=[DataRequired(), Length(min=1, max=50)])
     last_name = StringField('Last Name', render_kw={"placeholder":"Last Name"}, validators=[DataRequired(), Length(min=1, max=50)])
-    submit = SubmitField('Save')
+    submit_name = SubmitField('Save')
 
 class DeleteAccountForm(FlaskForm):
     submit = SubmitField('Delete Account')
