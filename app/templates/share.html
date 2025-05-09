@@ -74,19 +74,17 @@
                     </thead>
                     <tbody>
                         {% for user in shared_with_me %}
-                        <tr 
-                            class="border-b cursor-pointer {% if user.email == current_user.email %}bg-green-50{% endif %}" 
-                            data-email="{{ user.email }}" 
-                            onclick="togglePreview('{{ user.email }}')">
+                        <tr class="border-b cursor-pointer {% if user.email == current_user.email %}bg-green-50{% endif %}"
+                            data-email="{{ user.email }}" onclick="togglePreview('{{ user.email }}')">
                             <td class="py-3 px-4">
                                 {% if user.rank == 1 %}
-                                    🥇
+                                🥇
                                 {% elif user.rank == 2 %}
-                                    🥈
+                                🥈
                                 {% elif user.rank == 3 %}
-                                    🥉
+                                🥉
                                 {% else %}
-                                    {{ user.rank }}
+                                {{ user.rank }}
                                 {% endif %}
                             </td>
                             <td class="py-3 px-4">{{ user.name }}</td>
@@ -94,7 +92,7 @@
                             <td class="py-3 px-4">{{ user.carbon_footprint }}</td>
                             <td class="py-3 px-4">
                                 {% if user.email != current_user.email %}
-                                <button 
+                                <button
                                     onclick="loadSharedUserEmissions('{{ user.email }}', 'preview-{{ user.email }}')"
                                     class="text-blue-500 hover:underline cursor-pointer">
                                     View Details
@@ -112,12 +110,12 @@
                                     <div class="bg-white p-4 rounded-md">
                                         <div class="bg-gray-50 p-4 rounded-lg border border-gray-200">
                                             <div class="flex items-center mb-4">
-                                                <img src="{{ url_for('static', filename='assets/images/avatar.png') }}" 
-                                                     alt="Avatar"
-                                                     class="w-10 h-10 rounded-full mr-3" />
+                                                <img src="{{ url_for('static', filename='assets/images/avatar.png') }}"
+                                                    alt="Avatar" class="w-10 h-10 rounded-full mr-3" />
                                                 <div>
                                                     <p class="font-semibold">{{ selected_name }}</p>
-                                                    <p class="text-gray-500 text-sm hidden md:block">{{ selected_email }}</p>
+                                                    <p class="text-gray-500 text-sm hidden md:block">{{ selected_email
+                                                        }}</p>
                                                 </div>
                                             </div>
 
@@ -125,38 +123,53 @@
                                                 <div class="bg-white p-3 rounded-md shadow-sm">
                                                     <h3 class="font-semibold">Travel</h3>
                                                     <div class="mt-2 h-2 bg-gray-200 rounded-full">
-                                                        <div class="h-2 bg-primary rounded-full" style="width: {{ travel_pct }}%"></div>
+                                                        <div class="h-2 bg-primary rounded-full"
+                                                            style="width: {{ travel_pct }}%"></div>
                                                     </div>
-                                                    <p class="text-sm text-gray-600 mt-1">{{ travel_pct }}% of your carbon budget</p>
-                                                </div>
-
-                                                <div class="bg-white p-3 rounded-md shadow-sm">
-                                                    <h3 class="font-semibold">Food</h3>
-                                                    <div class="mt-2 h-2 bg-gray-200 rounded-full">
-                                                        <div class="h-2 bg-primary rounded-full" style="width: {{ food_pct }}%"></div>
-                                                    </div>
-                                                    <p class="text-sm text-gray-600 mt-1">{{ food_pct }}% of your carbon budget</p>
+                                                    <p class="text-sm text-gray-600 mt-1"><strong>{{ travel_pct
+                                                            }}%</strong> of their
+                                                        carbon budget</p>
                                                 </div>
 
                                                 <div class="bg-white p-3 rounded-md shadow-sm">
                                                     <h3 class="font-semibold">Home</h3>
                                                     <div class="mt-2 h-2 bg-gray-200 rounded-full">
-                                                        <div class="h-2 bg-primary rounded-full" style="width: {{ home_pct }}%"></div>
+                                                        <div class="h-2 bg-primary rounded-full"
+                                                            style="width: {{ home_pct }}%"></div>
                                                     </div>
-                                                    <p class="text-sm text-gray-600 mt-1">{{ home_pct }}% of your carbon budget</p>
+                                                    <p class="text-sm text-gray-600 mt-1"><strong>{{ home_pct
+                                                            }}%</strong> of their
+                                                        carbon
+                                                        budget</p>
+                                                </div>
+
+                                                <div class="bg-white p-3 rounded-md shadow-sm">
+                                                    <h3 class="font-semibold">Food</h3>
+                                                    <div class="mt-2 h-2 bg-gray-200 rounded-full">
+                                                        <div class="h-2 bg-primary rounded-full"
+                                                            style="width: {{ food_pct }}%"></div>
+                                                    </div>
+                                                    <p class="text-sm text-gray-600 mt-1"><strong>{{ food_pct
+                                                            }}%</strong> of their
+                                                        carbon
+                                                        budget</p>
                                                 </div>
 
                                                 <div class="bg-white p-3 rounded-md shadow-sm">
                                                     <h3 class="font-semibold">Shopping</h3>
                                                     <div class="mt-2 h-2 bg-gray-200 rounded-full">
-                                                        <div class="h-2 bg-primary rounded-full" style="width: {{ shopping_pct }}%"></div>
+                                                        <div class="h-2 bg-primary rounded-full"
+                                                            style="width: {{ shopping_pct }}%"></div>
                                                     </div>
-                                                    <p class="text-sm text-gray-600 mt-1">{{ shopping_pct }}% of your carbon budget</p>
+                                                    <p class="text-sm text-gray-600 mt-1"><strong>{{ shopping_pct
+                                                            }}%</strong> of their
+                                                        carbon budget</p>
                                                 </div>
                                             </div>
 
                                             <p class="mt-4 text-sm font-semibold text-center">
-                                                Total: <span class="text-primary">{{ total_emission | round(2) }}kg CO2eq</span> this month
+                                                Total: <span class="text-primary">{{ total_emission | round(2) }}kg
+                                                    CO2eq</span> this month
                                             </p>
                                         </div>
                                     </div>

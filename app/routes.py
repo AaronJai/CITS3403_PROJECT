@@ -434,10 +434,21 @@ def get_user_emissions(email):
     shopping = (emissions.furniture_emissions or 0.0) + (emissions.clothing_emissions or 0.0) + \
                (emissions.other_goods_emissions or 0.0) + (emissions.services_emissions or 0.0)
 
-    travel_pct = round((travel / total) * 100) if total else 0
-    food_pct = round((food / total) * 100) if total else 0
-    home_pct = round((home / total) * 100) if total else 0
-    shopping_pct = round((shopping / total) * 100) if total else 0
+    # These are the same goals used in dashboard.js
+    GOALS = {
+        'total': 12.3,
+        'travel': 2.9,
+        'home': 3.5,
+        'food': 3.1,
+        'shopping': 2.8
+    }
+
+    # Calculate percentages based on goals rather than total emissions
+    # This ensures consistency with how the dashboard displays percentages
+    travel_pct = round((travel / GOALS['travel']) * 100) if travel else 0
+    food_pct = round((food / GOALS['food']) * 100) if food else 0
+    home_pct = round((home / GOALS['home']) * 100) if home else 0
+    shopping_pct = round((shopping / GOALS['shopping']) * 100) if shopping else 0
 
     return jsonify({
         'name': f'{user.first_name} {user.last_name}',
