@@ -449,6 +449,7 @@ def get_user_emissions(email):
         'total_emissions': total
     })
 
+
 @app.route('/api/share', methods=['POST'])
 @login_required
 def api_share():
