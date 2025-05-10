@@ -17,47 +17,6 @@ document.addEventListener('DOMContentLoaded', function () {
         }
     });
 
-    const integerInputs = document.querySelectorAll('input[type="number"][name$="kms"], input[type="number"][name$="flights"], input[type="number"]');
-    integerInputs.forEach(input => {
-        // Change to text input to disable stepper, use numeric input mode
-        input.type = 'text';
-        input.setAttribute('inputmode', 'numeric');
-        input.setAttribute('pattern', '[0-9]*');
-        input.setAttribute('min', '0');
-
-        let lastValidValue = input.value || '0';
-
-        // Handle all input changes (typing, pasting, etc.)
-        input.addEventListener('input', function (e) {
-            let value = this.value.replace(/[^\d]/g, '');
-
-            if (value === '') {
-                value = '0';
-            }
-
-            // Update the input value
-            this.value = value;
-
-            // Update last valid value if valid (only digits)
-            if (/^\d+$/.test(value)) {
-                lastValidValue = value;
-            } else {
-                this.value = lastValidValue; // Revert if invalid
-            }
-        });
-
-        // Prevent non-digit keypresses
-        input.addEventListener('keydown', function (e) {
-            // Allow digits, backspace, delete, and navigation keys
-            if ((e.key >= '0' && e.key <= '9') || e.key === 'Backspace' || e.key === 'Delete' ||
-                e.key === 'ArrowLeft' || e.key === 'ArrowRight' || e.key === 'ArrowUp' || e.key === 'ArrowDown' ||
-                e.key === 'Tab') {
-                return;
-            }
-            e.preventDefault(); // Block all other keys (including +, -, .)
-        });
-    });
-
     // Track which mode is active for each section
     let isTravelSimpleMode = true;
     let isShoppingSimpleMode = true;
@@ -286,6 +245,7 @@ function addVehicle() {
     setupSlider('.vehicle-mpg', '.vehicle-mpg-value', (slider, value) => {
         return parseFloat(value).toFixed(1);
     });
+    integerFormatter();
 }
 
 
@@ -302,6 +262,49 @@ function setupSlider(sliderClass, valueClass, formatter) {
 
         slider.addEventListener('input', function () {
             valueElement.textContent = formatter(slider, this.value);
+        });
+    });
+}
+
+function integerFormatter() {
+    const integerInputs = document.querySelectorAll('input[type="number"][name$="kms"], input[type="number"][name$="flights"], input[type="number"]');
+    integerInputs.forEach(input => {
+        // Change to text input to disable stepper, use numeric input mode
+        input.type = 'text';
+        input.setAttribute('inputmode', 'numeric');
+        input.setAttribute('pattern', '[0-9]*');
+        input.setAttribute('min', '0');
+
+        let lastValidValue = input.value || '0';
+
+        // Handle all input changes (typing, pasting, etc.)
+        input.addEventListener('input', function (e) {
+            let value = this.value.replace(/[^\d]/g, '');
+
+            if (value === '') {
+                value = '0';
+            }
+
+            // Update the input value
+            this.value = value;
+
+            // Update last valid value if valid (only digits)
+            if (/^\d+$/.test(value)) {
+                lastValidValue = value;
+            } else {
+                this.value = lastValidValue; // Revert if invalid
+            }
+        });
+
+        // Prevent non-digit keypresses
+        input.addEventListener('keydown', function (e) {
+            // Allow digits, backspace, delete, and navigation keys
+            if ((e.key >= '0' && e.key <= '9') || e.key === 'Backspace' || e.key === 'Delete' ||
+                e.key === 'ArrowLeft' || e.key === 'ArrowRight' || e.key === 'ArrowUp' || e.key === 'ArrowDown' ||
+                e.key === 'Tab') {
+                return;
+            }
+            e.preventDefault(); // Block all other keys (including +, -, .)
         });
     });
 }
