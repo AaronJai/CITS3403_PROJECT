@@ -5,7 +5,7 @@
 {% block content %}
 
 <!-- Background Section -->
-<div class="relative min-h-screen flex">
+<section class="relative min-h-screen flex">
 
   <!-- Left Side -->
   <div class="w-2/3 relative rounded-2xl m-4 p-4 flex items-center justify-center overflow-hidden"
@@ -44,83 +44,37 @@
         Loading...
       </p>
     </div>
-
-    <div class="bg-white/60 backdrop-blur-md rounded-3xl shadow-2xl p-8 flex flex-col justify-between h-[400px]">
-
-      <!-- Top Section: Title + Circles + Hover Cards -->
-      <div class="flex flex-col items-center justify-center flex-1 gap-3">
-        <a href="{{ url_for('share') }}">
-          <h2 class="text-2xl font-bold text-[#16372c] hover:underline cursor-pointer transition">Share</h2>
-        </a>
-        <p class="text-gray-600 text-center">Share your results with friends!</p>
-
-        <!-- Circles + Hover Cards -->
-        <div class="flex gap-4 mt-2">
-          <!-- Circle 1 -->
-          <div class="relative group w-12 h-12">
-            <div class="w-full h-full bg-[#16372c] rounded-full transition transform hover:scale-110"></div>
-            <div
-              class="absolute top-full mt-2 left-1/2 -translate-x-1/2 hidden group-hover:flex flex-col items-start bg-white shadow-md p-3 rounded-lg w-44 z-50">
-              <p class="text-sm font-semibold">Jane Doe</p>
-              <p class="text-xs text-gray-500">jane@email.com</p>
-              <p class="text-xs text-gray-500">120kg CO2</p>
-            </div>
-          </div>
-
-          <!-- Circle 2 -->
-          <div class="relative group w-12 h-12">
-            <div class="w-full h-full bg-[#2f5c47] rounded-full transition transform hover:scale-110"></div>
-            <div
-              class="absolute top-full mt-2 left-1/2 -translate-x-1/2 hidden group-hover:flex flex-col items-start bg-white shadow-md p-3 rounded-lg w-44 z-50">
-              <p class="text-sm font-semibold">John Smith</p>
-              <p class="text-xs text-gray-500">john@email.com</p>
-              <p class="text-xs text-gray-500">98kg CO2</p>
-            </div>
-          </div>
-
-          <!-- Circle 3 -->
-          <div class="relative group w-12 h-12">
-            <div class="w-full h-full bg-[#497f66] rounded-full transition transform hover:scale-110"></div>
-            <div
-              class="absolute top-full mt-2 left-1/2 -translate-x-1/2 hidden group-hover:flex flex-col items-start bg-white shadow-md p-3 rounded-lg w-44 z-50">
-              <p class="text-sm font-semibold">Alex Lee</p>
-              <p class="text-xs text-gray-500">alex@email.com</p>
-              <p class="text-xs text-gray-500">105kg CO2</p>
-            </div>
-          </div>
-        </div>
-      </div>
-
-      <!-- Divider -->
-      <div class="border-t border-gray-300 my-3 w-full"></div>
-
-      <!-- Icon Sharing Section -->
-      <div class="flex justify-center gap-6">
-        <!-- Facebook -->
-        <a href="https://facebook.com/sharer/sharer.php?u=https://example.com" target="_blank"
-          class="flex items-center gap-2 hover:underline hover:scale-105 transition">
-          <img src="{{ url_for('static', filename='assets/icons/facebook.svg') }}" alt="Facebook" class="w-5 h-5">
-          <span class="text-sm text-blue-600">Facebook</span>
-        </a>
-
-        <!-- Twitter -->
-        <a href="https://twitter.com/intent/tweet?text=Check%20out%20my%20footprint!&url=https://example.com"
-          target="_blank" class="flex items-center gap-2 hover:underline hover:scale-105 transition">
-          <img src="{{ url_for('static', filename='assets/icons/x.svg') }}" alt="Twitter" class="w-5 h-5">
-          <span class="text-sm text-blue-500">Twitter</span>
-        </a>
-
-        <!-- WhatsApp -->
-        <a href="https://api.whatsapp.com/send?text=Check%20out%20my%20footprint!%20https://example.com" target="_blank"
-          class="flex items-center gap-2 hover:underline hover:scale-105 transition">
-          <img src="{{ url_for('static', filename='assets/icons/whatsapp.svg') }}" alt="WhatsApp" class="w-5 h-5">
-          <span class="text-sm text-green-600">WhatsApp</span>
-        </a>
-      </div>
+    <!-- leader Board-->
+    <div class="bg-white/60 backdrop-blur-md rounded-3xl shadow-2xl p-8 flex flex-col justify-start h-[400px] mb-2">
+        <h2 class="text-xl font-semibold text-center mb-4">Leader Board</h2>
+        <ul class="flex flex-col gap-3 overflow-y-auto">
+        {% for user in shared_with_me %}
+          <li>
+            <button onclick="toggleSharedUserEmissions('{{ user.email }}')"
+              class="flex items-center justify-between w-full px-4 py-2 bg-white rounded-lg shadow hover:bg-green-100 transition">
+              <div class="flex items-center gap-3">
+                {% if user.rank == 1 %}
+                  <span class="text-yellow-500 text-lg">🥇</span>
+                {% elif user.rank == 2 %}
+                  <span class="text-gray-500 text-lg">🥈</span>
+                {% elif user.rank == 3 %}
+                  <span class="text-orange-400 text-lg">🥉</span>
+                {% else %}
+                  <span class="text-sm font-semibold w-6 text-center">{{ user.rank }}</span>
+                {% endif %}
+                <span class="font-medium">{{ user.name }}</span>
+              </div>
+              <div class="text-sm text-gray-600">
+                {{ user.carbon_footprint }}
+              </div>
+            </button>
+          </li>
+        {% endfor %}
+      </ul>   
     </div>
 
   </div>
-</div>
+</section>
 
 <!-- Charts & Suggestions -->
 <div class="bg-white relative rounded-2xl w-full h-[600px] p-6 shadow-2xl flex flex-row overflow-hidden">

@@ -250,13 +250,45 @@ def view_data():
     if locked:
         return redirect(url_for('add_data', new_user='true'))
 
-    return render_template('view_data.html', 
-                          active_page='view_data', 
-                          nav_items=nav_items,
-                          first_name=current_user.first_name,
-                          last_name=current_user.last_name,
-                          email=current_user.email,
-                          locked=locked)
+    # Leader Board
+    shared_with_me_raw = []
+
+    # Current user's own data
+    emission = Emissions.query.filter_by(user_id=current_user.id).order_by(Emissions.calculated_at.desc()).first()
+    shared_with_me_raw.append({
+        'name': f"{current_user.first_name} {current_user.last_name}",
+        'email': current_user.email,
+        'carbon_footprint_value': float(emission.total_emissions) if emission else float('inf'),
+        'carbon_footprint': f"{emission.total_emissions:.2f} CO2eq" if emission else "N/A"
+    })
+
+    # Data shared by other users
+    shared_entries = Share.query.filter_by(to_user_id=current_user.id).all()
+    for entry in shared_entries:
+        sender = User.query.get(entry.from_user_id)
+        if sender:
+            sender_emission = Emissions.query.filter_by(user_id=sender.id).order_by(Emissions.calculated_at.desc()).first()
+            if sender_emission:
+                shared_with_me_raw.append({
+                    'name': f"{sender.first_name} {sender.last_name}",
+                    'email': sender.email,
+                    'carbon_footprint_value': float(sender_emission.total_emissions),
+                    'carbon_footprint': f"{sender_emission.total_emissions:.2f} CO2eq"
+                })
+
+    # Sort and rank users
+    shared_with_me_sorted = sorted(shared_with_me_raw, key=lambda x: x['carbon_footprint_value'])
+    for i, user in enumerate(shared_with_me_sorted, start=1):
+        user['rank'] = i
+
+    return render_template('view_data.html',
+                           active_page='view_data',
+                           nav_items=nav_items,
+                           first_name=current_user.first_name,
+                           last_name=current_user.last_name,
+                           email=current_user.email,
+                           locked=locked,
+                           shared_with_me=shared_with_me_sorted)
 
 
 @app.route('/api/emissions', methods=['GET'])
