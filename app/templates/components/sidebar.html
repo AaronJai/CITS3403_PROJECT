@@ -32,7 +32,12 @@
         class="sidebar-user-avatar" />
       <div class="hidden lg:block w-[200px] overflow-hidden">
         <p class="font-semibold">{{ first_name }} {{ last_name }}</p>
-        <p class="text-gray-500 w-[200px] truncate whitespace-nowrap overflow-hidden">{{ email }}</p>
+        <p class="text-gray-500 w-[180px] truncate whitespace-nowrap overflow-hidden hidden lg:block xl:hidden">
+          {{ email|truncate(14, True, '...') }}
+        </p>
+        <p class="text-gray-500 w-[240px] truncate whitespace-nowrap overflow-hidden hidden xl:block">
+          {{ email|truncate(21, True, '...') }}
+        </p>
       </div>
     </div>
   </a>
