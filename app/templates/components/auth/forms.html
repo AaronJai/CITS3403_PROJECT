@@ -61,14 +61,6 @@
                 {% endfor %}
             </div>
             {% endif %}
-
-            {% if active_page == 'login' %}
-            <div class="text-right mt-1">
-                <a href="{{ url_for('request_password_reset') }}" class="text-sm text-primary hover:underline">
-                    Forgot password?
-                </a>
-            </div>
-            {% endif %}
         </div>
 
         {% if active_page == 'signup' %}
@@ -88,13 +80,27 @@
 
         <!-- Submit -->
         {{ form.submit(class="button-primary") }}
-    </form>
 
-    <!-- Switch Forms -->
-    <div class="text-center mt-4 text-sm">
-        {{ "Don't have an account?" if active_page == 'login' else 'Already have an account?' }}
-        <a href="{{ url_for('signup' if active_page == 'login' else 'login') }}" class="link">
-            {{ 'Sign Up' if active_page == 'login' else 'Log In' }}
-        </a>
-    </div>
+        {% if active_page == 'login' %}
+        <div class="text-center mt-3">
+            <a href="{{ url_for('request_password_reset') }}" class="text-sm text-primary hover:underline">
+                Forgot password?
+            </a>
+        </div>
+
+        <div class="flex items-center my-5">
+            <hr class="flex-grow border-gray-300">
+            <span class="mx-3 text-gray-400 text-sm">or</span>
+            <hr class="flex-grow border-gray-300">
+        </div>
+        {% endif %}
+
+        <!-- Switch Forms -->
+        <div class="text-center text-sm">
+            {{ "Don't have an account?" if active_page == 'login' else 'Already have an account?' }}
+            <a href="{{ url_for('signup' if active_page == 'login' else 'login') }}" class="link">
+                {{ 'Sign Up' if active_page == 'login' else 'Log In' }}
+            </a>
+        </div>
+    </form>
 </div>
