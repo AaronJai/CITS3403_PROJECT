@@ -8,7 +8,7 @@ The Environmental Impact Tracker allows users to log their daily activities and 
 
 | UWA ID   | Name             | GitHub Username                               |
 | -------- | ---------------- | --------------------------------------------- |
-| 23861827 | Mei Lin Ke       | [MeiLin99999](https://github.com/MeiLin99999) |
+| 23861827 | Mei Lin Ke       | [MeiLin99999, Linda](https://github.com/MeiLin99999) |
 | 23683717 | Salman Nikakhter | [samlam691](https://github.com/samlam691)     |
 | 23074324 | Hazel Wang       | [useri4l](https://github.com/useri4l)         |
 | 22884212 | Aaron Tan        | [AaronJai](https://github.com/AaronJai)       |

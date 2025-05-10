@@ -369,7 +369,7 @@
 .energy-input,
 .energy-select {
   height: 2.5rem;
-  padding: 0 0.75rem;
+  padding: 0 0.5rem;
   font-size: 1rem;
   border: 1px solid #ccc;
   border-radius: 0.5rem;
@@ -382,7 +382,8 @@
 }
 
 .energy-select {
-  width: 5rem;
+  width: 6rem;
+  text-align: center;
 }
 
 .input-structure {
