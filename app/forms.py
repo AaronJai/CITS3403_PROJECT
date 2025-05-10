@@ -3,6 +3,7 @@ from wtforms import StringField, PasswordField, SubmitField, EmailField, SearchF
 from wtforms import IntegerField, FloatField, SelectField, RadioField, BooleanField, FormField, HiddenField
 from wtforms.validators import DataRequired, Email, EqualTo, Length, ValidationError, NumberRange, Optional
 import re
+from app.models import User
 
 def password_check(form, field):
     """Custom validator to check password complexity"""
@@ -231,3 +232,23 @@ class ResetPasswordForm(FlaskForm):
     ])
     submit = SubmitField('Reset Password')
 
+class EditEMailForm(FlaskForm):
+    email = StringField('New Email', render_kw={"placeholder": "New Email"}, validators=[
+        DataRequired(),
+        Email(message="Please enter a valid email address")
+    ])
+    original_email = HiddenField()
+    submit_email = SubmitField('Update Email')
+
+    def validate_email(self, field):
+        if field.data != self.original_email.data:
+            if User.query.filter_by(email=field.data).first():
+                raise ValidationError("Email already in use.")
+            
+class EditNameForm(FlaskForm):
+    first_name = StringField('First Name',render_kw={"placeholder":"First Name"}, validators=[DataRequired(), Length(min=1, max=50)])
+    last_name = StringField('Last Name', render_kw={"placeholder":"Last Name"}, validators=[DataRequired(), Length(min=1, max=50)])
+    submit_name = SubmitField('Save')
+
+class DeleteAccountForm(FlaskForm):
+    submit = SubmitField('Delete Account')

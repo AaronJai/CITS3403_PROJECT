@@ -8,8 +8,8 @@ from app.forms import FoodForm, ShoppingSimpleForm, ShoppingAdvancedForm, Carbon
 from app.models import User, CarbonFootprint, Travel, Vehicle, Home, Food, Shopping, Emissions, Share
 from app.processing_layer import CarbonFootprintCalculator
 from flask_login import login_user, logout_user, current_user, login_required
-from app.forms import LoginForm, SignupForm, ChangePasswordForm, ShareForm, ResetPasswordRequestForm, ResetPasswordForm
-from app.email_utils import send_confirmation_email, send_password_reset_email
+from app.forms import LoginForm, SignupForm, ChangePasswordForm, ShareForm, ResetPasswordRequestForm, ResetPasswordForm, DeleteAccountForm, EditNameForm, EditEMailForm
+from app.email_utils import send_confirmation_email, send_password_reset_email, send_email_update_confirmation
 
 @app.route('/')
 @login_required
@@ -484,7 +484,7 @@ def facts():
                           email=current_user.email,
                           is_new_user=is_new_user)
 
-@app.route('/profile')
+@app.route('/profile', methods=['GET', 'POST'])
 @login_required
 def profile():
     # Check if user is new (has no data)
@@ -492,6 +492,36 @@ def profile():
     is_new_user = user_data is None
     
     form = ChangePasswordForm()
+    delete_form = DeleteAccountForm()
+    name_form = EditNameForm()
+    email_form = EditEMailForm()
+
+    email_form.original_email.data = current_user.email
+
+    if email_form.submit_email.data and email_form.validate_on_submit():
+        submitted_original_email = request.form.get('original_email')
+        if email_form.email.data != current_user.email:
+            current_user.unconfirmed_email = email_form.email.data #stores email temporarily 
+            # current_user.confirmed = False
+            db.session.commit()
+            send_email_update_confirmation(current_user, email_form.email.data)
+            flash('Email updated. Please confirm your new email address.', 'info')
+        else:
+            flash("Please enter a valid Email address", "error")
+        return redirect(url_for('profile'))
+    
+    if email_form.submit_email.data and not email_form.validate():
+        for field, errors in email_form.errors.items():
+            for error in errors:
+                flash(f"{email_form[field].label.text}: {error}", "error")
+        return redirect(url_for('profile'))
+    
+    if name_form.submit_name.data and name_form.validate_on_submit():
+        current_user.first_name = name_form.first_name.data
+        current_user.last_name = name_form.last_name.data
+        db.session.commit()
+        flash('Name updated successfully!', 'success')
+        return redirect(url_for('profile'))
     
     return render_template('profile.html', 
                           nav_items=nav_items,
@@ -499,6 +529,9 @@ def profile():
                           last_name=current_user.last_name,
                           email=current_user.email,
                           form=form,
+                          delete_form=delete_form,
+                          name_form = name_form,
+                          email_form = email_form,
                           is_new_user=is_new_user)
 
 @app.route('/login', methods=['GET', 'POST'])
@@ -612,18 +645,49 @@ def change_password():
         
         return redirect(url_for('profile'))
 
+#helper function to delete any related data to user 
+def delete_user_and_data(user):
+    # Delete emissions and footprint-related models
+    footprints = CarbonFootprint.query.filter_by(user_id=user.id).all()
+    for fp in footprints:
+        # Delete emissions first
+        Emissions.query.filter_by(carbon_footprint_id=fp.id).delete()
+
+        # Delete linked travel and vehicles
+        if fp.travel_id:
+            Vehicle.query.filter_by(travel_id=fp.travel_id).delete()
+            Travel.query.filter_by(id=fp.travel_id).delete()
+
+        # Delete other linked models
+        if fp.home_id:
+            Home.query.filter_by(id=fp.home_id).delete()
+        if fp.food_id:
+            Food.query.filter_by(id=fp.food_id).delete()
+        if fp.shopping_id:
+            Shopping.query.filter_by(id=fp.shopping_id).delete()
+
+    # Delete the footprints
+    CarbonFootprint.query.filter_by(user_id=user.id).delete()
+
+    # Delete share records (both sent and received)
+    Share.query.filter(
+        (Share.from_user_id == user.id) |
+        (Share.to_user_id == user.id)
+    ).delete()
+
+    # Finally, delete the user
+    db.session.delete(user)
+    db.session.commit()
+
 @app.route('/delete_account', methods=['POST'])
 @login_required
 def delete_account():
-    # Delete user from database
-    db.session.delete(current_user._get_current_object())
-    db.session.commit()
-    
-    # Logout user
-    logout_user()
-    
-    print("Deleting user account")
-    flash('Your account has been deleted.', 'success')
+    form = DeleteAccountForm()
+    if form.validate_on_submit():
+        user = current_user._get_current_object()
+        logout_user()
+        delete_user_and_data(user)
+        flash('Your account and all related data has been deleted.', 'success')
     return redirect(url_for('login'))
 
 # New routes for email verification
@@ -650,13 +714,28 @@ def resend_confirmation():
 
 @app.route('/confirm_email/<token>')
 def confirm_email(token):
-    user = User.verify_email_token(token)
-    if not user:
+    data = User.verify_email_update_token(token)
+    
+    if not data:
         flash('The confirmation link is invalid or has expired.', 'error')
         return redirect(url_for('login'))
     
-    user.confirmed = True
-    db.session.commit()
+    user = User.query.get(data.get('user_id'))
+    if not user:
+        flash('The confirmation link is invalid or has expired.', 'error')
+        return redirect(url_for('login'))
+
+    new_email = data.get('new_email')
+    if User.query.filter_by(email=new_email).first():
+        flash('This email is already in use.', 'error')
+        return redirect(url_for('profile'))
+    
+    if user.email != new_email:
+        user.email = new_email
+        user.unconfirmed_email = None
+        user.confirmed = True
+        db.session.commit()
+
     flash('Account confirmed! Please log in.', 'success')
     return redirect(url_for('login'))
 
