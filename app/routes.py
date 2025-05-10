@@ -555,13 +555,12 @@ def chat():
 @app.route('/chat/<email>', methods=['GET'])
 @login_required
 def chat_history(email):
-    # 查询聊天记录
+    
     messages = Message.query.filter(
         ((Message.sender_id == current_user.email) & (Message.receiver_id == email)) |
         ((Message.sender_id == email) & (Message.receiver_id == current_user.email))
     ).order_by(Message.timestamp).all()
 
-    # ✅ 把对方发给我但我还没读的消息设为已读
     unread_msgs = Message.query.filter_by(sender_id=email, receiver_id=current_user.email, is_read=False).all()
     for msg in unread_msgs:
         msg.is_read = True
