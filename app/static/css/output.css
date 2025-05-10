@@ -664,6 +664,9 @@
   .cursor-help {
     cursor: help;
   }
+  .cursor-not-allowed {
+    cursor: not-allowed;
+  }
   .cursor-pointer {
     cursor: pointer;
   }

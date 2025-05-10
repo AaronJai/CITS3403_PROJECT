@@ -343,3 +343,131 @@ document.addEventListener('DOMContentLoaded', () => {
 
   window.showTab = showTab;
 });
+
+
+// Chart comparing
+ let barChart = null;
+  let originalConfig = null;
+
+  // Initialize Chart
+  document.addEventListener('DOMContentLoaded', () => {
+    const ctx = document.getElementById('myChart').getContext('2d');
+
+    // Initial chart configuration
+    originalConfig = {
+      type: 'bar',
+      data: {
+        labels: ['Travel', 'Home', 'Food', 'Shopping'],
+        datasets: [
+          {
+            label: 'Vehicle',
+            data: [1, 0, 0, 0],
+            backgroundColor: '#2f5c47'
+          },
+          {
+            label: 'Public Transit',
+            data: [2, 0, 0, 0],
+            backgroundColor: '#497f66'
+          },
+          {
+            label: 'Electricity',
+            data: [0, 3, 0, 0],
+            backgroundColor: '#7fc8a9'
+          },
+          {
+            label: 'Meat',
+            data: [0, 0, 4, 0],
+            backgroundColor: '#a0d9a0'
+          },
+          {
+            label: 'Furniture',
+            data: [0, 0, 0, 5],
+            backgroundColor: '#d0e7c3'
+          }
+        ]
+      },
+      options: {
+        responsive: true,
+        plugins: {
+          legend: { display: true }
+        },
+        scales: {
+          y: {
+            beginAtZero: true
+          }
+        }
+      }
+    };
+
+    // Create Chart
+    barChart = new Chart(ctx, originalConfig);
+  });
+
+  // Comparison chart
+  function toggleSharedUserEmissions(email) {
+    fetch(`/api/compare_emissions?email=${encodeURIComponent(email)}`)
+      .then(res => {
+        if (!res.ok) throw new Error('Failed to fetch compare data');
+        return res.json();
+      })
+      .then(data => {
+        if (data.error) {
+          alert(data.error);
+          return;
+        }
+
+        const chartId = 'myChart';
+        const existingChart = Chart.getChart(chartId);
+        if (existingChart) {
+          existingChart.destroy();
+        }
+
+        const ctx = document.getElementById(chartId).getContext('2d');
+
+        barChart = new Chart(ctx, {
+          type: 'bar',
+          data: {
+            labels: ['Travel', 'Food', 'Home', 'Shopping'],
+            datasets: [
+              {
+                label: 'You',
+                data: data.your_emissions,
+                backgroundColor: '#2f5c47'
+              },
+              {
+                label: data.other_name,
+                data: data.other_emissions,
+                backgroundColor: '#a0d9a0'
+              }
+            ]
+          },
+          options: {
+            responsive: true,
+            plugins: {
+              legend: { display: true }
+            },
+            scales: {
+              y: {
+                beginAtZero: true
+              }
+            }
+          }
+        });
+      })
+      .catch(err => {
+        alert("Error: " + err.message);
+        console.error(err);
+      });
+  }
+
+  // Restore Origianl Chart
+  function restoreOriginalChart() {
+    const chartId = 'myChart';
+    const existingChart = Chart.getChart(chartId);
+    if (existingChart) {
+      existingChart.destroy();
+    }
+
+    const ctx = document.getElementById(chartId).getContext('2d');
+    barChart = new Chart(ctx, originalConfig);
+  }

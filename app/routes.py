@@ -291,6 +291,36 @@ def view_data():
                            shared_with_me=shared_with_me_sorted)
 
 
+@app.route('/api/compare_emissions')
+@login_required
+def compare_emissions():
+    target_email = request.args.get('email')
+    other_user = User.query.filter_by(email=target_email).first()
+    if not other_user:
+        return jsonify({'error': 'User not found'}), 404
+
+    your_emission = Emissions.query.filter_by(user_id=current_user.id).order_by(Emissions.calculated_at.desc()).first()
+    other_emission = Emissions.query.filter_by(user_id=other_user.id).order_by(Emissions.calculated_at.desc()).first()
+
+    if not your_emission or not other_emission:
+        return jsonify({'error': 'Missing emission data'}), 400
+
+    def get_grouped_data(emission):
+        return [
+            emission.car_emissions + emission.public_transit_emissions + emission.air_travel_emissions,  # Travel
+            emission.meat_emissions + emission.dairy_emissions + emission.fruits_vegetables_emissions + emission.cereals_emissions + emission.snacks_emissions,  # Food
+            emission.electricity_emissions + emission.natural_gas_emissions + emission.heating_fuels_emissions + emission.water_emissions + emission.construction_emissions,  # Home
+            emission.furniture_emissions + emission.clothing_emissions + emission.other_goods_emissions + emission.services_emissions  # Shopping
+        ]
+
+    return jsonify({
+        'your_emissions': get_grouped_data(your_emission),
+        'other_emissions': get_grouped_data(other_emission),
+        'other_name': f"{other_user.first_name} {other_user.last_name}"
+    })
+
+
+
 @app.route('/api/emissions', methods=['GET'])
 @login_required
 def get_emissions():
