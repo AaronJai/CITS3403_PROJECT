@@ -820,28 +820,15 @@ def resend_confirmation():
 
 @app.route('/confirm_email/<token>')
 def confirm_email(token):
-    data = User.verify_email_update_token(token)
-    
-    if not data:
-        flash('The confirmation link is invalid or has expired.', 'error')
-        return redirect(url_for('login'))
-    
-    user = User.query.get(data.get('user_id'))
+    user = User.verify_email_token(token)
     if not user:
         flash('The confirmation link is invalid or has expired.', 'error')
         return redirect(url_for('login'))
-
-    new_email = data.get('new_email')
-    if User.query.filter_by(email=new_email).first():
-        flash('This email is already in use.', 'error')
-        return redirect(url_for('profile'))
-    
-    if user.email != new_email:
-        user.email = new_email
-        user.unconfirmed_email = None
-        user.confirmed = True
-        db.session.commit()
-
+    if user.confirmed:
+        flash('Account already confirmed. Please log in.', 'info')
+        return redirect(url_for('login'))
+    user.confirmed = True
+    db.session.commit()
     flash('Account confirmed! Please log in.', 'success')
     return redirect(url_for('login'))
 
