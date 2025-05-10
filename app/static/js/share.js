@@ -29,12 +29,13 @@ function generatePreviewCard({ name, email, travel_pct, food_pct, home_pct, shop
                     </div>
                     <div class="grid grid-cols-2 gap-4">
                         ${['Travel', 'Home', 'Food', 'Shopping'].map((label, i) => {
-                            const percent = [travel_pct, home_pct, food_pct, shopping_pct][i];
+                            let percent = [travel_pct, home_pct, food_pct, shopping_pct][i];
+                            const cappedPercent = Math.min(percent, 100); // Cap at 100%
                             return `
                             <div class="bg-white p-3 rounded-md shadow-sm">
                                 <h3 class="font-semibold">${label}</h3>
                                 <div class="mt-2 h-2 bg-gray-200 rounded-full">
-                                    <div class="h-2 bg-primary rounded-full" style="width: ${percent}%"></div>
+                                    <div class="h-2 bg-primary rounded-full" style="width: ${cappedPercent}%"></div>
                                 </div>
                                 <p class="text-sm text-gray-600 mt-1"><strong>${percent}%</strong> of their carbon budget</p>
                             </div>`;
