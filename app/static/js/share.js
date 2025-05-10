@@ -97,7 +97,6 @@ let chattingWith = null;
 
 // Start a chat with a user
 function startChat(email) {
-    console.log("Starting chat with:", email);
     chattingWith = email;
     document.getElementById('chatTitle').innerText = "Chat with " + email;
     document.getElementById('chatBox').classList.remove('hidden');
@@ -120,8 +119,6 @@ function sendMessage(event) {
     const input = document.getElementById('chatInput');
     const message = input.value.trim();
     if (!message || !chattingWith) return;
-
-    console.log("Sending message:", message, "to", chattingWith);
 
     const csrfToken = document.querySelector('meta[name="csrf-token"]').getAttribute('content');
 
