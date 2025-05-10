@@ -38,8 +38,6 @@ document.addEventListener('DOMContentLoaded', function () {
     form.addEventListener('submit', function (e) {
         // Before submitting, apply placeholder values to empty fields
         applyPlaceholdersToEmptyFields();
-        // Now log the form values for debugging
-        logFormValues();
     });
 
     // Function to apply placeholder values to empty fields
@@ -77,103 +75,10 @@ document.addEventListener('DOMContentLoaded', function () {
 
     // Add logging to the finish button click
     finishBtn.addEventListener('click', function () {
-        // Apply placeholders before logging and submitting
+        // Apply placeholders before submitting
         applyPlaceholdersToEmptyFields();
-        logFormValues();
         finishStepper();
     });
-
-    function logFormValues() {
-        console.log('========== FORM SUBMISSION VALUES ==========');
-        console.log('Active Travel Mode:', travelModeField.value);
-        console.log('Active Shopping Mode:', shoppingModeField.value);
-
-        // Log all input values
-        const allInputs = form.querySelectorAll('input, select, textarea');
-        const formData = {};
-
-        allInputs.forEach(input => {
-            // Skip submit buttons
-            if (input.type !== 'submit') {
-                formData[input.name] = input.value;
-            }
-        });
-
-        // Log by category
-        console.log('--- Travel Data ---');
-
-        // Enhanced vehicle logging with details
-        const vehicleItems = document.querySelectorAll('.vehicle-item');
-        console.log(`Vehicles: ${vehicleItems.length}`);
-        vehicleItems.forEach((vehicle, index) => {
-            const fuelType = vehicle.querySelector('.vehicle-fuel-type').value;
-            const distance = vehicle.querySelector('.vehicle-distance').value;
-            const fuelEfficiency = vehicle.querySelector('.vehicle-mpg').value;
-
-            console.log(`  Vehicle #${index + 1}:`);
-            console.log(`    Type: ${fuelType}`);
-            console.log(`    Distance: ${distance || 'Not specified'} kms/yr`);
-            console.log(`    Fuel Efficiency: ${fuelEfficiency} ${fuelType === 'electric' ? 'kWh/100km' : 'L/100km'}`);
-        });
-
-        // Log simple travel data
-        if (travelModeField.value === 'simple') {
-            console.log('Public Transit (simple):', formData['public_transit_simple-distance']);
-            console.log('Air Travel (simple):', formData['air_travel_simple-distance']);
-        } else {
-            // Log advanced travel data
-            console.log('Bus kms:', formData['public_transit_advanced-bus_kms']);
-            console.log('Transit Rail kms:', formData['public_transit_advanced-transit_rail_kms']);
-            console.log('Commuter Rail kms:', formData['public_transit_advanced-commuter_rail_kms']);
-            console.log('Intercity Rail kms:', formData['public_transit_advanced-intercity_rail_kms']);
-            console.log('Short Flights:', formData['air_travel_advanced-short_flights']);
-            console.log('Medium Flights:', formData['air_travel_advanced-medium_flights']);
-            console.log('Long Flights:', formData['air_travel_advanced-long_flights']);
-            console.log('Extended Flights:', formData['air_travel_advanced-extended_flights']);
-        }
-
-        console.log('--- Home Energy Data ---');
-        console.log('Electricity:', formData['home_energy-electricity']);
-        console.log('Electricity Unit:', formData['home_energy-electricity_unit']);
-        console.log('Electricity Frequency:', formData['home_energy-electricity_frequency']);
-        console.log('Clean Energy Percentage:', formData['home_energy-clean_energy_percentage']);
-        console.log('Natural Gas:', formData['home_energy-natural_gas']);
-        console.log('Natural Gas Unit:', formData['home_energy-natural_gas_unit']);
-        console.log('Natural Gas Frequency:', formData['home_energy-natural_gas_frequency']);
-        console.log('Heating Oil:', formData['home_energy-heating_oil']);
-        console.log('Heating Oil Unit:', formData['home_energy-heating_oil_unit']);
-        console.log('Heating Oil Frequency:', formData['home_energy-heating_oil_frequency']);
-        console.log('Living Space:', formData['home_energy-living_space']);
-        console.log('Water Usage:', formData['home_energy-water_usage']);
-
-        console.log('--- Food Data ---');
-        console.log('Meat/Fish/Eggs:', formData['food-meat_fish_eggs']);
-        console.log('Grains/Baked Goods:', formData['food-grains_baked_goods']);
-        console.log('Dairy:', formData['food-dairy']);
-        console.log('Fruits/Vegetables:', formData['food-fruits_vegetables']);
-        console.log('Snacks/Drinks:', formData['food-snacks_drinks']);
-
-        console.log('--- Shopping Data ---');
-        if (shoppingModeField.value === 'simple') {
-            console.log('Goods Multiplier:', formData['shopping_simple-goods_multiplier']);
-            console.log('Services Multiplier:', formData['shopping_simple-services_multiplier']);
-        } else {
-            // Goods
-            console.log('Furniture & Appliances:', formData['shopping_advanced-furniture_appliances']);
-            console.log('Clothing:', formData['shopping_advanced-clothing']);
-            console.log('Entertainment:', formData['shopping_advanced-entertainment']);
-            console.log('Office Supplies:', formData['shopping_advanced-office_supplies']);
-            console.log('Personal Care:', formData['shopping_advanced-personal_care']);
-
-            // Services
-            console.log('Services Food:', formData['shopping_advanced-services_food']);
-            console.log('Education:', formData['shopping_advanced-education']);
-            console.log('Communication:', formData['shopping_advanced-communication']);
-            console.log('Loan:', formData['shopping_advanced-loan']);
-            console.log('Transport:', formData['shopping_advanced-transport']);
-        }
-        console.log('===========================================');
-    }
 
     navItems.forEach((item) => {
         const data = JSON.parse(item.getAttribute('data-stepper-nav-item'));
@@ -209,10 +114,6 @@ document.addEventListener('DOMContentLoaded', function () {
                 behavior: 'smooth'
             });
         }
-    }
-
-    function finishStepper() {
-        alert('Carbon footprint calculation complete!');
     }
 
     function updateStepper() {
@@ -344,6 +245,7 @@ function addVehicle() {
     setupSlider('.vehicle-mpg', '.vehicle-mpg-value', (slider, value) => {
         return parseFloat(value).toFixed(1);
     });
+    integerFormatter();
 }
 
 
@@ -360,6 +262,49 @@ function setupSlider(sliderClass, valueClass, formatter) {
 
         slider.addEventListener('input', function () {
             valueElement.textContent = formatter(slider, this.value);
+        });
+    });
+}
+
+function integerFormatter() {
+    const integerInputs = document.querySelectorAll('input[type="number"][name$="kms"], input[type="number"][name$="flights"], input[type="number"]');
+    integerInputs.forEach(input => {
+        // Change to text input to disable stepper, use numeric input mode
+        input.type = 'text';
+        input.setAttribute('inputmode', 'numeric');
+        input.setAttribute('pattern', '[0-9]*');
+        input.setAttribute('min', '0');
+
+        let lastValidValue = input.value || '0';
+
+        // Handle all input changes (typing, pasting, etc.)
+        input.addEventListener('input', function (e) {
+            let value = this.value.replace(/[^\d]/g, '');
+
+            if (value === '') {
+                value = '0';
+            }
+
+            // Update the input value
+            this.value = value;
+
+            // Update last valid value if valid (only digits)
+            if (/^\d+$/.test(value)) {
+                lastValidValue = value;
+            } else {
+                this.value = lastValidValue; // Revert if invalid
+            }
+        });
+
+        // Prevent non-digit keypresses
+        input.addEventListener('keydown', function (e) {
+            // Allow digits, backspace, delete, and navigation keys
+            if ((e.key >= '0' && e.key <= '9') || e.key === 'Backspace' || e.key === 'Delete' ||
+                e.key === 'ArrowLeft' || e.key === 'ArrowRight' || e.key === 'ArrowUp' || e.key === 'ArrowDown' ||
+                e.key === 'Tab') {
+                return;
+            }
+            e.preventDefault(); // Block all other keys (including +, -, .)
         });
     });
 }
