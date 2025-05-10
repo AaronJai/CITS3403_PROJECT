@@ -362,7 +362,7 @@ def share():
             'carbon_footprint': f"{emission.total_emissions:.2f} CO2eq" if emission else "N/A"
         })
 
-    # Add self
+    # Add current user to the leaderboard
     emission = Emissions.query.filter_by(user_id=current_user.id).order_by(Emissions.calculated_at.desc()).first()
     shared_with_me_raw.append({
         'name': f"{current_user.first_name} {current_user.last_name}",
@@ -375,7 +375,7 @@ def share():
     for i, user in enumerate(shared_with_me_sorted, start=1):
         user['rank'] = i
 
-    # If viewing someone’s footprint
+    # Viewing other user's data
     view_email = request.args.get('view_email')
     selected_name = selected_email = None
     travel_pct = food_pct = home_pct = shopping_pct = total_emission = 0
@@ -442,7 +442,6 @@ def get_user_emissions(email):
     shopping = (emissions.furniture_emissions or 0.0) + (emissions.clothing_emissions or 0.0) + \
                (emissions.other_goods_emissions or 0.0) + (emissions.services_emissions or 0.0)
 
-    # These are the same goals used in dashboard.js
     GOALS = {
         'total': 12.3,
         'travel': 2.9,
@@ -555,12 +554,14 @@ def chat():
 @app.route('/chat/<email>', methods=['GET'])
 @login_required
 def chat_history(email):
-    
+
+    # Load message history
     messages = Message.query.filter(
         ((Message.sender_id == current_user.email) & (Message.receiver_id == email)) |
         ((Message.sender_id == email) & (Message.receiver_id == current_user.email))
     ).order_by(Message.timestamp).all()
 
+    # mark messages sent by the other
     unread_msgs = Message.query.filter_by(sender_id=email, receiver_id=current_user.email, is_read=False).all()
     for msg in unread_msgs:
         msg.is_read = True
@@ -573,7 +574,6 @@ def chat_history(email):
             'timestamp': msg.timestamp.strftime('%Y-%m-%d %H:%M')
         } for msg in messages
     ])
-
 
 @app.route('/facts')
 @login_required
