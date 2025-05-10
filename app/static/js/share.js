@@ -19,14 +19,6 @@ function generatePreviewCard({ name, email, travel_pct, food_pct, home_pct, shop
         <section class="mt-2">
             <div class="bg-white p-4 rounded-md">
                 <div class="bg-gray-50 p-4 rounded-lg border border-gray-200">
-                    <div class="flex items-center mb-4">
-                        <img src="/static/assets/images/avatar.png" alt="Avatar"
-                            class="w-10 h-10 rounded-full mr-3" />
-                        <div>
-                            <p class="font-semibold">${name}</p>
-                            <p class="text-gray-500 text-sm hidden md:block">${email}</p>
-                        </div>
-                    </div>
                     <div class="grid grid-cols-2 gap-4">
                         ${['Travel', 'Home', 'Food', 'Shopping'].map((label, i) => {
                             let percent = [travel_pct, home_pct, food_pct, shopping_pct][i];
@@ -56,13 +48,21 @@ function generatePreviewCard({ name, email, travel_pct, food_pct, home_pct, shop
 function toggleSharedUserEmissions(email) {
     // Check if the preview already exists
     const existingPreview = document.getElementById(`preview-${email}`);
-    
+    // Remove highlight from all rows first
+    document.querySelectorAll('tr[data-email]').forEach(row => {
+        row.classList.remove('bg-gray-100');
+    });
     if (existingPreview) {
         // If preview exists, remove it (close)
         existingPreview.remove();
     } else {
         // If preview doesn't exist, load and show it (open)
         loadSharedUserEmissions(email);
+        // Highlight the toggled row
+        const userRow = document.querySelector(`tr[data-email="${email}"]`);
+        if (userRow) {
+            userRow.classList.add('bg-gray-100');
+        }
     }
 }
 
