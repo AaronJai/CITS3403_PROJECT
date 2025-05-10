@@ -51,6 +51,20 @@ function generatePreviewCard({ name, email, travel_pct, food_pct, home_pct, shop
     `;
 }
 
+// Toggle shared user emissions - show or hide the preview card
+function toggleSharedUserEmissions(email) {
+    // Check if the preview already exists
+    const existingPreview = document.getElementById(`preview-${email}`);
+    
+    if (existingPreview) {
+        // If preview exists, remove it (close)
+        existingPreview.remove();
+    } else {
+        // If preview doesn't exist, load and show it (open)
+        loadSharedUserEmissions(email);
+    }
+}
+
 // Load shared user emissions and display them in a preview card
 function loadSharedUserEmissions(email) {
     fetch(`/api/emissions/${email}`)
