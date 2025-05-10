@@ -197,10 +197,18 @@
 
                     <!-- Left: Avatar and user info -->
                     <div class="flex items-start">
-                        <div
-                            class="w-12 h-12 rounded-full bg-[#16372c] text-white flex items-center justify-center font-bold text-lg shrink-0">
+                        <div class="relative">
+                        <!-- Profile pic -->
+                        <div class="w-12 h-12 rounded-full bg-[#16372c] text-white flex items-center justify-center font-bold text-lg shrink-0">
                             {{ user.name[0]|upper }}
                         </div>
+
+                        {% if user.has_unread %}
+                        <!-- Notification -->
+                        <span id="dot-{{ user.email }}" class="absolute top-0 right-0 w-3 h-3 bg-red-500 border-2 border-white rounded-full"></span>
+                        {% endif %}
+                    </div>
+
                         <div class="ml-4">
                             <p class="text-base font-bold leading-tight text-gray-800">{{ user.name }}</p>
                             <p class="text-sm text-gray-500 break-all">{{ user.email }}</p>

@@ -291,8 +291,6 @@ def get_emissions():
         'total_emissions': emissions.total_emissions or 0.0
     }) 
 
-
-
 @app.route('/share', methods=['GET', 'POST'])
 @login_required
 def share():
@@ -335,11 +333,21 @@ def share():
     sharing_with = []
     for share_record in sharing_records:
         target = User.query.get(share_record.to_user_id)
+
+        # Check if message read or not
+        has_unread = Message.query.filter_by(
+            sender_id=target.email,
+            receiver_id=current_user.email,
+            is_read=False
+        ).count() > 0
+
         sharing_with.append({
             'name': f"{target.first_name} {target.last_name}",
             'email': target.email,
-            'shared_date': share_record.shared_date.strftime("%B %d, %Y")
+            'shared_date': share_record.shared_date.strftime("%B %d, %Y"),
+            'has_unread': has_unread
         })
+
 
     # Users who shared with current_user
     received_records = Share.query.filter_by(to_user_id=current_user.id).all()
@@ -545,13 +553,20 @@ def chat():
     return jsonify(success=True)
 
 @app.route('/chat/<email>', methods=['GET'])
+@login_required
 def chat_history(email):
-    # Retrieve chat history between the current user and the specified email
+    # 查询聊天记录
     messages = Message.query.filter(
         ((Message.sender_id == current_user.email) & (Message.receiver_id == email)) |
         ((Message.sender_id == email) & (Message.receiver_id == current_user.email))
     ).order_by(Message.timestamp).all()
-    
+
+    # ✅ 把对方发给我但我还没读的消息设为已读
+    unread_msgs = Message.query.filter_by(sender_id=email, receiver_id=current_user.email, is_read=False).all()
+    for msg in unread_msgs:
+        msg.is_read = True
+    db.session.commit()
+
     return jsonify([
         {
             'sender': msg.sender_id,
@@ -559,6 +574,7 @@ def chat_history(email):
             'timestamp': msg.timestamp.strftime('%Y-%m-%d %H:%M')
         } for msg in messages
     ])
+
 
 @app.route('/facts')
 @login_required

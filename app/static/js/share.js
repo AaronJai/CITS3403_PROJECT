@@ -102,6 +102,10 @@ function startChat(email) {
     document.getElementById('chatTitle').innerText = "Chat with " + email;
     document.getElementById('chatBox').classList.remove('hidden');
     loadMessages();
+    const dot = document.getElementById(`dot-${email}`);
+  if (dot) {
+    dot.remove();
+  }
 }
 
 // Close the chat
