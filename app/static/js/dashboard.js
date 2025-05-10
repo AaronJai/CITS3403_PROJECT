@@ -1,118 +1,110 @@
 document.addEventListener('DOMContentLoaded', () => {
-    // Emission goals (metric tons CO2eq/year)
+    const tooltipTrigger = document.getElementById('tooltip-trigger');
+    const tooltipText = document.getElementById('tooltip-text');
+
+    if (tooltipTrigger && tooltipText) {
+        tooltipTrigger.addEventListener('mouseenter', () => {
+            tooltipText.classList.remove('hidden');
+        });
+        tooltipTrigger.addEventListener('mouseleave', () => {
+            tooltipText.classList.add('hidden');
+        });
+    }
+
     const GOALS = {
-        total: 2.2, // Total emissions goal
-        travel: 0.7, // Vehicles, public transit, air travel
-        home: 0.5, // Electricity, natural gas, heating fuels, water, construction
-        food: 0.5, // Meat, dairy, fruits/vegetables, cereals, snacks
-        shopping: 0.5 // Furniture, clothing, other goods, services
+        total: 12.3,
+        travel: 2.9,
+        home: 3.5,
+        food: 3.1,
+        shopping: 2.8
     };
 
-    // Function to calculate percentage and savings
+    // Calculate the percentage of emissions saved and emitted
     function calculateMetrics(actual, goal) {
-        const percentage = Math.min((goal / actual) * 100, 100); // Cap at 100%
-        const saved = Math.max(goal - actual, 0); // Savings cannot be negative
+        const percentage = (actual / goal) * 100;
+        const isBelow = actual <= goal;
+        const saved = Math.max(15.01 - actual, 0); // Assuming 15.01tons is the average emissions for Australian households
         return {
             percentage: percentage.toFixed(0),
             saved: saved.toFixed(2),
-            emitted: actual.toFixed(2)
+            emitted: actual.toFixed(2),
+            isBelow
         };
     }
 
-    // Function to update progress circle
+    // Update the progress circle and text
     function updateProgressCircle(percentage) {
-        const circle = document.getElementById('progress-circle');
+        const arc = document.getElementById('gauge-arc');
         const text = document.getElementById('progress-text');
         const validPercentage = (typeof percentage === 'string' || typeof percentage === 'number') && !isNaN(percentage) && percentage >= 0 ? parseFloat(percentage) : 0;
-        const circumference = 282.74;
-        circle.setAttribute('stroke-dasharray', circumference);
-        const offset = circumference * (1 - validPercentage / 100);
-        circle.setAttribute('stroke-dashoffset', offset);
-        text.textContent = `${validPercentage.toFixed(0)}%`;
 
+        const maxOffset = 282.743;
+        const offset = maxOffset * (1 - Math.min(validPercentage, 100) / 100);
+        arc.setAttribute('stroke-dashoffset', offset);
+        text.textContent = `${validPercentage.toFixed(0)}%`;
     }
 
-    // Function to update progress bar
-    function updateProgressBar(elementId, percentage) {
+    // Update the progress bar and text
+    function updateProgressBar(elementId, percentage, isBelow) {
         const bar = document.getElementById(elementId);
-        if (bar) {
-            bar.className = `progress-bar-fill w-[${percentage}%]`;
+        if (!bar || isNaN(percentage)) return;
+
+        const safePercentage = Math.max(0, parseFloat(percentage));
+        bar.className = 'progress-bar-fill';
+        bar.style.width = `${Math.min(safePercentage, 100)}%`;
+        bar.classList.remove('bg-red-500', 'bg-yellow-400', 'bg-green-700', 'bg-transparent');
+
+        if (percentage < 0) {
+            bar.classList.add('bg-transparent');
+        } else {
+            bar.classList.add(isBelow ? 'bg-green-700' : 'bg-red-500');
         }
     }
 
-    // Function to update dashboard with emissions data
-    function updateDashboard(data) {
-        // Aggregate category emissions
-        const travelEmissions = (
-            data.car_emissions +
-            data.public_transit_emissions +
-            data.air_travel_emissions
-        );
-        const homeEmissions = (
-            data.electricity_emissions +
-            data.natural_gas_emissions +
-            data.heating_fuels_emissions +
-            data.water_emissions +
-            data.construction_emissions
-        );
-        const foodEmissions = (
-            data.meat_emissions +
-            data.dairy_emissions +
-            data.fruits_vegetables_emissions +
-            data.cereals_emissions +
-            data.snacks_emissions
-        );
-        const shoppingEmissions = (
-            data.furniture_emissions +
-            data.clothing_emissions +
-            data.other_goods_emissions +
-            data.services_emissions
-        );
+    // Update a single category's dashboard elements
+    function updateCategory(category, metrics, goal) {
+        const prefix = `${category}-`;
+        updateProgressBar(`${prefix}progress`, metrics.percentage, metrics.isBelow);
+        document.getElementById(`${prefix}fraction`).innerHTML = `${metrics.isBelow
+            ? `You've used <strong> ${metrics.percentage}%</strong> of your annual goal! <br> Great work!`
+            : `You've used <strong>${metrics.percentage}%</strong> of your annual goal (<strong>${metrics.percentage - 100}%</strong> over) <br> Keep reducing your emissions!`}`;
+        document.getElementById(`${prefix}emitted`).innerHTML = `
+            <span style="font-weight: bold">Current emitted: </span>${metrics.emitted} CO₂eq<br>
+            <span style="font-weight: bold">Annual goal: </span>${goal.toFixed(2)} CO₂eq`;
+        const status = document.getElementById(`${prefix}status`);
+        if (status) {
+            status.textContent = metrics.isBelow ? 'better than other households' : 'worse off';
+            status.classList.remove('text-green-700', 'text-red-500');
+            status.classList.add(metrics.isBelow ? 'text-green-700' : 'text-red-500');
+        }
+    }
 
-        // Calculate metrics
+    // Update the dashboard with the fetched data
+    function updateDashboard(data) {
+        const travelEmissions = data.car_emissions + data.public_transit_emissions + data.air_travel_emissions;
+        const homeEmissions = data.electricity_emissions + data.natural_gas_emissions + data.heating_fuels_emissions +
+            data.water_emissions + data.construction_emissions;
+        const foodEmissions = data.meat_emissions + data.dairy_emissions + data.fruits_vegetables_emissions +
+            data.cereals_emissions + data.snacks_emissions;
+        const shoppingEmissions = data.furniture_emissions + data.clothing_emissions + data.other_goods_emissions +
+            data.services_emissions;
+
         const totalMetrics = calculateMetrics(data.total_emissions, GOALS.total);
         const travelMetrics = calculateMetrics(travelEmissions, GOALS.travel);
         const homeMetrics = calculateMetrics(homeEmissions, GOALS.home);
         const foodMetrics = calculateMetrics(foodEmissions, GOALS.food);
         const shoppingMetrics = calculateMetrics(shoppingEmissions, GOALS.shopping);
 
-        // Update total emissions section
         updateProgressCircle(totalMetrics.percentage);
-        document.getElementById('progress-text').textContent = `${totalMetrics.percentage}%`;
-        const emittedTotal = document.getElementById('emitted-total');
-        const savedTotal = document.getElementById('saved-total');
-        if (emittedTotal && savedTotal) {
-            emittedTotal.textContent = `${totalMetrics.emitted} metric tons CO2eq emitted`;
-            savedTotal.textContent = `${totalMetrics.saved} metric tons CO2eq saved`;
-        }
+        document.getElementById('emitted-total').textContent = `${totalMetrics.emitted} metric tons CO₂eq emitted in total`;
+        document.getElementById('saved-total').textContent = `${totalMetrics.saved} metric tons CO₂eq saved compared to Australian average households`;
 
-        // Update category cards
-        // Travel
-        updateProgressBar('travel-progress', travelMetrics.percentage);
-        document.getElementById('travel-fraction').textContent = `${travelMetrics.percentage}/100`;
-        document.getElementById('travel-emitted').textContent =
-            `You have emitted ${travelMetrics.emitted} CO2eq out of a possible ${GOALS.travel.toFixed(2)} CO2eq`;
-
-        // Home
-        updateProgressBar('home-progress', homeMetrics.percentage);
-        document.getElementById('home-fraction').textContent = `${homeMetrics.percentage}/100`;
-        document.getElementById('home-emitted').textContent =
-            `You have emitted ${homeMetrics.emitted} CO2eq out of a possible ${GOALS.home.toFixed(2)} CO2eq`;
-
-        // Food
-        updateProgressBar('food-progress', foodMetrics.percentage);
-        document.getElementById('food-fraction').textContent = `${foodMetrics.percentage}/100`;
-        document.getElementById('food-emitted').textContent =
-            `You have emitted ${foodMetrics.emitted} CO2eq out of a possible ${GOALS.food.toFixed(2)} CO2eq`;
-
-        // Shopping
-        updateProgressBar('shopping-progress', shoppingMetrics.percentage);
-        document.getElementById('shopping-fraction').textContent = `${shoppingMetrics.percentage}/100`;
-        document.getElementById('shopping-emitted').textContent =
-            `You have emitted ${shoppingMetrics.emitted} CO2eq out of a possible ${GOALS.shopping.toFixed(2)} CO2eq`;
+        updateCategory('travel', travelMetrics, GOALS.travel);
+        updateCategory('home', homeMetrics, GOALS.home);
+        updateCategory('food', foodMetrics, GOALS.food);
+        updateCategory('shopping', shoppingMetrics, GOALS.shopping);
     }
 
-    // Fetch emissions data via AJAX
     fetch('/api/emissions', {
         method: 'GET',
         headers: { 'Content-Type': 'application/json' }
@@ -123,28 +115,19 @@ document.addEventListener('DOMContentLoaded', () => {
             }
             return response.json();
         })
-        .then(data => {
-            updateDashboard(data);
-        })
+        .then(data => updateDashboard(data))
         .catch(error => {
-            // Update with error placeholders
-            const progressText = document.getElementById('progress-text');
-            if (progressText) {
-                progressText.textContent = 'N/A';
-            }
-            const emittedTotal = document.getElementById('emitted-total');
-            const savedTotal = document.getElementById('saved-total');
-            if (emittedTotal && savedTotal) {
-                emittedTotal.textContent = 'Error loading data';
-                savedTotal.textContent = 'Error loading data';
-            }
-            const categories = ['travel', 'home', 'food', 'shopping'];
-            categories.forEach(category => {
-                const fraction = document.getElementById(`${category}-fraction`);
-                const emitted = document.getElementById(`${category}-emitted`);
-                if (fraction && emitted) {
-                    fraction.textContent = '0/100';
-                    emitted.textContent = 'Error loading data';
+            document.getElementById('progress-text').textContent = 'N/A';
+            document.getElementById('emitted-total').textContent = 'Error loading data';
+            document.getElementById('saved-total').textContent = 'Error loading data';
+            ['travel', 'home', 'food', 'shopping'].forEach(category => {
+                const prefix = `${category}-`;
+                document.getElementById(`${prefix}fraction`).textContent = '0%';
+                document.getElementById(`${prefix}emitted`).textContent = 'Error loading data';
+                const status = document.getElementById(`${prefix}status`);
+                if (status) {
+                    status.textContent = 'Error loading data';
+                    status.classList.remove('text-green-700', 'text-red-500');
                 }
             });
         });

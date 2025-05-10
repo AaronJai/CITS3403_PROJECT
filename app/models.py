@@ -95,13 +95,13 @@ class CarbonFootprint(db.Model):
 
 class Travel(db.Model):
     id = db.Column(db.Integer, primary_key=True)
-    public_transit_distance = db.Column(db.Float, default=0.0)
-    air_travel_distance = db.Column(db.Float, default=0.0)
+    public_transit_distance = db.Column(db.Integer, default=0)
+    air_travel_distance = db.Column(db.Integer, default=0)
     # Advanced public transit fields
-    bus_kms = db.Column(db.Float, default=0.0)
-    transit_rail_kms = db.Column(db.Float, default=0.0)
-    commuter_rail_kms = db.Column(db.Float, default=0.0)
-    intercity_rail_kms = db.Column(db.Float, default=0.0)
+    bus_kms = db.Column(db.Integer, default=0)
+    transit_rail_kms = db.Column(db.Integer, default=0)
+    commuter_rail_kms = db.Column(db.Integer, default=0)
+    intercity_rail_kms = db.Column(db.Integer, default=0)
     # Advanced air travel fields
     short_flights = db.Column(db.Integer, default=0)
     medium_flights = db.Column(db.Integer, default=0)
@@ -113,23 +113,23 @@ class Vehicle(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     travel_id = db.Column(db.Integer, db.ForeignKey('travel.id'), nullable=False)
     fuel_type = db.Column(db.String(20), nullable=False)
-    distance = db.Column(db.Float, default=0.0)
+    distance = db.Column(db.Integer, default=0)
     fuel_efficiency = db.Column(db.Float, default=0.0)
 
 class Shopping(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     goods_multiplier = db.Column(db.Float, default=0.0)
     services_multiplier = db.Column(db.Float, default=0.0)
-    furniture_appliances = db.Column(db.Float, default=0.0)
-    clothing = db.Column(db.Float, default=0.0)
-    entertainment = db.Column(db.Float, default=0.0)
-    office_supplies = db.Column(db.Float, default=0.0)
-    personal_care = db.Column(db.Float, default=0.0)
-    services_food = db.Column(db.Float, default=0.0)
-    education = db.Column(db.Float, default=0.0)
-    communication = db.Column(db.Float, default=0.0)
-    loan = db.Column(db.Float, default=0.0)
-    transport = db.Column(db.Float, default=0.0)
+    furniture_appliances = db.Column(db.Integer, default=0)
+    clothing = db.Column(db.Integer, default=0)
+    entertainment = db.Column(db.Integer, default=0)
+    office_supplies = db.Column(db.Integer, default=0)
+    personal_care = db.Column(db.Integer, default=0)
+    services_food = db.Column(db.Integer, default=0)
+    education = db.Column(db.Integer, default=0)
+    communication = db.Column(db.Integer, default=0)
+    loan = db.Column(db.Integer, default=0)
+    transport = db.Column(db.Integer, default=0)
 
 class Food(db.Model):
     id = db.Column(db.Integer, primary_key=True)
@@ -141,7 +141,7 @@ class Food(db.Model):
 
 class Home(db.Model):
     id = db.Column(db.Integer, primary_key=True)
-    electricity = db.Column(db.Float, default=0.0)
+    electricity = db.Column(db.Integer, default=0)
     electricity_unit = db.Column(db.String(10))
     electricity_frequency = db.Column(db.String(10))
     clean_energy_percentage = db.Column(db.Float, default=0.0)
@@ -184,4 +184,3 @@ class Share(db.Model):
     to_user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
     shared_date = db.Column(db.DateTime, default=datetime.utcnow)
 
-    

@@ -2,25 +2,42 @@
 
 {% block title %}Dashboard | EcoTrack{% endblock %}
 
-
 {% block content %}
 <div>
   <!-- Emission Goal -->
-  <section class="emission-goal">
+  <section class="emission-goal" id="emission-goal-card"
+    style="background-image: url('{{ url_for('static', filename='assets/images/dashboard_image.png') }}'); background-size: cover; background-position: center;">
     <div class="emission-content">
-      <div class="progress-circle">
-        <svg class="absolute w-full h-full transform -rotate-90" viewBox="0 0 100 100">
-          <circle cx="50" cy="50" r="45" stroke="white" stroke-width="10" fill="none" opacity="0.2" />
-          <circle id="progress-circle" cx="50" cy="50" r="45" stroke="white" stroke-width="10" fill="none"
-            stroke-dasharray="282.74" stroke-dashoffset="120.27" stroke-linecap="round" />
+      <div class="progress-circle relative w-[150px] h-[75px] mx-auto mb-4">
+        <svg viewBox="0 0 200 100" class="w-full h-full">
+          <!-- Background arc -->
+          <path d="M10 100 A90 90 0 0 1 190 100" fill="none" stroke="white" stroke-opacity="0.2" stroke-width="20"
+            stroke-linecap="round" />
+          <!-- Foreground arc -->
+          <path id="gauge-arc" d="M10 100 A90 90 0 0 1 190 100" fill="none" stroke="white" stroke-width="20"
+            stroke-dasharray="282.743" stroke-dashoffset="282.743" stroke-linecap="round" />
         </svg>
-        <div id="progress-text" class="progress-text">Loading...
+        <div id="progress-text"
+          class="absolute inset-0 top-8 flex justify-center items-center text-xl font-bold text-white">
+          Loading...
         </div>
       </div>
       <div class="emission-details">
-        <h2 class="text-2xl font-semibold mb-2">Your Footprint</h2>
-        <p id="emitted-total" class="text-lg">Loading...</p>
-        <p id="saved-total" class="text-lg">Loading...</p>
+        <h2 class="text-2xl font-bold mb-2 inline-flex items-center">
+          Your Footprint
+          <span class="relative ml-2">
+            <span
+              class="w-4 h-4 bg-gray-500 rounded-full flex items-center justify-center text-white text-xs cursor-help"
+              id="tooltip-trigger">?</span>
+            <div id="tooltip-text"
+              class="absolute top-0 left-full ml-2 w-64 bg-gray-800/90 text-white text-sm p-2 rounded shadow-lg z-10 hidden">
+              Your carbon footprint comes from daily activities like travel, food, and shopping. It shows the total
+              greenhouse gases you produce—a bigger footprint puts a heavier strain on the environment.
+            </div>
+          </span>
+        </h2>
+        <p id="emitted-total" class="text-lg font-semibold">Loading...</p>
+        <p id="saved-total" class="text-lg font-semibold">Loading...</p>
       </div>
     </div>
   </section>
@@ -28,46 +45,80 @@
   <!-- Category Cards -->
   <section class="category-cards">
     <!-- Travel -->
-    <div class="category-card">
-      <h3 class="category-heading">Travel</h3>
+    <div class="category-card" data-category="travel" data-tab="0">
+      <h3 class="category-heading">🚌 Travel</h3>
       <div class="progress-bar">
         <div id="travel-progress" class="progress-bar-fill w-[0%]"></div>
       </div>
-      <p id="travel-fraction" class="category-description">0/100</p>
+      <p id="travel-fraction" class="category-description">0%</p>
       <p id="travel-emitted" class="category-description">Loading...</p>
     </div>
 
     <!-- Home -->
-    <div class="category-card">
-      <h3 class="category-heading">Home</h3>
+    <div class="category-card" data-category="home" data-tab="1">
+      <h3 class="category-heading">🏠 Home</h3>
       <div class="progress-bar">
         <div id="home-progress" class="progress-bar-fill w-[0%]"></div>
       </div>
-      <p id="home-fraction" class="category-description">0/100</p>
+      <p id="home-fraction" class="category-description">0%</p>
       <p id="home-emitted" class="category-description">Loading...</p>
     </div>
 
     <!-- Food -->
-    <div class="category-card">
-      <h3 class="category-heading">Food</h3>
+    <div class="category-card" data-category="food" data-tab="2">
+      <h3 class="category-heading">🍔 Food</h3>
       <div class="progress-bar">
         <div id="food-progress" class="progress-bar-fill w-[0%]"></div>
       </div>
-      <p id="food-fraction" class="category-description">0/100</p>
+      <p id="food-fraction" class="category-description">0%</p>
       <p id="food-emitted" class="category-description">Loading...</p>
     </div>
 
     <!-- Shopping -->
-    <div class="category-card">
-      <h3 class="category-heading">Shopping</h3>
+    <div class="category-card" data-category="shopping" data-tab="3">
+      <h3 class="category-heading">🛍️ Shopping</h3>
       <div class="progress-bar">
         <div id="shopping-progress" class="progress-bar-fill w-[0%]"></div>
       </div>
-      <p id="shopping-fraction" class="category-description">0/100</p>
+      <p id="shopping-fraction" class="category-description">0%</p>
       <p id="shopping-emitted" class="category-description">Loading...</p>
     </div>
   </section>
 </div>
 
 <script src="{{ url_for('static', filename='js/dashboard.js') }}"></script>
+<script>
+  document.addEventListener('DOMContentLoaded', function () {
+    const tooltipTrigger = document.getElementById('tooltip-trigger');
+    const tooltipText = document.getElementById('tooltip-text');
+    const tooltipContainer = document.getElementById('tooltip-container');
+
+    // Toggle tooltip on click
+    tooltipTrigger.addEventListener('click', function (event) {
+      event.stopPropagation();  // Prevent click bubbling
+      tooltipText.classList.toggle('hidden');
+    });
+
+    document.addEventListener('click', function (event) {
+      if (!tooltipContainer.contains(event.target)) {
+        tooltipText.classList.add('hidden');
+      }
+    });
+
+    // Click handler for emission goal card
+    document.getElementById('emission-goal-card').addEventListener('click', function () {
+      window.location.href = "{{ url_for('view_data') }}";
+    });
+
+    // Click handler for category cards
+    const categoryCards = document.querySelectorAll('.category-card');
+    categoryCards.forEach(card => {
+      card.addEventListener('click', function () {
+        const tabIndex = this.dataset.tab;
+        window.location.href = "{{ url_for('view_data') }}?tab=" + tabIndex;
+      });
+    });
+  });
+
+</script>
 {% endblock %}
