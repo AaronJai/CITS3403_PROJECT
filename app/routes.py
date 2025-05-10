@@ -531,7 +531,7 @@ def profile():
                           form=form,
                           delete_form=delete_form,
                           name_form = name_form,
-                          email_form = email_form)
+                          email_form = email_form,
                           is_new_user=is_new_user)
 
 @app.route('/login', methods=['GET', 'POST'])
