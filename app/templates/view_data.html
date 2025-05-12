@@ -79,7 +79,7 @@
 </section>
 
 <!-- Charts & Suggestions -->
-<div class="bg-white relative rounded-2xl w-full h-[600px] p-6 shadow-2xl flex flex-row overflow-hidden">
+<div class="bg-white relative rounded-2xl w-full p-6 shadow-2xl flex flex-row overflow-hidden">
 
   <div class="relative w-full h-[400px] flex items-center justify-center pt-12">
     <canvas id="travelPieChart" class="w-full h-full"></canvas>
@@ -131,7 +131,7 @@
 
 <!-- Scripts -->
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels"></script> <!-- Load Chart.js Plugin -->
-<script src="{{ url_for('static', filename='js/view_data.js') }}"></script> <!-- Load Custom JS -->
-
+<script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels"></script>
+<script src="{{ url_for('static', filename='js/view_data.js') }}"></script>
+<script src="{{ url_for('static', filename='js/viewdata-sum.js') }}"></script> 
 {% endblock %}

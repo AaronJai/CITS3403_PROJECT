@@ -466,15 +466,3 @@ document.addEventListener('DOMContentLoaded', () => {
         console.error(err);
       });
   }
-
-  // Restore Origianl Chart
-  function restoreOriginalChart() {
-    const chartId = 'myChart';
-    const existingChart = Chart.getChart(chartId);
-    if (existingChart) {
-      existingChart.destroy();
-    }
-
-    const ctx = document.getElementById(chartId).getContext('2d');
-    barChart = new Chart(ctx, originalConfig);
-  }
