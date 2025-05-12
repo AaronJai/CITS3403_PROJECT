@@ -135,6 +135,7 @@ function insertCategoryInsights(travelTotal, homeTotal, foodTotal, shoppingTotal
       <li><strong>Public Transit:</strong> Choose low-emission buses or trains when possible.</li><br>
     </ul>
   `,
+  
     // Home PCT Analysis
     home: `
     ${homeTotal > GOALS.home ? `
@@ -190,6 +191,7 @@ function insertCategoryInsights(travelTotal, homeTotal, foodTotal, shoppingTotal
       <li><strong>Construction:</strong> Maintain your home carefully and renovate only when necessary.</li><br>
     </ul>
   `,
+
     // Food PCT Analysis
     food: `
     ${foodTotal > GOALS.food ? `
@@ -236,6 +238,7 @@ function insertCategoryInsights(travelTotal, homeTotal, foodTotal, shoppingTotal
       <li><strong>Snack Smart:</strong> Minimize processed, packaged foods.</li><br>
     </ul>
   `,
+
     // Shopping PCT Analysis
     shopping: `
       ${shoppingTotal > GOALS.shopping ? `
