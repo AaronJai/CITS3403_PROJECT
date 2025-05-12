@@ -78,7 +78,7 @@
                             <td class="py-3 px-4 hidden md:table-cell">{{ user.email }}</td>
                             <td class="py-3 px-4">{{ user.carbon_footprint }}</td>
                             <td class="py-3 px-4">
-                                <form method="GET" action="{{ url_for('share') }}">
+                                <form method="GET" action="{{ url_for('main.share') }}">
                                     <input type="hidden" name="view_email" value="{{ user.email }}">
                                     <button type="submit" class="text-blue-500 hover:underline cursor-pointer">
                                         View Details
