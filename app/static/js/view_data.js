@@ -449,6 +449,13 @@ document.addEventListener('DOMContentLoaded', () => {
             scales: {
               y: {
                 beginAtZero: true
+              },
+              x: {
+                ticks: {
+                  color: '#222222',
+                  font: { size: 16, weight: 'bold' },
+                  padding: 10
+                }
               }
             }
           }
