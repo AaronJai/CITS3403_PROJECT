@@ -29,7 +29,7 @@ def send_email_update_confirmation(user, new_email):
     Sends a confirmation email to the new address during an email update.
     """
     token = user.get_email_update_token(new_email)
-    confirm_url = url_for('confirm_email', token=token, _external=True)
+    confirm_url = url_for('main.confirm_email', token=token, _external=True)
 
     send_email(
         'EcoTrack: Confirm your new email address',
