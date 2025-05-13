@@ -219,3 +219,46 @@ document.addEventListener('DOMContentLoaded', () => {
     })
     .catch(err => console.error('Error loading emissions summary:', err));
 });
+
+fetch('/api/emissions_summary')
+  .then(res => res.json())
+  .then(data => {
+    const categoryTotals = {
+      Travel: data.travelTotal,
+      Food: data.foodTotal,
+      Home: data.homeTotal,
+      Shopping: data.shoppingTotal
+    };
+
+    const total = Object.values(categoryTotals).reduce((a, b) => a + b, 0);
+    const sortedCategories = Object.entries(categoryTotals).sort((a, b) => b[1] - a[1]);
+
+    const highestCategory = sortedCategories[0][0];
+    const secondCategory = sortedCategories[1][0];
+
+    let intro = '';
+    if (total > GOALS.total) {
+      intro = `Your total carbon footprint this month is ${total.toFixed(2)} kg CO₂eq, which exceeds the recommended limit of ${GOALS.total} kg. This indicates a need for improvement in your consumption habits.`;
+    } else {
+      intro = `Great job! Your total footprint is ${total.toFixed(2)} kg CO₂eq, which is within the sustainable range. Still, let’s explore where small improvements can be made.`;
+    }
+
+    const suggestionsMap = {
+      Food: "🍽️ Food is currently your largest emission category. Reducing red meat, dairy, and processed snacks — and cutting food waste — can make a big difference.",
+      Travel: "🚗 Travel ranks high among your emissions. Consider more sustainable transport options like walking, cycling, or carpooling, and reduce short-distance flights.",
+      Home: "🏠 Home-related emissions are significant. Focus on using energy-efficient appliances, reducing water usage, and improving insulation to save energy.",
+      Shopping: "🛍️ Shopping is a major contributor. Reducing fast fashion, buying second-hand items, and cutting back on unnecessary goods can reduce your impact."
+    };
+
+    const summaryAdvice = `
+      <p class="text-sm text-gray-700 mt-1">${intro}</p>
+      <p class="text-sm text-gray-700 mt-2">${suggestionsMap[highestCategory]}</p>
+      <p class="text-sm text-gray-700 mt-2">${suggestionsMap[secondCategory]}</p>
+      <p class="text-sm text-gray-700 mt-2">🎯 Focus on these areas first to see the biggest improvements in your overall sustainability.</p>
+    `;
+
+    document.querySelector('#suggestions').innerHTML = `
+      <h3 class="font-bold text-[#16372c] text-base">What you can do about it</h3>
+      ${summaryAdvice}
+    `;
+  });
