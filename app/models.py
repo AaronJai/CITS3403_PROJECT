@@ -1,7 +1,7 @@
 # Database models (ORM)
 from app import db, login_manager
 from werkzeug.security import generate_password_hash, check_password_hash
-from datetime import datetime
+from datetime import datetime, UTC
 from flask_login import UserMixin
 from time import time
 import jwt
@@ -11,7 +11,7 @@ from flask import current_app
 # User loader function required by Flask-Login
 @login_manager.user_loader
 def load_user(id):
-    return User.query.get(int(id))
+    return db.session.get(User, int(id))
 
 
 
@@ -53,7 +53,7 @@ class User(UserMixin, db.Model):
             id = jwt.decode(token, current_app.config['SECRET_KEY'], algorithms=['HS256'])['confirm_email']
         except:
             return None
-        return User.query.get(id)
+        return db.session.get(User, id)
     
     @staticmethod
     def verify_reset_password_token(token):
@@ -61,7 +61,7 @@ class User(UserMixin, db.Model):
             id = jwt.decode(token, current_app.config['SECRET_KEY'], algorithms=['HS256'])['reset_password']
         except:
             return None
-        return User.query.get(id)
+        return db.session.get(User, id)
 
     def get_email_update_token(self, new_email, expires_in=3600):
         return jwt.encode(
@@ -80,7 +80,7 @@ class User(UserMixin, db.Model):
 class CarbonFootprint(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
-    created_at = db.Column(db.DateTime, default=datetime.utcnow)
+    created_at = db.Column(db.DateTime, default=lambda: datetime.now(UTC))
     travel_id = db.Column(db.Integer, db.ForeignKey('travel.id'), nullable=True)
     shopping_id = db.Column(db.Integer, db.ForeignKey('shopping.id'), nullable=True)
     food_id = db.Column(db.Integer, db.ForeignKey('food.id'), nullable=True)
@@ -159,7 +159,7 @@ class Emissions(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     carbon_footprint_id = db.Column(db.Integer, db.ForeignKey('carbon_footprint.id'), nullable=False)
     user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
-    calculated_at = db.Column(db.DateTime, default=datetime.utcnow)
+    calculated_at = db.Column(db.DateTime, default=lambda: datetime.now(UTC))
     total_emissions = db.Column(db.Float, default=0.0)
     car_emissions = db.Column(db.Float, default=0.0)
     air_travel_emissions = db.Column(db.Float, default=0.0)
@@ -183,5 +183,5 @@ class Share(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     from_user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
     to_user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
-    shared_date = db.Column(db.DateTime, default=datetime.utcnow)
+    shared_date = db.Column(db.DateTime, default=lambda: datetime.now(UTC))
 
