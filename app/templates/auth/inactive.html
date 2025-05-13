@@ -14,7 +14,7 @@
                 received an email with a confirmation link.
             </p>
 
-            <form action="{{ url_for('resend_confirmation') }}" method="post">
+            <form action="{{ url_for('main.resend_confirmation') }}" method="post">
                 <input type="hidden" name="email" value="{{ email }}">
                 <input type="hidden" name="csrf_token" value="{{ csrf_token() if csrf_token else '' }}">
                 <button type="submit" class="text-primary hover:text-primary-dark underline">

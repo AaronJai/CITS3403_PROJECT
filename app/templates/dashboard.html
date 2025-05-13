@@ -107,7 +107,7 @@
 
     // Click handler for emission goal card
     document.getElementById('emission-goal-card').addEventListener('click', function () {
-      window.location.href = "{{ url_for('view_data') }}";
+      window.location.href = "{{ url_for('main.view_data') }}";
     });
 
     // Click handler for category cards
@@ -115,7 +115,7 @@
     categoryCards.forEach(card => {
       card.addEventListener('click', function () {
         const tabIndex = this.dataset.tab;
-        window.location.href = "{{ url_for('view_data') }}?tab=" + tabIndex;
+        window.location.href = "{{ url_for('main.view_data') }}?tab=" + tabIndex;
       });
     });
   });

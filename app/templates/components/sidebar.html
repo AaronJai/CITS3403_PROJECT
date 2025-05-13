@@ -1,7 +1,7 @@
 <!-- Navigation bar -->
 <aside class="sidebar">
   <!-- App Title and Logo -->
-  <a href="{{ url_for('dashboard') }}">
+  <a href="{{ url_for('main.dashboard') }}">
     <div class="flex items-center text-2xl font-bold mt-2 text-primary">
       <img src="{{ url_for('static', filename='assets/images/logo.png') }}" alt="EcoTrack Logo"
         class="h-10 ml-2 mr-3 mt-2" />
@@ -10,15 +10,15 @@
   </a>
 
   <nav class="sidebar-nav">
-    <ul class="flex flex-1 flex-col gap-5">
-      {% for item in nav_items %}
-      {% set is_locked = (is_new_user and item.endpoint in ['dashboard', 'view_data']) %}
+    <ul class="flex flex-1 flex-col gap-5"> {% for item in nav_items %}
+      {% set endpoint_name = item.endpoint.split('.')[-1] %}
+      {% set is_locked = (is_new_user and endpoint_name in ['dashboard', 'view_data']) %}
       <li
-        class="sidebar-nav-item {% if active_page == item.endpoint %}shad-active{% endif %} {% if is_locked %}locked{% endif %}">
+        class="sidebar-nav-item {% if active_page == endpoint_name %}shad-active{% endif %} {% if is_locked %}locked{% endif %}">
         <a href="{{ url_for(item.endpoint) }}" class="sidebar-nav-link" {% if is_locked
           %}title="Please add data to unlock this feature" {% endif %}>
           <img src="{{ url_for('static', filename='assets/icons/' + item.icon) }}" alt="{{ item.name }}"
-            class="{% if active_page == item.endpoint %}nav-icon-active{% else %}nav-icon{% endif %}" />
+            class="{% if active_page == endpoint_name %}nav-icon-active{% else %}nav-icon{% endif %}" />
           <p class="hidden lg:block">{{ item.name }}</p>
         </a>
       </li>
@@ -29,7 +29,7 @@
   <img src="{{ url_for('static', filename='assets/images/ecofriendly.png') }}" alt="Earth" class="w-full" />
 
   <!-- User -->
-  <a href="{{ url_for('profile') }}" class="hover:underline">
+  <a href="{{ url_for('main.profile') }}" class="hover:underline">
     <div class="sidebar-user-info">
       <image src="{{ url_for('static', filename='assets/images/avatar.png') }}" alt="avatar"
         class="sidebar-user-avatar" />
