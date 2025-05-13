@@ -5,10 +5,10 @@
 {% block content %}
 
 <!-- Background Section -->
-<section class="relative min-h-screen flex">
+<section class="relative min-h-screen flex flex-col lg:flex-row">
 
   <!-- Left Side -->
-  <div class="w-2/3 relative rounded-2xl m-4 p-4 flex items-center justify-center overflow-hidden"
+  <div class="w-full lg:w-2/3 relative rounded-2xl m-4 p-4 flex items-center justify-center overflow-hidden"
     style="background: linear-gradient(to bottom, #d6f0ec, #f8fae8)">
 
     <!-- Grass Background -->
@@ -32,7 +32,7 @@
   </div>
 
   <!-- Right Side -->
-  <div class="w-1/3 flex flex-col gap-4 m-4">
+  <div class="w-full lg:w-1/3 flex flex-col gap-4 m-4">
 
     <!-- Summary Section -->
     <div
@@ -51,8 +51,8 @@
       <ul class="flex flex-col gap-3 overflow-y-auto">
         {% for user in shared_with_me %}
         <li>
-          <button {% if user.email !=current_user.email %} onclick="toggleSharedUserEmissions('{{ user.email }}')" {%
-            endif %} class="flex items-center justify-between w-full px-4 py-2 bg-white rounded-lg shadow transition
+          <button {% if user.email != current_user.email %} onclick="toggleSharedUserEmissions('{{ user.email }}')" {% endif %}
+            class="flex items-center justify-between w-full px-4 py-2 bg-white rounded-lg shadow transition
               {% if user.email != current_user.email %} hover:bg-green-100 cursor-pointer {% endif %}">
             <div class="flex items-center gap-3">
               {% if user.rank == 1 %}
@@ -66,7 +66,6 @@
               {% endif %}
               <span class="font-medium">{{ user.name }}</span>
             </div>
-
             <div class="text-sm text-gray-600">
               {{ user.carbon_footprint }}
             </div>
@@ -79,17 +78,18 @@
 </section>
 
 <!-- Charts & Suggestions -->
-<div class="bg-white relative rounded-2xl w-full p-6 shadow-2xl flex flex-row overflow-hidden">
+<section class="bg-white relative rounded-2xl w-full p-6 shadow-2xl flex flex-col lg:flex-row overflow-hidden">
 
-  <div class="relative w-full h-[400px] flex items-center justify-center pt-12">
+  <!-- Charts -->
+  <div class="w-full lg:w-2/3 h-[400px] flex items-center justify-center pt-12">
     <canvas id="travelPieChart" class="w-full h-full"></canvas>
     <canvas id="homePieChart" class="w-full h-full hidden"></canvas>
     <canvas id="foodPieChart" class="w-full h-full hidden"></canvas>
     <canvas id="shoppingPieChart" class="w-full h-full hidden"></canvas>
   </div>
 
-  <!-- Right Content -->
-  <div class="flex-[1] flex flex-col bg-white">
+  <!-- Right Side -->
+  <div class="w-full lg:w-1/3 flex flex-col bg-white mt-6 lg:mt-0 lg:ml-6">
 
     <!-- Buttons -->
     <div class="flex border-b border-gray-300 space-x-4">
@@ -103,29 +103,29 @@
         class="tab-btn px-4 py-2 text-sm font-semibold cursor-pointer text-[#16372c]">Shopping</button>
     </div>
 
-    <!-- Chart Summary -->
-    <div id="tabContent0" class="tab-content">
+    <!-- SUmmary Section -->
+    <div id="tabContent0" class="tab-content mt-4">
       <p>🚌 Travel insights here...</p>
     </div>
-    <div id="tabContent1" class="tab-content hidden">
+    <div id="tabContent1" class="tab-content hidden mt-4">
       <p>🏠 Home energy info...</p>
     </div>
-    <div id="tabContent2" class="tab-content hidden">
+    <div id="tabContent2" class="tab-content hidden mt-4">
       <p>🍔 Food-related suggestions...</p>
     </div>
-    <div id="tabContent3" class="tab-content hidden">
+    <div id="tabContent3" class="tab-content hidden mt-4">
       <p>🛍️ Goods & Services summary...</p>
     </div>
 
     <!-- Suggestions -->
-    <div class="bg-green-100 rounded-xl p-4 mt-auto">
+    <div class="bg-green-100 rounded-xl p-4 mt-4 lg:mt-auto">
       <h3 class="font-bold text-[#16372c] text-base">What you can do about it</h3>
       <p class="text-sm text-gray-700 mt-1">
         Take small actions to offset your footprint or support carbon restoration.
       </p>
     </div>
   </div>
-</div>
+</section>
 
 <!-- Scripts -->
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
