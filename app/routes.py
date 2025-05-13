@@ -529,6 +529,74 @@ def get_user_emissions(email):
         'total_emissions': total
     })
 
+@app.route('/api/emissions_summary')
+@login_required
+def get_emissions_summary():
+    emissions = Emissions.query.filter_by(user_id=current_user.id).order_by(Emissions.calculated_at.desc()).first()
+    if not emissions:
+        return jsonify({'error': 'No emissions data found'}), 404
+
+    # Calculate totals for each category
+    car = emissions.car_emissions or 0
+    air = emissions.air_travel_emissions or 0
+    transit = emissions.public_transit_emissions or 0
+    travel_total = car + air + transit
+
+    electricity = emissions.electricity_emissions or 0
+    natural_gas = emissions.natural_gas_emissions or 0
+    heating_fuel = emissions.heating_fuels_emissions or 0
+    water = emissions.water_emissions or 0
+    construction = emissions.construction_emissions or 0
+    home_total = electricity + natural_gas + heating_fuel + water + construction
+
+    meat = emissions.meat_emissions or 0
+    dairy = emissions.dairy_emissions or 0
+    fruit_veg = emissions.fruits_vegetables_emissions or 0
+    cereals = emissions.cereals_emissions or 0
+    snacks = emissions.snacks_emissions or 0
+    food_total = meat + dairy + fruit_veg + cereals + snacks
+
+    furniture = emissions.furniture_emissions or 0
+    clothing = emissions.clothing_emissions or 0
+    other_goods = emissions.other_goods_emissions or 0
+    services = emissions.services_emissions or 0
+    shopping_total = furniture + clothing + other_goods + services
+
+    def safe_pct(value, total):
+        return round((value / total) * 100, 2) if total else 0
+
+    return jsonify({
+        'travelTotal': travel_total,
+        'homeTotal': home_total,
+        'foodTotal': food_total,
+        'shoppingTotal': shopping_total,
+
+        'travel': {
+            'carPct': safe_pct(car, travel_total),
+            'airPct': safe_pct(air, travel_total),
+            'transitPct': safe_pct(transit, travel_total),
+        },
+        'home': {
+            'electricityPct': safe_pct(electricity, home_total),
+            'naturalGasPct': safe_pct(natural_gas, home_total),
+            'heatingFuelPct': safe_pct(heating_fuel, home_total),
+            'waterPct': safe_pct(water, home_total),
+            'constructionPct': safe_pct(construction, home_total),
+        },
+        'food': {
+            'meatPct': safe_pct(meat, food_total),
+            'dairyPct': safe_pct(dairy, food_total),
+            'fruitVegPct': safe_pct(fruit_veg, food_total),
+            'cerealsPct': safe_pct(cereals, food_total),
+            'snacksPct': safe_pct(snacks, food_total),
+        },
+        'shopping': {
+            'furniturePct': safe_pct(furniture, shopping_total),
+            'clothingPct': safe_pct(clothing, shopping_total),
+            'otherGoodsPct': safe_pct(other_goods, shopping_total),
+            'servicesPct': safe_pct(services, shopping_total),
+        }
+    })
 
 @app.route('/api/share', methods=['POST'])
 @login_required
