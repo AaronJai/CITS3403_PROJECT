@@ -353,6 +353,53 @@ def get_emissions():
         'total_emissions': emissions.total_emissions or 0.0
     }) 
 
+@app.route('/api/dashboard_metrics', methods=['GET'])
+@login_required
+def get_dashboard_metrics():
+    """
+    Returns all dashboard metrics (percentages, saved, emitted, isBelow, etc.) for the current user.
+    """
+    emissions = Emissions.query.filter_by(user_id=current_user.id).order_by(Emissions.calculated_at.desc()).first()
+    if not emissions:
+        return jsonify({'error': 'No emissions data found'}), 404
+
+    GOALS = {
+        'total': 12.3,
+        'travel': 2.9,
+        'home': 3.5,
+        'food': 3.1,
+        'shopping': 2.8
+    }
+    AU_AVG = 15.01  # Australian average household emissions
+
+    # Calculate category totals
+    travel = (emissions.car_emissions or 0.0) + (emissions.public_transit_emissions or 0.0) + (emissions.air_travel_emissions or 0.0)
+    home = (emissions.electricity_emissions or 0.0) + (emissions.natural_gas_emissions or 0.0) + (emissions.heating_fuels_emissions or 0.0) + (emissions.water_emissions or 0.0) + (emissions.construction_emissions or 0.0)
+    food = (emissions.meat_emissions or 0.0) + (emissions.dairy_emissions or 0.0) + (emissions.fruits_vegetables_emissions or 0.0) + (emissions.cereals_emissions or 0.0) + (emissions.snacks_emissions or 0.0)
+    shopping = (emissions.furniture_emissions or 0.0) + (emissions.clothing_emissions or 0.0) + (emissions.other_goods_emissions or 0.0) + (emissions.services_emissions or 0.0)
+    total = emissions.total_emissions or 0.0
+
+    def calc_metrics(actual, goal):
+        percentage = (actual / goal) * 100 if goal else 0
+        is_below = actual <= goal
+        saved = max(AU_AVG - actual, 0)
+        return {
+            'percentage': round(percentage),
+            'saved': round(saved, 2),
+            'emitted': round(actual, 2),
+            'isBelow': is_below
+        }
+
+    return jsonify({
+        'total': calc_metrics(total, GOALS['total']),
+        'travel': calc_metrics(travel, GOALS['travel']),
+        'home': calc_metrics(home, GOALS['home']),
+        'food': calc_metrics(food, GOALS['food']),
+        'shopping': calc_metrics(shopping, GOALS['shopping']),
+        'goals': GOALS,
+        'au_average': AU_AVG
+    })
+
 @app.route('/share', methods=['GET', 'POST'])
 @login_required
 def share():
