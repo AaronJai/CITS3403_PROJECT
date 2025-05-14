@@ -30,7 +30,7 @@ document.addEventListener('DOMContentLoaded', () => {
         <p class="text-[16px] text-gray-800 mt-2">
           🚗 Your travel-related emissions are currently within the recommended sustainable target.
           This suggests you are making conscious choices such as minimizing unnecessary car trips, flying less frequently, or incorporating low-carbon transport methods into your lifestyle.
-        </p>
+        </p><br>
         <p class="text-[16px] text-gray-800 mt-2">
           Efficient commuting habits, such as using public transport, walking, cycling, or choosing fuel-efficient vehicles, are clearly contributing to this result.
         </p><br>
@@ -119,97 +119,110 @@ document.addEventListener('DOMContentLoaded', () => {
     `,
 
       // Food PCT Analysis
-      food: `
-      ${data.foodTotal > GOALS.food ? `
-        <p class="text-[16px] text-gray-800 mt-2">
-          🥩 Your food-related carbon emissions exceed the recommended sustainable target.
-          This may be due to a high consumption of meat, dairy, or processed snacks.
-        </p>
-        <p class="text-[16px] text-gray-800 mt-2">
-          Consider reducing intake of red meat and dairy, and incorporating more plant-based meals into your diet.
-          Minimizing heavily packaged or processed foods can also contribute to lower emissions.
-        </p><br>
-      ` : `
-        <p class="text-[16px] text-gray-800 mt-2">
-          🥦 Your food-related emissions are within the sustainable target range.
-          This indicates a balanced diet with limited high-emission items like red meat and dairy.
-        </p>
-        <p class="text-[16px] text-gray-800 mt-2">
-          Continue choosing plant-based options, seasonal produce, and low-packaging items to maintain or further reduce your food footprint.
-        </p><br>
-      `}
-
+    food: `
+    ${data.foodTotal > GOALS.food ? `
       <p class="text-[16px] text-gray-800 mt-2">
-        🟢 Breakdown of your food emissions: Meat ${data.food.meatPct.toFixed(0)}%, Dairy ${data.food.dairyPct.toFixed(0)}%, Fruits & Vegetables ${data.food.fruitVegPct.toFixed(0)}%, Cereals ${data.food.cerealsPct.toFixed(0)}%, Snacks ${data.food.snacksPct.toFixed(0)}%.
+        🥩 Your food-related carbon emissions exceed the recommended sustainable target.
+        This may be due to a high consumption of meat, particularly red meats like beef and lamb, dairy products such as cheese and milk, or frequent intake of highly processed snacks and ready-to-eat meals.
       </p>
+      <p class="text-[16px] text-gray-800 mt-2">
+        To improve this, consider reducing your intake of red meat and full-fat dairy products, incorporating more plant-based meals and ingredients like legumes, grains, and vegetables into your diet.
+        Additionally, minimizing heavily packaged and ultra-processed foods—often high in emissions due to industrial manufacturing—can also contribute to lower overall carbon output.
+      </p><br>
+    ` : `
+      <p class="text-[16px] text-gray-800 mt-2">
+        🥦 Your food-related emissions are within the sustainable target range.
+        This indicates that you likely maintain a balanced, climate-conscious diet with limited intake of high-emission items such as red meat, full-fat dairy, or ultra-processed foods.
+      </p>
+      <p class="text-[16px] text-gray-800 mt-2">
+        To maintain or further reduce your food footprint, continue prioritizing plant-based choices, seasonal fruits and vegetables, and food items with minimal packaging.
+        Supporting local and organic farming where possible can also help contribute to a more sustainable lifestyle.
+      </p><br>
+    `}
 
-      ${data.meatPct > data.dairyPct && data.meatPct > data.fruitVegPct && data.meatPct > data.cerealsPct && data.meatPct > data.snacksPct ? `
-        <p class="text-[16px] text-gray-800 mt-2">
-          Meat is the largest contributor to your food emissions. Reducing beef or lamb and replacing them with legumes, tofu, or plant proteins can significantly lower your impact.
-        </p><br>` : ''}
+    <p class="text-[16px] text-gray-800 mt-2">
+      🟢 Breakdown of your food emissions: Meat ${data.food.meatPct.toFixed(0)}%, Dairy ${data.food.dairyPct.toFixed(0)}%, Fruits & Vegetables ${data.food.fruitVegPct.toFixed(0)}%, Cereals ${data.food.cerealsPct.toFixed(0)}%, Snacks ${data.food.snacksPct.toFixed(0)}%.
+      This breakdown highlights the dominant sources of your food-related carbon footprint and can guide your dietary adjustments moving forward.
+    </p>
 
-      ${data.dairyPct > data.meatPct && data.dairyPct > data.fruitVegPct && data.dairyPct > data.cerealsPct && data.dairyPct > data.snacksPct ? `
-        <p class="text-[16px] text-gray-800 mt-2">
-          Dairy products contribute the most to your food emissions. Try plant-based alternatives like almond, oat, or soy milk to reduce this footprint.
-        </p><br>` : ''}
+    ${data.meatPct > data.dairyPct && data.meatPct > data.fruitVegPct && data.meatPct > data.cerealsPct && data.meatPct > data.snacksPct ? `
+      <p class="text-[16px] text-gray-800 mt-2">
+        Meat is currently the largest contributor to your food-related carbon emissions.
+        Consider reducing consumption of beef, lamb, or processed meats and replacing them with more climate-friendly alternatives such as lentils, tofu, tempeh, or beans.
+        These options not only have a lower carbon footprint but also offer rich nutritional value.
+      </p><br>` : ''}
 
-      ${data.snacksPct > data.meatPct && data.snacksPct > data.dairyPct && data.snacksPct > data.fruitVegPct && data.snacksPct > data.cerealsPct ? `
-        <p class="text-[16px] text-gray-800 mt-2">
-          Processed snacks are a major source of your food emissions. Choosing whole foods and reducing packaging waste can make a big difference.
-        </p><br>` : ''}
+    ${data.dairyPct > data.meatPct && data.dairyPct > data.fruitVegPct && data.dairyPct > data.cerealsPct && data.dairyPct > data.snacksPct ? `
+      <p class="text-[16px] text-gray-800 mt-2">
+        Dairy products appear to be the top source of your food emissions.
+        Switching to plant-based alternatives like almond milk, soy milk, oat milk, or even coconut-based yogurts can significantly reduce your impact.
+        Many of these alternatives are now widely available and offer comparable nutritional benefits.
+      </p><br>` : ''}
 
-      <ul class="list-disc pl-5 mt-2 text-[16px] text-gray-800">
-        <li><strong>Reduce Meat:</strong> Choose plant-based proteins like legumes or tofu.</li>
-        <li><strong>Dairy Alternatives:</strong> Use soy, oat, or almond milk to lower impact.</li>
-        <li><strong>Snack Smart:</strong> Minimize processed, packaged foods.</li><br>
-      </ul>
-    `,
+    ${data.snacksPct > data.meatPct && data.snacksPct > data.dairyPct && data.snacksPct > data.fruitVegPct && data.snacksPct > data.cerealsPct ? `
+      <p class="text-[16px] text-gray-800 mt-2">
+        Processed snacks and convenience foods are a major contributor to your current food emissions.
+        These products often involve high levels of packaging, transportation, and processing.
+        Opting for whole foods, homemade meals, or items with less packaging can greatly reduce your snack-related carbon output.
+      </p><br>` : ''}
 
-      // Shopping PCT Analysis
-      shopping: `
-        ${data.shoppingTotal > GOALS.shopping ? `
-          <p class="text-[16px] text-gray-800 mt-2">
-            🛍️ Your shopping-related carbon emissions exceed the recommended sustainable target.
-            This might be due to frequent purchases of furniture, clothing, or usage of service-based expenditures.
-          </p>
-          <p class="text-[16px] text-gray-800 mt-2">
-            Consider reducing discretionary purchases, choosing second-hand or more durable goods, and evaluating the necessity of recurring service costs.
-          </p><br>
-        ` : `
-          <p class="text-[16px] text-gray-800 mt-2">
-            🛒 Your shopping-related emissions are within the recommended sustainable range.
-            This suggests that you're making mindful choices around consumption and services.
-          </p>
-          <p class="text-[16px] text-gray-800 mt-2">
-            Maintaining this pattern by buying less but better-quality products and supporting sustainable service providers will help keep your impact low.
-          </p><br>
-        `}
+    <ul class="list-disc pl-5 mt-2 text-[16px] text-gray-800">
+      <li><strong>Reduce Meat:</strong> Replace red meats with plant-based proteins like beans, tofu, lentils, or seitan to lower emissions.</li>
+      <li><strong>Dairy Alternatives:</strong> Switch to oat, almond, or soy-based milk and yogurt to cut back on dairy-related carbon output.</li>
+      <li><strong>Snack Smart:</strong> Avoid highly processed and packaged snacks; choose fresh, bulk, or homemade alternatives when possible.</li><br>
+    </ul>
+  `,
 
-        <p class="text-[16px] text-gray-800 mt-2">
-          🟢 Breakdown of your shopping emissions: Furniture ${data.shopping.furniturePct.toFixed(0)}%, Clothing ${data.shopping.clothingPct.toFixed(0)}%, Other Goods ${data.shopping.otherGoodsPct.toFixed(0)}%, Services ${data.shopping.servicesPct.toFixed(0)}%.
-        </p>
+    // Shopping PCT Analysis
+    shopping: `
+    ${data.shoppingTotal > GOALS.shopping ? `
+      <p class="text-[16px] text-gray-800 mt-2">
+        🛍️ Your shopping-related carbon emissions exceed the recommended sustainable target.
+        This might be due to frequent purchases of items such as furniture, clothing, or service-based expenditures including online subscriptions, household services, or entertainment.
+      </p>
+      <p class="text-[16px] text-gray-800 mt-2">
+        Consider reducing discretionary purchases, opting for longer-lasting or second-hand goods, and critically evaluating the necessity and frequency of recurring service costs such as memberships or delivery services.
+      </p><br>
+    ` : `
+      <p class="text-[16px] text-gray-800 mt-2">
+        🛒 Your shopping-related emissions are within the recommended sustainable range.
+        This suggests that you're making mindful and conscious choices around consumption patterns, prioritizing necessity over indulgence, and likely limiting the use of high-emission services.
+      </p>
+      <p class="text-[16px] text-gray-800 mt-2">
+        Maintaining this pattern by continuing to buy fewer but better-quality products, reusing where possible, and supporting ethical and sustainable service providers will help you keep your carbon impact low in the long term.
+      </p><br>
+    `}
 
-        ${data.furniturePct > data.clothingPct && data.furniturePct > data.otherGoodsPct && data.furniturePct > data.servicesPct ? `
-          <p class="text-[16px] text-gray-800 mt-2">
-            Furniture and appliances are the largest contributors in your shopping emissions. Consider buying second-hand, choosing longer-lasting products, or delaying non-essential upgrades.
-          </p><br>` : ''}
+    <p class="text-[16px] text-gray-800 mt-2">
+      🟢 Breakdown of your shopping emissions: Furniture ${data.shopping.furniturePct.toFixed(0)}%, Clothing ${data.shopping.clothingPct.toFixed(0)}%, Other Goods ${data.shopping.otherGoodsPct.toFixed(0)}%, Services ${data.shopping.servicesPct.toFixed(0)}%.
+      This breakdown helps you identify which specific areas contribute most to your shopping footprint, providing a clear direction for improvement.
+    </p>
 
-        ${data.clothingPct > data.furniturePct && data.clothingPct > data.otherGoodsPct && data.clothingPct > data.servicesPct ? `
-          <p class="text-[16px] text-gray-800 mt-2">
-            Clothing makes up the largest part of your shopping footprint. Try reducing fast fashion purchases, supporting sustainable brands, and buying higher-quality pieces less frequently.
-          </p><br>` : ''}
+    ${data.furniturePct > data.clothingPct && data.furniturePct > data.otherGoodsPct && data.furniturePct > data.servicesPct ? `
+      <p class="text-[16px] text-gray-800 mt-2">
+        Furniture and household appliances are currently the largest contributors in your shopping emissions.
+        These items tend to have higher embodied carbon due to manufacturing and transportation processes. Consider delaying non-essential upgrades, buying second-hand when possible, or choosing products certified as sustainable or eco-friendly.
+      </p><br>` : ''}
 
-        ${data.servicesPct > data.furniturePct && data.servicesPct > data.clothingPct && data.servicesPct > data.otherGoodsPct ? `
-          <p class="text-[16px] text-gray-800 mt-2">
-            Services are your main source of shopping emissions. Review any non-essential subscriptions or high-emission services to find opportunities for reduction.
-          </p><br>` : ''}
+    ${data.clothingPct > data.furniturePct && data.clothingPct > data.otherGoodsPct && data.clothingPct > data.servicesPct ? `
+      <p class="text-[16px] text-gray-800 mt-2">
+        Clothing makes up the largest portion of your shopping carbon footprint.
+        Fast fashion, with its high turnover and waste, is a significant contributor. To reduce your impact, try supporting slow fashion brands, purchasing fewer but more durable pieces, and avoiding trends that encourage frequent replacement.
+      </p><br>` : ''}
 
-        <ul class="list-disc pl-5 mt-2 text-[16px] text-gray-800">
-          <li><strong>Furniture:</strong> Opt for second-hand or sustainably-made furnishings.</li>
-          <li><strong>Clothing:</strong> Avoid fast fashion and favor quality over quantity.</li>
-          <li><strong>Services:</strong> Review subscriptions or service plans with high emissions.</li><br>
-        </ul>
-      `,
+    ${data.servicesPct > data.furniturePct && data.servicesPct > data.clothingPct && data.servicesPct > data.otherGoodsPct ? `
+      <p class="text-[16px] text-gray-800 mt-2">
+        Services are currently the main source of your shopping-related emissions.
+        This includes everything from entertainment subscriptions to professional services and delivery-based conveniences. Audit your recurring payments and service contracts to identify areas where reductions or more sustainable alternatives are possible.
+      </p><br>` : ''}
+
+    <ul class="list-disc pl-5 mt-2 text-[16px] text-gray-800">
+      <li><strong>Furniture:</strong> Opt for second-hand, refurbished, or sustainably-made furnishings to reduce embodied carbon and landfill waste.</li>
+      <li><strong>Clothing:</strong> Avoid fast fashion trends, focus on high-quality wardrobe staples, and consider swapping or thrifting clothes.</li>
+      <li><strong>Services:</strong> Regularly review subscriptions, especially those with high data or energy usage, and look for greener alternatives.</li><br>
+    </ul>
+  `,
+
     };
       // Populate the tab content with the insights
       document.getElementById('tabContent0').innerHTML = `<div>${insights.travel}</div>`;
@@ -240,7 +253,7 @@ fetch('/api/emissions_summary')
     if (total > GOALS.total) {
       intro = `Your total carbon footprint this month is ${total.toFixed(2)} kg CO₂eq, which exceeds the recommended limit of ${GOALS.total} kg. This indicates a need for improvement in your consumption habits.`;
     } else {
-      intro = `Great job! Your total footprint is ${total.toFixed(2)} kg CO₂eq, which is within the sustainable range. Still, let’s explore where small improvements can be made.`;
+      intro = `Your total footprint is ${total.toFixed(2)} kg CO₂eq, which is within the sustainable range. Still, let’s explore where small improvements can be made.`;
     }
 
     const suggestionsMap = {

@@ -1,6 +1,6 @@
 document.addEventListener('DOMContentLoaded', () => {
   let barChart = null;
-  let originalConfig = null; // ✅ 加上这一行
+  let originalConfig = null;
   let emissionsData = null;
   const chartInstances = {};
 
@@ -395,14 +395,14 @@ function showTab(index) {
       return res.json();
     })
     .then(data => {
-      // ✅ Update total emissions
+      // Update total emissions
       const totalElement = document.getElementById('total-emissions');
       if (totalElement) {
         totalElement.textContent = `${data.total_emissions.toFixed(2)} metric tons CO₂eq`;
       }
       updateCharts(data);
       showTab(getTabFromUrl());
-      // ✅ Scroll to charts section after tab is shown
+      // Scroll to charts section after tab is shown
       scrollToChartsIfNeeded();
     })
     .catch(error => {
@@ -412,7 +412,7 @@ function showTab(index) {
       }
       console.error('Error fetching emissions:', error);
       showTab(getTabFromUrl());
-      // ✅ Still attempt to scroll even if there’s an error
+      // Still attempt to scroll even if there’s an error
       scrollToChartsIfNeeded();
     });
 
