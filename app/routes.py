@@ -833,6 +833,27 @@ def confirm_email(token):
     flash('Account confirmed! Please log in.', 'success')
     return redirect(url_for('main.login'))
 
+@main.route('/confirm_new_email/<token>')
+def confirm_new_email(token):
+    data = User.verify_email_update_token(token)
+    if not data:
+        flash('The confirmation link is invalid or has expired.', 'error')
+        return redirect(url_for('main.profile'))
+    user = User.query.get(data.get('user_id'))
+    new_email = data.get('new_email')
+    if not user or not new_email:
+        flash('Invalid confirmation data.', 'error')
+        return redirect(url_for('main.profile'))
+    # Check if the new email is already taken
+    if User.query.filter_by(email=new_email).first():
+        flash('This email is already in use.', 'error')
+        return redirect(url_for('main.profile'))
+    user.email = new_email
+    user.unconfirmed_email = None
+    db.session.commit()
+    flash('Your email address has been updated and confirmed!', 'success')
+    return redirect(url_for('main.profile'))
+
 # Password reset functionality
 @main.route('/confirm_email', methods=['GET', 'POST'])
 def request_password_reset():
