@@ -355,5 +355,55 @@ class ShareModelTests(BaseTestCase):
         self.assertIsNotNone(shares[0].shared_date)
 
 
+class MessageModelTests(BaseTestCase):
+    def setUp(self):
+        super().setUp()
+        # Create two users
+        self.user1 = User(
+            first_name='User',
+            last_name='One',
+            email='user1@example.com',
+            confirmed=True
+        )
+        self.user1.set_password('password1')
+        self.user2 = User(
+            first_name='User',
+            last_name='Two',
+            email='user2@example.com',
+            confirmed=True
+        )
+        self.user2.set_password('password2')
+        db.session.add_all([self.user1, self.user2])
+        db.session.commit()
+        # Share data between users
+        share1 = Share(from_user_id=self.user1.id, to_user_id=self.user2.id)
+        share2 = Share(from_user_id=self.user2.id, to_user_id=self.user1.id)
+        db.session.add_all([share1, share2])
+        db.session.commit()
+
+    def test_send_and_receive_messages(self):
+        from app.models import Message
+        # User1 sends message to User2
+        msg1 = Message(sender_id=self.user1.id, receiver_id=self.user2.id, content="Hello from user1!")
+        db.session.add(msg1)
+        # User2 sends message to User1
+        msg2 = Message(sender_id=self.user2.id, receiver_id=self.user1.id, content="Hi user1, this is user2!")
+        db.session.add(msg2)
+        db.session.commit()
+        # Assert both messages exist
+        messages = Message.query.all()
+        self.assertEqual(len(messages), 2)
+        # Assert correct sender/receiver/content
+        self.assertEqual(int(messages[0].sender_id), self.user1.id)
+        self.assertEqual(int(messages[0].receiver_id), self.user2.id)
+        self.assertEqual(messages[0].content, "Hello from user1!")
+        self.assertEqual(int(messages[1].sender_id), self.user2.id)
+        self.assertEqual(int(messages[1].receiver_id), self.user1.id)
+        self.assertEqual(messages[1].content, "Hi user1, this is user2!")
+        # Assert timestamps are set
+        self.assertIsNotNone(messages[0].timestamp)
+        self.assertIsNotNone(messages[1].timestamp)
+
+
 if __name__ == '__main__':
     unittest.main()

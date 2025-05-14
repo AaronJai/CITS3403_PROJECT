@@ -190,5 +190,5 @@ class Message(db.Model):
     sender_id = db.Column(db.String(120), nullable=False)
     receiver_id = db.Column(db.String(120), nullable=False)
     content = db.Column(db.Text, nullable=False)
-    timestamp = db.Column(db.DateTime, default=datetime.utcnow)
+    timestamp = db.Column(db.DateTime, default=lambda: datetime.now(UTC))
     is_read = db.Column(db.Boolean, default=False)
