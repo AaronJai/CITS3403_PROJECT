@@ -1,19 +1,21 @@
-# Unit Testing Guide for EcoTrack
+# Unit & Selenium Testing Guide for EcoTrack
 
-This guide explains how to run the unit tests for the EcoTrack application.
+This guide explains how to run the unit and Selenium UI tests for the EcoTrack application.
 
 ## Prerequisites
 
 - Python 3.6+ installed
 - All dependencies installed (`pip install -r requirements.txt`)
-- Flask application properly set up
+- Flask application properly set up and running (for Selenium tests)
+- ChromeDriver (or another WebDriver) installed and in your PATH for Selenium
 
 ## Running Tests
 
 ### From the project root directory:
 
+**UNIT TESTS**
 ```bash
-# Run all tests
+# Run all unit tests
 python -m unittest tests/unit.py
 
 # Run tests with verbose output
@@ -26,7 +28,26 @@ python -m unittest discover tests
 python -m unittest tests.unit.UserModelUnitTests
 ```
 
-### From within the tests folder:
+**SELENIUM UI TESTS**
+```bash
+# Make sure your Flask server is running (e.g. flask run or python EcoTrack.py)
+
+# Run all Selenium UI tests
+python -m unittest tests.test_selenium
+
+# Or, using the module runner (both work, but unittest is preferred for test discovery)
+python -m tests.test_selenium
+
+# Run Selenium tests with verbose output
+python -m unittest tests.test_selenium -v
+```
+
+**Note:**
+- Always run Selenium tests from the project root, not from inside the tests folder.
+- Selenium tests require the web server to be running and accessible at the base URL (default: http://127.0.0.1:5000/). i.e., open the application in another terminal before attempting.
+- If you get import errors, use the `python -m unittest ...` form from the project root.
+
+### From within the tests folder (unit tests only):
 
 ```bash
 cd tests
@@ -53,23 +74,38 @@ The unit tests cover the following components:
    - Tests the sharing functionality between users
    - Verifies share records creation and timestamp generation
 
+The Selenium UI tests cover:
+- Homepage loading
+- Login page loading
+- Full signup, email confirmation, and login flow (bypassing email by programmatically confirming the user)
+
 ## Writing New Tests
 
 To add new tests:
 
-1. Create a new test class that inherits from `BaseTestCase`
+1. Create a new test class that inherits from `BaseTestCase` (for unit tests) or `unittest.TestCase` (for Selenium tests)
 2. Write test methods that start with `test_`
 3. Use standard unittest assertions like `assertEqual`, `assertTrue`, etc.
 
-Example:
-
+Example (unit test):
 ```python
 class NewFeatureTests(BaseTestCase):
     def setUp(self):
         super().setUp()
         # Set up test data
-        
     def test_new_feature(self):
         # Test your feature
         self.assertTrue(result)
 ```
+
+Example (Selenium test):
+```python
+def test_dashboard_loads(self):
+    self.driver.get(self.base_url + "dashboard")
+    self.assertIn("Dashboard", self.driver.title)
+```
+
+## Troubleshooting
+- If you get `ModuleNotFoundError: No module named 'app'`, make sure you are running tests from the project root and using the `python -m unittest ...` form.
+- If Selenium cannot find elements, check your form field IDs and selectors in the templates.
+- If you get database errors in Selenium tests, ensure your Flask server is running and using the same database as your test code for direct DB access.

@@ -89,6 +89,17 @@ Follow these steps to set up the EcoTrack application:
 7. **Access the application:**
    Open a web browser and go to `http://127.0.0.1:5000/`
 
+## Testing (from root directory)
+```bash
+# Unittest
+python -m unittest tests/unit.py
+
+# Selenium
+python -m unittest tests.test_selenium
+```
+- You can add '-v' to the end for verbose outputs.
+- For more detail on testing please see the ```README.md``` in the ```tests``` file 
+
 ## Database Management
 
 If you need to make changes to the database models:
