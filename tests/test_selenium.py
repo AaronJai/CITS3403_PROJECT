@@ -26,6 +26,11 @@ class EcoTrackSeleniumTests(unittest.TestCase):
     def tearDownClass(cls):
         cls.driver.quit()
 
+    def setUp(self):
+        self.driver.delete_all_cookies()
+        # Optionally, ensure logged out
+        self.driver.get(self.base_url + "logout")
+
     def test_homepage_loads(self):
         self.driver.get(self.base_url)
         self.assertIn("EcoTrack", self.driver.title)
@@ -38,7 +43,7 @@ class EcoTrackSeleniumTests(unittest.TestCase):
         self.assertIsNotNone(email_input)
         self.assertIsNotNone(password_input)
 
-    def test_signup_and_login(self):
+    def test_01_signup_and_login(self):
         driver = self.driver
         # Go to signup page
         driver.get(self.base_url + "signup")
@@ -71,6 +76,172 @@ class EcoTrackSeleniumTests(unittest.TestCase):
         time.sleep(1)
         # Should be redirected to add-data page
         self.assertIn("add_data", driver.current_url)
+
+    def test_02_add_data_simple(self):
+        driver = self.driver
+        # Reuse credentials from signup test
+        test_email = f"selenium{int(time.time())}@test.com"
+        password = "TestPassword1!"
+
+        # Sign up and confirm user (reuse logic from test_signup_and_login)
+        driver.get(self.base_url + "signup")
+        driver.find_element(By.ID, "first-name").send_keys("Selenium")
+        driver.find_element(By.ID, "last-name").send_keys("Tester")
+        driver.find_element(By.ID, "email").send_keys(test_email)
+        driver.find_element(By.ID, "password").send_keys(password)
+        driver.find_element(By.ID, "confirm-password").send_keys(password)
+        driver.find_element(By.CSS_SELECTOR, "form input[type='submit']").click()
+        time.sleep(1)
+        self.assertIn("inactive", driver.current_url)
+        with self.app.app_context():
+            user = self.User.query.filter_by(email=test_email).first()
+            token = user.get_email_verification_token()
+        driver.get(self.base_url + f"confirm_email/{token}")
+        time.sleep(1)
+        self.assertIn("login", driver.current_url)
+        driver.get(self.base_url + "login")
+        driver.find_element(By.ID, "email").send_keys(test_email)
+        driver.find_element(By.ID, "password").send_keys(password)
+        driver.find_element(By.CSS_SELECTOR, "form input[type='submit']").click()
+        time.sleep(1)
+        self.assertIn("add_data", driver.current_url)
+
+        # Step through each section using the stepper's Next button
+        for _ in range(3):  # There are 4 steps, so click Next 3 times
+            next_btn = driver.find_element(By.CSS_SELECTOR, '[data-stepper-next-btn]')
+            next_btn.click()
+            time.sleep(0.5)
+
+        # Now the Calculate Footprint button should be visible
+        finish_btn = driver.find_element(By.CSS_SELECTOR, '[data-stepper-finish-btn]')
+        driver.execute_script("arguments[0].classList.remove('hidden');", finish_btn)  # Ensure it's visible
+        finish_btn.click()
+        time.sleep(2)
+        # Assert redirect to view_data page
+        self.assertIn("view_data", driver.current_url)
+        
+    def test_03_add_data_advanced(self):
+        driver = self.driver
+        test_email = f"selenium{int(time.time())}@test.com"
+        password = "TestPassword1!"
+
+        # Sign up and confirm user
+        driver.get(self.base_url + "signup")
+        driver.find_element(By.ID, "first-name").send_keys("Selenium")
+        driver.find_element(By.ID, "last-name").send_keys("Tester")
+        driver.find_element(By.ID, "email").send_keys(test_email)
+        driver.find_element(By.ID, "password").send_keys(password)
+        driver.find_element(By.ID, "confirm-password").send_keys(password)
+        driver.find_element(By.CSS_SELECTOR, "form input[type='submit']").click()
+        time.sleep(1)
+        self.assertIn("inactive", driver.current_url)
+        with self.app.app_context():
+            user = self.User.query.filter_by(email=test_email).first()
+            token = user.get_email_verification_token()
+        driver.get(self.base_url + f"confirm_email/{token}")
+        time.sleep(1)
+        self.assertIn("login", driver.current_url)
+        driver.get(self.base_url + "login")
+        driver.find_element(By.ID, "email").send_keys(test_email)
+        driver.find_element(By.ID, "password").send_keys(password)
+        driver.find_element(By.CSS_SELECTOR, "form input[type='submit']").click()
+        time.sleep(1)
+        self.assertIn("add_data", driver.current_url)
+
+        # --- Step 1: Travel (select Advanced, fill all advanced inputs) ---
+        driver.find_element(By.ID, "show-advanced").click()
+        # Wait for vehicle-distance input to appear
+        for _ in range(20):
+            try:
+                vehicle_distance_input = driver.find_element(By.ID, "vehicle-distance")
+                break
+            except Exception:
+                time.sleep(0.1)
+        else:
+            raise Exception("vehicle-distance input not found after waiting")
+        vehicle_distance_input.clear()
+        vehicle_distance_input.send_keys("15000")
+        # Fill advanced public transit fields
+        adv_ids = [
+            'public_transit_advanced-bus_kms',
+            'public_transit_advanced-transit_rail_kms',
+            'public_transit_advanced-commuter_rail_kms',
+            'public_transit_advanced-intercity_rail_kms',
+        ]
+        adv_vals = ["100", "200", "300", "400"]
+        for adv_id, val in zip(adv_ids, adv_vals):
+            el = driver.find_element(By.ID, adv_id)
+            el.clear()
+            el.send_keys(val)
+        # Fill advanced air travel fields
+        air_ids = [
+            'air_travel_advanced-short_flights',
+            'air_travel_advanced-medium_flights',
+            'air_travel_advanced-long_flights',
+            'air_travel_advanced-extended_flights',
+        ]
+        air_vals = ["2", "3", "1", "0"]
+        for air_id, val in zip(air_ids, air_vals):
+            el = driver.find_element(By.ID, air_id)
+            el.clear()
+            el.send_keys(val)
+        driver.find_element(By.CSS_SELECTOR, '[data-stepper-next-btn]').click()
+        time.sleep(0.5)
+
+        # --- Step 2: Home (fill all number/range inputs) ---
+        driver.find_element(By.ID, "electricity").clear()
+        driver.find_element(By.ID, "electricity").send_keys("1200")
+        driver.find_element(By.ID, "natural-gas").clear()
+        driver.find_element(By.ID, "natural-gas").send_keys("500")
+        driver.find_element(By.ID, "heating-oil").clear()
+        driver.find_element(By.ID, "heating-oil").send_keys("250")
+        driver.find_element(By.ID, "living-space").clear()
+        driver.find_element(By.ID, "living-space").send_keys("100")
+        # Sliders for clean energy and water usage
+        clean_slider = driver.find_element(By.CSS_SELECTOR, '[name="home_energy-clean_energy_percentage"]')
+        driver.execute_script("arguments[0].value = arguments[1]; arguments[0].dispatchEvent(new Event('input'));", clean_slider, "40")
+        water_slider = driver.find_element(By.CSS_SELECTOR, '[name="home_energy-water_usage"]')
+        driver.execute_script("arguments[0].value = arguments[1]; arguments[0].dispatchEvent(new Event('input'));", water_slider, "120")
+        driver.find_element(By.CSS_SELECTOR, '[data-stepper-next-btn]').click()
+        time.sleep(0.5)
+
+        # --- Step 3: Food (fill all sliders) ---
+        food_ids = [
+            'food-meat_fish_eggs',
+            'food-grains_baked_goods',
+            'food-dairy',
+            'food-fruits_vegetables',
+            'food-snacks_drinks',
+        ]
+        for food_id in food_ids:
+            slider = driver.find_element(By.CSS_SELECTOR, f'[name="{food_id}"]')
+            driver.execute_script("arguments[0].value = arguments[1]; arguments[0].dispatchEvent(new Event('input'));", slider, "2.0")
+        driver.find_element(By.CSS_SELECTOR, '[data-stepper-next-btn]').click()
+        time.sleep(0.5)
+
+        # --- Step 4: Shopping (select Advanced, fill all advanced inputs) ---
+        driver.find_element(By.ID, "show-advanced-shopping").click()
+        time.sleep(0.3)
+        shopping_ids = [
+            'input_input_footprint_shopping_goods_furnitureappliances',
+            'input_input_footprint_shopping_goods_clothing',
+            'input_input_footprint_shopping_goods_entertainment',
+            'input_input_footprint_shopping_goods_officesupplies',
+            'input_input_footprint_shopping_goods_personalcare',
+            'input_input_footprint_shopping_services_food',
+            'input_input_footprint_shopping_services_education',
+            'input_input_footprint_shopping_services_communication',
+            'input_input_footprint_shopping_services_loan',
+            'input_input_footprint_shopping_services_transport',
+        ]
+        shopping_vals = ["100", "200", "50", "30", "40", "60", "70", "80", "90", "110"]
+        for shop_id, val in zip(shopping_ids, shopping_vals):
+            el = driver.find_element(By.ID, shop_id)
+            el.clear()
+            el.send_keys(val)
+        driver.find_element(By.CSS_SELECTOR, '[data-stepper-finish-btn]').click()
+        time.sleep(2)
+        self.assertIn("view_data", driver.current_url)
 
 if __name__ == "__main__":
     unittest.main()
