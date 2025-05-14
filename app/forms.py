@@ -76,6 +76,48 @@ class ChangePasswordForm(FlaskForm):
         EqualTo('new_password', message="Passwords must match")
     ])
     submit = SubmitField('Save')
+    
+class ResetPasswordRequestForm(FlaskForm):
+    """Form for requesting a password reset"""
+    email = EmailField('Email', validators=[
+        DataRequired(),
+        Email(message="Please enter a valid email address")
+    ])
+    submit = SubmitField('Send Reset Link')
+
+class ResetPasswordForm(FlaskForm):
+    """Form for resetting password"""
+    new_password = PasswordField('New Password', validators=[
+        DataRequired(),
+        Length(min=8, message="Password must be at least 8 characters long"),
+        password_check
+    ])
+    confirm_password = PasswordField('Confirm New Password', validators=[
+        DataRequired(),
+        EqualTo('new_password', message="Passwords must match")
+    ])
+    submit = SubmitField('Reset Password')
+
+class EditEMailForm(FlaskForm):
+    email = StringField('New Email', render_kw={"placeholder": "New Email"}, validators=[
+        DataRequired(),
+        Email(message="Please enter a valid email address")
+    ])
+    original_email = HiddenField()
+    submit_email = SubmitField('Update Email')
+
+    def validate_email(self, field):
+        if field.data != self.original_email.data:
+            if User.query.filter_by(email=field.data).first():
+                raise ValidationError("Email already in use.")
+            
+class EditNameForm(FlaskForm):
+    first_name = StringField('First Name',render_kw={"placeholder":"First Name"}, validators=[DataRequired(), Length(min=1, max=50)])
+    last_name = StringField('Last Name', render_kw={"placeholder":"Last Name"}, validators=[DataRequired(), Length(min=1, max=50)])
+    submit_name = SubmitField('Save')
+
+class DeleteAccountForm(FlaskForm):
+    submit = SubmitField('Delete Account')
 
 # Carbon Footprint Forms
 
@@ -211,44 +253,3 @@ class CarbonFootprintForm(FlaskForm):
     # so we don't need to include them here
     submit = SubmitField('Calculate Footprint')
 
-class ResetPasswordRequestForm(FlaskForm):
-    """Form for requesting a password reset"""
-    email = EmailField('Email', validators=[
-        DataRequired(),
-        Email(message="Please enter a valid email address")
-    ])
-    submit = SubmitField('Send Reset Link')
-
-class ResetPasswordForm(FlaskForm):
-    """Form for resetting password"""
-    new_password = PasswordField('New Password', validators=[
-        DataRequired(),
-        Length(min=8, message="Password must be at least 8 characters long"),
-        password_check
-    ])
-    confirm_password = PasswordField('Confirm New Password', validators=[
-        DataRequired(),
-        EqualTo('new_password', message="Passwords must match")
-    ])
-    submit = SubmitField('Reset Password')
-
-class EditEMailForm(FlaskForm):
-    email = StringField('New Email', render_kw={"placeholder": "New Email"}, validators=[
-        DataRequired(),
-        Email(message="Please enter a valid email address")
-    ])
-    original_email = HiddenField()
-    submit_email = SubmitField('Update Email')
-
-    def validate_email(self, field):
-        if field.data != self.original_email.data:
-            if User.query.filter_by(email=field.data).first():
-                raise ValidationError("Email already in use.")
-            
-class EditNameForm(FlaskForm):
-    first_name = StringField('First Name',render_kw={"placeholder":"First Name"}, validators=[DataRequired(), Length(min=1, max=50)])
-    last_name = StringField('Last Name', render_kw={"placeholder":"Last Name"}, validators=[DataRequired(), Length(min=1, max=50)])
-    submit_name = SubmitField('Save')
-
-class DeleteAccountForm(FlaskForm):
-    submit = SubmitField('Delete Account')

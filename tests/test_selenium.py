@@ -261,5 +261,84 @@ class EcoTrackSeleniumTests(unittest.TestCase):
         time.sleep(2)
         self.assertIn("view_data", driver.current_url)
 
+    def test_06_profile_full_flow(self):
+        driver = self.driver
+        # Create and sign in user
+        test_email = f"selenium{int(time.time())}@test.com"
+        password = "TestPassword1!"
+        driver.get(self.base_url + "signup")
+        driver.find_element(By.ID, "first-name").send_keys("Selenium")
+        driver.find_element(By.ID, "last-name").send_keys("Tester")
+        driver.find_element(By.ID, "email").send_keys(test_email)
+        driver.find_element(By.ID, "password").send_keys(password)
+        driver.find_element(By.ID, "confirm-password").send_keys(password)
+        driver.find_element(By.CSS_SELECTOR, "form input[type='submit']").click()
+        time.sleep(1)
+        self.assertIn("inactive", driver.current_url)
+        # Confirm user
+        with self.app.app_context():
+            user = self.User.query.filter_by(email=test_email).first()
+            token = user.get_email_verification_token()
+        driver.get(self.base_url + f"confirm_email/{token}")
+        time.sleep(1)
+        self.assertIn("login", driver.current_url)
+        # Log in
+        driver.get(self.base_url + "login")
+        driver.find_element(By.ID, "email").send_keys(test_email)
+        driver.find_element(By.ID, "password").send_keys(password)
+        driver.find_element(By.CSS_SELECTOR, "form input[type='submit']").click()
+        time.sleep(1)
+        self.assertIn("add_data", driver.current_url)
+        # Go to profile page
+        driver.get(self.base_url + "profile")
+        # Change name
+        first_name_input = driver.find_element(By.NAME, "first_name")
+        last_name_input = driver.find_element(By.NAME, "last_name")
+        first_name_input.clear()
+        first_name_input.send_keys("NewFirst")
+        last_name_input.clear()
+        last_name_input.send_keys("NewLast")
+        driver.find_element(By.NAME, "submit_name").click()
+        time.sleep(1)
+        driver.refresh()
+        # Check that the updated name appears in the profile header
+        header = driver.find_element(By.CSS_SELECTOR, "h1.text-3xl.font-bold.pt-4")
+        self.assertIn("NewFirst NewLast", header.text)
+        # Change email
+        new_email = f"selenium_new{int(time.time())}@test.com"
+        email_input = driver.find_element(By.NAME, "email")
+        email_input.clear()
+        email_input.send_keys(new_email)
+        driver.find_element(By.NAME, "submit_email").click()
+        time.sleep(1)
+        # Confirm new email via token
+        with self.app.app_context():
+            user = self.User.query.filter_by(email=test_email).first()
+            self.assertIsNotNone(user)
+            self.assertEqual(user.unconfirmed_email, new_email)
+            token = user.get_email_update_token(new_email)
+        driver.get(self.base_url + f"confirm_new_email/{token}")
+        time.sleep(1)
+        # Go to profile page again (user is still logged in)
+        driver.get(self.base_url + "profile")
+        # Change password
+        driver.find_element(By.NAME, "current_password").send_keys(password)
+        new_password = "TestPassword2!"
+        driver.find_element(By.NAME, "new_password").send_keys(new_password)
+        driver.find_element(By.NAME, "confirm_password").send_keys(new_password)
+        driver.find_element(By.NAME, "submit").click()
+        time.sleep(1)
+        # Log out using the Logout button (find by text and href)
+        logout_btn = driver.find_element(By.XPATH, "//a[contains(@href, '/logout') and .//span[text()='Logout']]")
+        logout_btn.click()
+        time.sleep(0.5)
+        # Log in with new email and new password
+        driver.get(self.base_url + "login")
+        driver.find_element(By.ID, "email").send_keys(new_email)
+        driver.find_element(By.ID, "password").send_keys(new_password)
+        driver.find_element(By.CSS_SELECTOR, "form input[type='submit']").click()
+        time.sleep(1)
+        self.assertIn("add_data", driver.current_url)
+
 if __name__ == "__main__":
     unittest.main()
