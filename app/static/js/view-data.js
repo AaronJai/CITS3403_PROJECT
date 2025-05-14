@@ -337,8 +337,8 @@ function showTab(index) {
             return `
               <div class="flex items-center gap-1">
                 <span class="inline-block w-3 h-3 rounded-full" style="background:${color}"></span>
-                <span class="font-semibold text-gray-800">${label}:</span>
-                <span class="text-gray-700">${value.toFixed(2)} kg</span>
+                <span class="font-bold text-gray-800">${label}:</span>
+                <span class="font-semibold text-gray-700">${value.toFixed(2)} kg</span>
               </div>
             `;
           }).join('')}
@@ -353,8 +353,8 @@ function showTab(index) {
           return `
             <div class="flex items-center gap-1">
               <span class="inline-block w-3 h-3 rounded-full" style="background:${color}"></span>
-              <span class="font-semibold text-gray-800">${label}:</span>
-              <span class="text-gray-700">${value.toFixed(2)} kg</span>
+              <span class="font-bold text-gray-800">${label}:</span>
+              <span class="font-medium text-gray-900">${value.toFixed(2)} kg</span>
             </div>
           `;
         }).join('');
@@ -366,8 +366,8 @@ function showTab(index) {
           return `
             <div class="flex items-center gap-1">
               <span class="inline-block w-3 h-3 rounded-full" style="background:${color}"></span>
-              <span class="font-semibold text-gray-800">${label}:</span>
-              <span class="text-gray-700">${value.toFixed(2)} kg</span>
+              <span class="font-bold text-gray-800">${label}:</span>
+              <span class="font-medium text-gray-900">${value.toFixed(2)} kg</span>
             </div>
           `;
         }).join('');
