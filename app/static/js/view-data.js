@@ -27,6 +27,15 @@ document.addEventListener('DOMContentLoaded', () => {
     }
   }
 
+  function renderChart(config) {
+  const canvas = document.getElementById('myChart');
+  const existing = Chart.getChart(canvas);
+  if (existing) existing.destroy();
+
+  const ctx = canvas.getContext('2d');
+  window.barChart = new Chart(ctx, JSON.parse(JSON.stringify(config)));
+}
+
   const barChartConfig = {
     type: 'bar',
     data: {
@@ -74,7 +83,7 @@ document.addEventListener('DOMContentLoaded', () => {
           },
           grid: {
             color: 'rgba(0,0,0,0.1)',
-            lineWidth: 1.5,
+            lineWidth: 1.5
           },
           border: {
             color: '#222222',
@@ -103,17 +112,6 @@ document.addEventListener('DOMContentLoaded', () => {
             width: 2
           }
         }
-      },
-      plugins: {
-        legend: { display: false },
-        tooltip: {
-          backgroundColor: '#2f5c47',
-          titleColor: '#ffffff',
-          bodyColor: '#ffffff',
-          cornerRadius: 6,
-          borderWidth: 1,
-          borderColor: '#497f66'
-        }
       }
     },
     plugins: [
@@ -133,6 +131,10 @@ document.addEventListener('DOMContentLoaded', () => {
       }
     ]
   };
+  document.addEventListener('DOMContentLoaded', () => {
+    window.originalConfig = barChartConfig;
+    renderChart(window.originalConfig);
+  });
 
   // Pie chart configurations
   const chartConfigs = [
@@ -165,6 +167,7 @@ document.addEventListener('DOMContentLoaded', () => {
   // Initialize bar chart
   const barCtx = document.getElementById('myChart')?.getContext('2d');
   if (barCtx) {
+    window.originalConfig = barChartConfig;
     barChart = new Chart(barCtx, barChartConfig);
   }
 
@@ -233,7 +236,7 @@ document.addEventListener('DOMContentLoaded', () => {
     emissionsData = data;
   }
 
-function showTab(index) {
+window.showTab = function (index) {
   const canvasIds = ['travelPieChart', 'homePieChart', 'foodPieChart', 'shoppingPieChart'];
   const contentIds = ['tabContent0', 'tabContent1', 'tabContent2', 'tabContent3'];
   const buttons = document.querySelectorAll('.tab-btn');
@@ -463,17 +466,21 @@ function showTab(index) {
     };
 
     // Create Chart
-    function restoreOriginalChart() {
-      if (barChart) {
-        barChart.destroy();
-      }
+  window.restoreOriginalChart = function () {
+    if (!window.originalConfig) {
+      return;
+    }
 
-      const ctx = document.getElementById('myChart').getContext('2d');
-      barChart = new Chart(ctx, originalConfig);
-  }
+    const canvas = document.getElementById('myChart');
+    const existing = Chart.getChart(canvas);
+    if (existing) existing.destroy();
+
+    const ctx = canvas.getContext('2d');
+    window.barChart = new Chart(ctx, JSON.parse(JSON.stringify(window.originalConfig)));
+  };
 
   // Comparison chart
-  function toggleSharedUserEmissions(email) {
+  window.toggleSharedUserEmissions = function (email) {
     console.log('Fetching emissions for:', email);
 
     fetch(`/api/compare_emissions?email=${encodeURIComponent(email)}`)
@@ -535,8 +542,12 @@ function showTab(index) {
         alert("Error: " + err.message);
         console.error(err);
       });
-  }
+  };
 
 // Restore original chart on page load
-window.toggleSharedUserEmissions = toggleSharedUserEmissions;
-});
+function showOriginalChart() {
+  if (window.originalConfig) {
+    renderChart(window.originalConfig);
+  }
+}
+})
