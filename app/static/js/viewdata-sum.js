@@ -37,7 +37,7 @@ document.addEventListener('DOMContentLoaded', () => {
       `}
 
       <p class="text-[16px] text-gray-800 mt-2">
-        Breakdown of your travel emissions: Car ${data.travel.carPct.toFixed(0)}%, Air ${data.travel.airPct.toFixed(0)}%, Transit ${data.travel.transitPct.toFixed(0)}%.
+        🟢 Breakdown of your travel emissions: Car ${data.travel.carPct.toFixed(0)}%, Air ${data.travel.airPct.toFixed(0)}%, Transit ${data.travel.transitPct.toFixed(0)}%.
       </p>
 
       ${data.carPct > data.airPct && data.carPct > data.transitPct ? `
@@ -81,7 +81,7 @@ document.addEventListener('DOMContentLoaded', () => {
       `}
 
       <p class="text-[16px] text-gray-800 mt-2">
-        Breakdown: Electricity ${data.home.electricityPct.toFixed(0)}%, Natural Gas ${data.home.naturalGasPct.toFixed(0)}%, Heating Fuel ${data.home.heatingFuelPct.toFixed(0)}%, Water ${data.home.waterPct.toFixed(0)}%, Construction ${data.home.constructionPct.toFixed(0)}%.
+        🟢 Breakdown: Electricity ${data.home.electricityPct.toFixed(0)}%, Natural Gas ${data.home.naturalGasPct.toFixed(0)}%, Heating Fuel ${data.home.heatingFuelPct.toFixed(0)}%, Water ${data.home.waterPct.toFixed(0)}%, Construction ${data.home.constructionPct.toFixed(0)}%.
       </p>
 
       ${data.electricityPct > data.naturalGasPct && data.electricityPct > data.heatingFuelPct && data.electricityPct > data.waterPct && data.electricityPct > data.constructionPct ? `
@@ -140,7 +140,7 @@ document.addEventListener('DOMContentLoaded', () => {
       `}
 
       <p class="text-[16px] text-gray-800 mt-2">
-        Breakdown of your food emissions: Meat ${data.food.meatPct.toFixed(0)}%, Dairy ${data.food.dairyPct.toFixed(0)}%, Fruits & Vegetables ${data.food.fruitVegPct.toFixed(0)}%, Cereals ${data.food.cerealsPct.toFixed(0)}%, Snacks ${data.food.snacksPct.toFixed(0)}%.
+        🟢 Breakdown of your food emissions: Meat ${data.food.meatPct.toFixed(0)}%, Dairy ${data.food.dairyPct.toFixed(0)}%, Fruits & Vegetables ${data.food.fruitVegPct.toFixed(0)}%, Cereals ${data.food.cerealsPct.toFixed(0)}%, Snacks ${data.food.snacksPct.toFixed(0)}%.
       </p>
 
       ${data.meatPct > data.dairyPct && data.meatPct > data.fruitVegPct && data.meatPct > data.cerealsPct && data.meatPct > data.snacksPct ? `
@@ -186,7 +186,7 @@ document.addEventListener('DOMContentLoaded', () => {
         `}
 
         <p class="text-[16px] text-gray-800 mt-2">
-          Breakdown of your shopping emissions: Furniture ${data.shopping.furniturePct.toFixed(0)}%, Clothing ${data.shopping.clothingPct.toFixed(0)}%, Other Goods ${data.shopping.otherGoodsPct.toFixed(0)}%, Services ${data.shopping.servicesPct.toFixed(0)}%.
+          🟢 Breakdown of your shopping emissions: Furniture ${data.shopping.furniturePct.toFixed(0)}%, Clothing ${data.shopping.clothingPct.toFixed(0)}%, Other Goods ${data.shopping.otherGoodsPct.toFixed(0)}%, Services ${data.shopping.servicesPct.toFixed(0)}%.
         </p>
 
         ${data.furniturePct > data.clothingPct && data.furniturePct > data.otherGoodsPct && data.furniturePct > data.servicesPct ? `

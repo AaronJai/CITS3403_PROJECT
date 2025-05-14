@@ -1,8 +1,9 @@
 document.addEventListener('DOMContentLoaded', () => {
-  // Initialize chart variables
   let barChart = null;
-  const chartInstances = {};
+  let originalConfig = null; // ✅ 加上这一行
   let emissionsData = null;
+  const chartInstances = {};
+
 
   // Handle URL parameter for tab selection
   function getTabFromUrl() {
@@ -232,102 +233,176 @@ document.addEventListener('DOMContentLoaded', () => {
     emissionsData = data;
   }
 
-  function showTab(index) {
-    const canvasIds = ['travelPieChart', 'homePieChart', 'foodPieChart', 'shoppingPieChart'];
-    const contentIds = ['tabContent0', 'tabContent1', 'tabContent2', 'tabContent3'];
-    const buttons = document.querySelectorAll('.tab-btn');
+function showTab(index) {
+  const canvasIds = ['travelPieChart', 'homePieChart', 'foodPieChart', 'shoppingPieChart'];
+  const contentIds = ['tabContent0', 'tabContent1', 'tabContent2', 'tabContent3'];
+  const buttons = document.querySelectorAll('.tab-btn');
+  const chartId = canvasIds[index];
 
-    // Hide all canvas elements and destroy existing charts
-    canvasIds.forEach((id, i) => {
-      const canvas = document.getElementById(id);
-      if (i === index) {
-        canvas.classList.remove('hidden');
-      } else {
-        canvas.classList.add('hidden');
-        if (chartInstances[id]) {
-          chartInstances[id].destroy();
-          delete chartInstances[id];
-        }
+  // Hide all canvas elements and destroy existing charts
+  canvasIds.forEach((id, i) => {
+    const canvas = document.getElementById(id);
+    if (i === index) {
+      canvas.classList.remove('hidden');
+    } else {
+      canvas.classList.add('hidden');
+      if (chartInstances[id]) {
+        chartInstances[id].destroy();
+        delete chartInstances[id];
       }
-    });
+    }
+  });
 
-    // Show the selected content and hide others
-    contentIds.forEach((id, i) => {
-      const content = document.getElementById(id);
-      content.classList.toggle('hidden', i !== index);
-    });
+  // Show the selected content and hide others
+  contentIds.forEach((id, i) => {
+    const content = document.getElementById(id);
+    content.classList.toggle('hidden', i !== index);
+  });
 
-    // Update button styles
-    buttons.forEach((btn, i) => {
-      btn.classList.toggle('border-b-2', i === index);
-      btn.classList.toggle('text-[#16372c]', i === index);
-      btn.classList.toggle('border-[#16372c]', i === index);
-    });
+  // Update button styles
+  buttons.forEach((btn, i) => {
+    btn.classList.toggle('border-b-2', i === index);
+    btn.classList.toggle('text-[#16372c]', i === index);
+    btn.classList.toggle('border-[#16372c]', i === index);
+  });
 
-    const chartId = canvasIds[index];
-    // Destroy existing chart to ensure fresh data
+  // Re-create the chart
+  const config = chartConfigs.find(c => c.id === chartId);
+  const ctx = document.getElementById(chartId)?.getContext('2d');
+  if (ctx && config) {
+    const data = emissionsData
+      ? config.dataKey.map(key => emissionsData[key] || 0)
+      : new Array(config.labels.length).fill(0);
+
+    // Destroy existing
     if (chartInstances[chartId]) {
       chartInstances[chartId].destroy();
       delete chartInstances[chartId];
     }
 
-    const config = chartConfigs.find(c => c.id === chartId);
-    const ctx = document.getElementById(chartId)?.getContext('2d');
-    if (ctx && config) {
-      const data = emissionsData
-        ? config.dataKey.map(key => emissionsData[key] || 0)
-        : new Array(config.labels.length).fill(0);
-      chartInstances[chartId] = new Chart(ctx, {
-        type: 'pie',
-        data: {
-          labels: config.labels,
-          datasets: [{
-            data: data,
-            backgroundColor: config.colors,
-            borderColor: '#ffffff',
-            borderWidth: 2
-          }]
-        },
-        plugins: [ChartDataLabels],
-        options: {
-          responsive: true,
-          plugins: {
-            legend: { display: false },
-            tooltip: {
-              backgroundColor: '#2f5c47',
-              titleColor: '#ffffff',
-              bodyColor: '#ffffff',
-              borderColor: '#497f66',
-              borderWidth: 1
-            },
-            datalabels: { display: false }
-          }
+    // Create new chart
+    chartInstances[chartId] = new Chart(ctx, {
+      type: 'pie',
+      data: {
+        labels: config.labels,
+        datasets: [{
+          data: data,
+          backgroundColor: config.colors,
+          borderColor: '#ffffff',
+          borderWidth: 2
+        }]
+      },
+      plugins: [ChartDataLabels],
+      options: {
+        responsive: true,
+        plugins: {
+          legend: { display: false },
+          tooltip: {
+            backgroundColor: '#2f5c47',
+            titleColor: '#ffffff',
+            bodyColor: '#ffffff',
+            borderColor: '#497f66',
+            borderWidth: 1
+          },
+          datalabels: { display: false }
         }
-      });
+      }
+    });
+
+    // Update legend
+    const legendDivIds = {
+      travelPieChart: 'travelLegend',
+      homePieChart: 'homeLegend',
+      foodPieChart: 'foodLegend',
+      shoppingPieChart: 'shoppingLegend'
+    };
+
+    // Hide all legends
+    Object.values(legendDivIds).forEach(id => {
+      const el = document.getElementById(id);
+      if (el) el.classList.add('hidden');
+    });
+
+    // Show the current chart's legend
+    const legendDiv = document.getElementById(legendDivIds[chartId]);
+    if (legendDiv) {
+      legendDiv.classList.remove('hidden');
+
+      // Generate legend HTML
+      let legendHTML = `
+        <div class="flex flex-wrap justify-center gap-x-6 gap-y-1 text-sm">
+          ${config.labels.map((label, i) => {
+            const value = data[i];
+            const color = config.colors[i];
+            return `
+              <div class="flex items-center gap-1">
+                <span class="inline-block w-3 h-3 rounded-full" style="background:${color}"></span>
+                <span class="font-semibold text-gray-800">${label}:</span>
+                <span class="text-gray-700">${value.toFixed(2)} kg</span>
+              </div>
+            `;
+          }).join('')}
+        </div>
+      `;
+
+      // If the chart is food or home, split into two rows
+      if (chartId === 'foodPieChart' || chartId === 'homePieChart') {
+        const firstRow = config.labels.slice(0, 3).map((label, i) => {
+          const value = data[i];
+          const color = config.colors[i];
+          return `
+            <div class="flex items-center gap-1">
+              <span class="inline-block w-3 h-3 rounded-full" style="background:${color}"></span>
+              <span class="font-semibold text-gray-800">${label}:</span>
+              <span class="text-gray-700">${value.toFixed(2)} kg</span>
+            </div>
+          `;
+        }).join('');
+
+        const secondRow = config.labels.slice(3).map((label, i) => {
+          const realIndex = i + 3;
+          const value = data[realIndex];
+          const color = config.colors[realIndex];
+          return `
+            <div class="flex items-center gap-1">
+              <span class="inline-block w-3 h-3 rounded-full" style="background:${color}"></span>
+              <span class="font-semibold text-gray-800">${label}:</span>
+              <span class="text-gray-700">${value.toFixed(2)} kg</span>
+            </div>
+          `;
+        }).join('');
+
+        legendHTML = `
+          <div class="flex flex-wrap justify-center gap-x-6 gap-y-1 text-sm">
+            ${firstRow}
+          </div>
+          <div class="flex flex-wrap justify-center gap-x-6 gap-y-1 text-sm mt-1">
+            ${secondRow}
+          </div>
+        `;
+      }
+
+      // Insert legend
+      legendDiv.innerHTML = legendHTML;
     }
   }
-
-  // Fetch emissions data via AJAX
-  fetch('/api/emissions', {
-    method: 'GET',
-    headers: { 'Content-Type': 'application/json' }
-  })
-    .then(response => {
-      if (!response.ok) {
-        throw new Error(response.status === 401 ? 'User not logged in' : 'No emissions data found');
-      }
-      return response.json();
+}
+  window.showTab = showTab;
+  // Fetch emissions and show default chart
+  fetch('/api/emissions')
+    .then(res => {
+      if (!res.ok) throw new Error('Failed to fetch emissions');
+      return res.json();
     })
     .then(data => {
-      // Update total emissions
+      // ✅ Update total emissions
       const totalElement = document.getElementById('total-emissions');
       if (totalElement) {
-        totalElement.textContent = `${data.total_emissions.toFixed(2)} metric tons CO₂/year`;
+        totalElement.textContent = `${data.total_emissions.toFixed(2)} metric tons CO₂eq`;
       }
-
       updateCharts(data);
       showTab(getTabFromUrl());
-      // Scroll to charts section after tab is shown
+      // ✅ Scroll to charts section after tab is shown
       scrollToChartsIfNeeded();
     })
     .catch(error => {
@@ -337,21 +412,9 @@ document.addEventListener('DOMContentLoaded', () => {
       }
       console.error('Error fetching emissions:', error);
       showTab(getTabFromUrl());
-      // Still attempt to scroll even if there's an error
+      // ✅ Still attempt to scroll even if there’s an error
       scrollToChartsIfNeeded();
     });
-
-  window.showTab = showTab;
-});
-
-
-// Chart comparing
- let barChart = null;
-  let originalConfig = null;
-
-  // Initialize Chart
-  document.addEventListener('DOMContentLoaded', () => {
-    const ctx = document.getElementById('myChart').getContext('2d');
 
     // Initial chart configuration
     originalConfig = {
@@ -400,11 +463,19 @@ document.addEventListener('DOMContentLoaded', () => {
     };
 
     // Create Chart
-    barChart = new Chart(ctx, originalConfig);
-  });
+    function restoreOriginalChart() {
+      if (barChart) {
+        barChart.destroy();
+      }
+
+      const ctx = document.getElementById('myChart').getContext('2d');
+      barChart = new Chart(ctx, originalConfig);
+  }
 
   // Comparison chart
   function toggleSharedUserEmissions(email) {
+    console.log('Fetching emissions for:', email);
+
     fetch(`/api/compare_emissions?email=${encodeURIComponent(email)}`)
       .then(res => {
         if (!res.ok) throw new Error('Failed to fetch compare data');
@@ -415,7 +486,6 @@ document.addEventListener('DOMContentLoaded', () => {
           alert(data.error);
           return;
         }
-
         const chartId = 'myChart';
         const existingChart = Chart.getChart(chartId);
         if (existingChart) {
@@ -467,14 +537,6 @@ document.addEventListener('DOMContentLoaded', () => {
       });
   }
 
-  // Restore Origianl Chart
-  function restoreOriginalChart() {
-    const chartId = 'myChart';
-    const existingChart = Chart.getChart(chartId);
-    if (existingChart) {
-      existingChart.destroy();
-    }
-
-    const ctx = document.getElementById(chartId).getContext('2d');
-    barChart = new Chart(ctx, originalConfig);
-  }
+// Restore original chart on page load
+window.toggleSharedUserEmissions = toggleSharedUserEmissions;
+});
