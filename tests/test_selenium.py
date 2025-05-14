@@ -31,19 +31,37 @@ class EcoTrackSeleniumTests(unittest.TestCase):
         # Optionally, ensure logged out
         self.driver.get(self.base_url + "logout")
 
-    def test_homepage_loads(self):
+    def test_01_homepage_loads(self):
         self.driver.get(self.base_url)
         self.assertIn("EcoTrack", self.driver.title)
 
-    def test_login_page_loads(self):
-        self.driver.get(self.base_url + "login")
-        self.assertIn("Log in", self.driver.title)
-        email_input = self.driver.find_element(By.ID, "email")
-        password_input = self.driver.find_element(By.ID, "password")
+    def test_02_auth_pages(self):
+        driver = self.driver
+        # Test login page loads and fields are present
+        driver.get(self.base_url + "login")
+        self.assertIn("Log in", driver.title)
+        email_input = driver.find_element(By.ID, "email")
+        password_input = driver.find_element(By.ID, "password")
         self.assertIsNotNone(email_input)
         self.assertIsNotNone(password_input)
+        # Click the sign up link/button on the login form
+        signup_link = driver.find_element(By.LINK_TEXT, "Sign Up")
+        signup_link.click()
+        time.sleep(0.5)
+        # Now on the signup page, check fields
+        self.assertIn("Sign Up", driver.title)
+        first_name = driver.find_element(By.ID, "first-name")
+        last_name = driver.find_element(By.ID, "last-name")
+        email = driver.find_element(By.ID, "email")
+        password = driver.find_element(By.ID, "password")
+        confirm_password = driver.find_element(By.ID, "confirm-password")
+        self.assertIsNotNone(first_name)
+        self.assertIsNotNone(last_name)
+        self.assertIsNotNone(email)
+        self.assertIsNotNone(password)
+        self.assertIsNotNone(confirm_password)
 
-    def test_01_signup_and_login(self):
+    def test_03_signup_and_login(self):
         driver = self.driver
         # Go to signup page
         driver.get(self.base_url + "signup")
@@ -77,7 +95,7 @@ class EcoTrackSeleniumTests(unittest.TestCase):
         # Should be redirected to add-data page
         self.assertIn("add_data", driver.current_url)
 
-    def test_02_add_data_simple(self):
+    def test_04_add_data_simple(self):
         driver = self.driver
         # Reuse credentials from signup test
         test_email = f"selenium{int(time.time())}@test.com"
@@ -120,7 +138,7 @@ class EcoTrackSeleniumTests(unittest.TestCase):
         # Assert redirect to view_data page
         self.assertIn("view_data", driver.current_url)
         
-    def test_03_add_data_advanced(self):
+    def test_05_add_data_advanced(self):
         driver = self.driver
         test_email = f"selenium{int(time.time())}@test.com"
         password = "TestPassword1!"
