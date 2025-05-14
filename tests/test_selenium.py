@@ -12,6 +12,15 @@ class EcoTrackSeleniumTests(unittest.TestCase):
         cls.driver = webdriver.Chrome()
         cls.driver.implicitly_wait(10)
         cls.base_url = "http://127.0.0.1:5000/"
+        # Set up app context and imports for programmatic confirmation
+        import sys, os
+        sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
+        from app import create_app, db
+        from app.models import User
+        from app.config import Config
+        cls.app = create_app(Config)
+        cls.db = db
+        cls.User = User
 
     @classmethod
     def tearDownClass(cls):
@@ -46,15 +55,8 @@ class EcoTrackSeleniumTests(unittest.TestCase):
         self.assertIn("inactive", driver.current_url)
 
         # --- Programmatically confirm the user ---
-        # Get the confirmation token using the same method as in unit.py
-        import sys, os
-        sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
-        from app import create_app, db
-        from app.models import User
-        from app.config import Config  # Use the main config, not TestingConfig
-        app = create_app(Config)
-        with app.app_context():
-            user = User.query.filter_by(email=test_email).first()
+        with self.app.app_context():
+            user = self.User.query.filter_by(email=test_email).first()
             token = user.get_email_verification_token()
         # Visit the confirmation link
         driver.get(self.base_url + f"confirm_email/{token}")
