@@ -2,10 +2,14 @@
 
 {% block title %}Share | EcoTrack{% endblock %}
 
+{% block head %}
+<script>const currentUser = "{{ current_user.email }}";</script>
+<script src="{{ url_for('static', filename='js/share.js') }}" defer></script>
+<script src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js" defer></script>
+{% endblock %}
+
 {% block content %}
 <div>
-    <h1 class="subtitle">Share Your Eco Data</h1>
-
     <!-- Search Section -->
     <section class="mb-8">
         <div class="bg-white p-6 rounded-xl shadow-md">
@@ -78,7 +82,7 @@
                     </thead>
                     <tbody>
                         {% for user in shared_with_me %}
-                        <tr class="border-b cursor-pointer {% if user.email == current_user.email %}bg-green-50{% endif %}"
+                        <tr class="border-b {% if user.email == current_user.email %}bg-green-50{% endif %}"
                             data-email="{{ user.email }}">
                             <td class="py-3 px-4">
                                 {% if user.rank == 1 %}
@@ -230,20 +234,20 @@
                                 <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
                                 <input type="hidden" name="receiver_email" value="{{ user.email }}">
                                 <button type="submit"
-                                    class="px-4 py-1 text-xs rounded-full bg-red-200 text-red-800 border border-red-300 hover:bg-red-300 transition">
+                                    class="px-4 py-1 cursor-pointer text-xs rounded-full bg-red-200 text-red-800 border border-red-300 hover:bg-red-300 transition">
                                     Stop
                                 </button>
                             </form>
 
                             <button
-                                class="px-4 py-1 text-xs rounded-full bg-green-200 text-green-800 border border-green-300 hover:bg-green-300 transition"
+                                class="px-4 py-1 cursor-pointer text-xs rounded-full bg-green-200 text-green-800 border border-green-300 hover:bg-green-300 transition"
                                 onclick="startChat('{{ user.email }}')">
                                 Chat
                             </button>
                         </div>
 
                         <button @click="show = !show" class="text-gray-400 hover:text-gray-600 focus:outline-none mt-1">
-                            <svg :class="{ 'rotate-180': show }" class="w-4 h-4 transition-transform transform"
+                            <svg :class="{ 'rotate-180': show }" class="w-4 h-4 cursor-pointer transition-transform transform"
                                 fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" d="M19 9l-7 7-7-7" />
                             </svg>
@@ -283,13 +287,6 @@
         </form>
     </div>
 </div>
-
-<!-- JavaScript -->
-<script>
-    const currentUser = "{{ current_user.email }}";
-</script>
-<script src="{{ url_for('static', filename='js/share.js') }}"></script>
-<script src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js" defer></script>
 <meta name="csrf-token" content="{{ csrf_token() }}">
 
 {% endblock %}
