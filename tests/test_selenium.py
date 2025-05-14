@@ -31,6 +31,30 @@ class EcoTrackSeleniumTests(unittest.TestCase):
         # Optionally, ensure logged out
         self.driver.get(self.base_url + "logout")
 
+    def signup_confirm_login(self, email, password):
+        driver = self.driver
+        driver.get(self.base_url + "signup")
+        driver.find_element(By.ID, "first-name").send_keys("Selenium")
+        driver.find_element(By.ID, "last-name").send_keys("Tester")
+        driver.find_element(By.ID, "email").send_keys(email)
+        driver.find_element(By.ID, "password").send_keys(password)
+        driver.find_element(By.ID, "confirm-password").send_keys(password)
+        driver.find_element(By.CSS_SELECTOR, "form input[type='submit']").click()
+        time.sleep(1)
+        self.assertIn("inactive", driver.current_url)
+        with self.app.app_context():
+            user = self.User.query.filter_by(email=email).first()
+            token = user.get_email_verification_token()
+        driver.get(self.base_url + f"confirm_email/{token}")
+        time.sleep(1)
+        self.assertIn("login", driver.current_url)
+        driver.get(self.base_url + "login")
+        driver.find_element(By.ID, "email").send_keys(email)
+        driver.find_element(By.ID, "password").send_keys(password)
+        driver.find_element(By.CSS_SELECTOR, "form input[type='submit']").click()
+        time.sleep(1)
+        self.assertIn("add_data", driver.current_url)
+
     def test_01_homepage_loads(self):
         self.driver.get(self.base_url)
         self.assertIn("EcoTrack", self.driver.title)
@@ -62,110 +86,32 @@ class EcoTrackSeleniumTests(unittest.TestCase):
         self.assertIsNotNone(confirm_password)
 
     def test_03_signup_and_login(self):
-        driver = self.driver
-        # Go to signup page
-        driver.get(self.base_url + "signup")
-        # Fill out the signup form
-        driver.find_element(By.ID, "first-name").send_keys("Selenium")
-        driver.find_element(By.ID, "last-name").send_keys("Tester")
         test_email = f"selenium{int(time.time())}@test.com"
-        driver.find_element(By.ID, "email").send_keys(test_email)
-        driver.find_element(By.ID, "password").send_keys("TestPassword1!")
-        driver.find_element(By.ID, "confirm-password").send_keys("TestPassword1!")
-        driver.find_element(By.CSS_SELECTOR, "form input[type='submit']").click()
-        # Wait for redirect to inactive page
-        time.sleep(1)
-        self.assertIn("inactive", driver.current_url)
-
-        # --- Programmatically confirm the user ---
-        with self.app.app_context():
-            user = self.User.query.filter_by(email=test_email).first()
-            token = user.get_email_verification_token()
-        # Visit the confirmation link
-        driver.get(self.base_url + f"confirm_email/{token}")
-        time.sleep(1)
-        self.assertIn("login", driver.current_url)
-
-        # Now log in
-        driver.get(self.base_url + "login")
-        driver.find_element(By.ID, "email").send_keys(test_email)
-        driver.find_element(By.ID, "password").send_keys("TestPassword1!")
-        driver.find_element(By.CSS_SELECTOR, "form input[type='submit']").click()
-        time.sleep(1)
-        # Should be redirected to add-data page
-        self.assertIn("add_data", driver.current_url)
+        password = "TestPassword1!"
+        self.signup_confirm_login(test_email, password)
 
     def test_04_add_data_simple(self):
         driver = self.driver
-        # Reuse credentials from signup test
         test_email = f"selenium{int(time.time())}@test.com"
         password = "TestPassword1!"
-
-        # Sign up and confirm user (reuse logic from test_signup_and_login)
-        driver.get(self.base_url + "signup")
-        driver.find_element(By.ID, "first-name").send_keys("Selenium")
-        driver.find_element(By.ID, "last-name").send_keys("Tester")
-        driver.find_element(By.ID, "email").send_keys(test_email)
-        driver.find_element(By.ID, "password").send_keys(password)
-        driver.find_element(By.ID, "confirm-password").send_keys(password)
-        driver.find_element(By.CSS_SELECTOR, "form input[type='submit']").click()
-        time.sleep(1)
-        self.assertIn("inactive", driver.current_url)
-        with self.app.app_context():
-            user = self.User.query.filter_by(email=test_email).first()
-            token = user.get_email_verification_token()
-        driver.get(self.base_url + f"confirm_email/{token}")
-        time.sleep(1)
-        self.assertIn("login", driver.current_url)
-        driver.get(self.base_url + "login")
-        driver.find_element(By.ID, "email").send_keys(test_email)
-        driver.find_element(By.ID, "password").send_keys(password)
-        driver.find_element(By.CSS_SELECTOR, "form input[type='submit']").click()
-        time.sleep(1)
-        self.assertIn("add_data", driver.current_url)
-
+        self.signup_confirm_login(test_email, password)
         # Step through each section using the stepper's Next button
         for _ in range(3):  # There are 4 steps, so click Next 3 times
             next_btn = driver.find_element(By.CSS_SELECTOR, '[data-stepper-next-btn]')
             next_btn.click()
             time.sleep(0.5)
-
         # Now the Calculate Footprint button should be visible
         finish_btn = driver.find_element(By.CSS_SELECTOR, '[data-stepper-finish-btn]')
         driver.execute_script("arguments[0].classList.remove('hidden');", finish_btn)  # Ensure it's visible
         finish_btn.click()
         time.sleep(2)
-        # Assert redirect to view_data page
         self.assertIn("view_data", driver.current_url)
-        
+
     def test_05_add_data_advanced(self):
         driver = self.driver
         test_email = f"selenium{int(time.time())}@test.com"
         password = "TestPassword1!"
-
-        # Sign up and confirm user
-        driver.get(self.base_url + "signup")
-        driver.find_element(By.ID, "first-name").send_keys("Selenium")
-        driver.find_element(By.ID, "last-name").send_keys("Tester")
-        driver.find_element(By.ID, "email").send_keys(test_email)
-        driver.find_element(By.ID, "password").send_keys(password)
-        driver.find_element(By.ID, "confirm-password").send_keys(password)
-        driver.find_element(By.CSS_SELECTOR, "form input[type='submit']").click()
-        time.sleep(1)
-        self.assertIn("inactive", driver.current_url)
-        with self.app.app_context():
-            user = self.User.query.filter_by(email=test_email).first()
-            token = user.get_email_verification_token()
-        driver.get(self.base_url + f"confirm_email/{token}")
-        time.sleep(1)
-        self.assertIn("login", driver.current_url)
-        driver.get(self.base_url + "login")
-        driver.find_element(By.ID, "email").send_keys(test_email)
-        driver.find_element(By.ID, "password").send_keys(password)
-        driver.find_element(By.CSS_SELECTOR, "form input[type='submit']").click()
-        time.sleep(1)
-        self.assertIn("add_data", driver.current_url)
-
+        self.signup_confirm_login(test_email, password)
         # --- Step 1: Travel (select Advanced, fill all advanced inputs) ---
         driver.find_element(By.ID, "show-advanced").click()
         # Wait for vehicle-distance input to appear
@@ -263,32 +209,9 @@ class EcoTrackSeleniumTests(unittest.TestCase):
 
     def test_06_change_details(self):
         driver = self.driver
-        # Create and sign in user
         test_email = f"selenium{int(time.time())}@test.com"
         password = "TestPassword1!"
-        driver.get(self.base_url + "signup")
-        driver.find_element(By.ID, "first-name").send_keys("Selenium")
-        driver.find_element(By.ID, "last-name").send_keys("Tester")
-        driver.find_element(By.ID, "email").send_keys(test_email)
-        driver.find_element(By.ID, "password").send_keys(password)
-        driver.find_element(By.ID, "confirm-password").send_keys(password)
-        driver.find_element(By.CSS_SELECTOR, "form input[type='submit']").click()
-        time.sleep(1)
-        self.assertIn("inactive", driver.current_url)
-        # Confirm user
-        with self.app.app_context():
-            user = self.User.query.filter_by(email=test_email).first()
-            token = user.get_email_verification_token()
-        driver.get(self.base_url + f"confirm_email/{token}")
-        time.sleep(1)
-        self.assertIn("login", driver.current_url)
-        # Log in
-        driver.get(self.base_url + "login")
-        driver.find_element(By.ID, "email").send_keys(test_email)
-        driver.find_element(By.ID, "password").send_keys(password)
-        driver.find_element(By.CSS_SELECTOR, "form input[type='submit']").click()
-        time.sleep(1)
-        self.assertIn("add_data", driver.current_url)
+        self.signup_confirm_login(test_email, password)
         # Go to profile page
         driver.get(self.base_url + "profile")
         # Change name
@@ -342,32 +265,9 @@ class EcoTrackSeleniumTests(unittest.TestCase):
     
     def test_07_delete_user(self):
         driver = self.driver
-        # Create and sign in user
         test_email = f"selenium{int(time.time())}@test.com"
         password = "TestPassword1!"
-        driver.get(self.base_url + "signup")
-        driver.find_element(By.ID, "first-name").send_keys("Selenium")
-        driver.find_element(By.ID, "last-name").send_keys("Tester")
-        driver.find_element(By.ID, "email").send_keys(test_email)
-        driver.find_element(By.ID, "password").send_keys(password)
-        driver.find_element(By.ID, "confirm-password").send_keys(password)
-        driver.find_element(By.CSS_SELECTOR, "form input[type='submit']").click()
-        time.sleep(1)
-        self.assertIn("inactive", driver.current_url)
-        # Confirm user
-        with self.app.app_context():
-            user = self.User.query.filter_by(email=test_email).first()
-            token = user.get_email_verification_token()
-        driver.get(self.base_url + f"confirm_email/{token}")
-        time.sleep(1)
-        self.assertIn("login", driver.current_url)
-        # Log in
-        driver.get(self.base_url + "login")
-        driver.find_element(By.ID, "email").send_keys(test_email)
-        driver.find_element(By.ID, "password").send_keys(password)
-        driver.find_element(By.CSS_SELECTOR, "form input[type='submit']").click()
-        time.sleep(1)
-        self.assertIn("add_data", driver.current_url)
+        self.signup_confirm_login(test_email, password)
         # Go to profile page
         driver.get(self.base_url + "profile")
         # Click delete account button and handle prompt
