@@ -292,7 +292,7 @@ def view_data():
                            shared_with_me=shared_with_me_sorted)
 
 
-@app.route('/api/compare_emissions')
+@main.route('/api/compare_emissions')
 @login_required
 def compare_emissions():
     target_email = request.args.get('email')
@@ -354,7 +354,7 @@ def get_emissions():
         'total_emissions': emissions.total_emissions or 0.0
     }) 
 
-@app.route('/api/dashboard_metrics', methods=['GET'])
+@main.route('/api/dashboard_metrics', methods=['GET'])
 @login_required
 def get_dashboard_metrics():
     """
@@ -401,7 +401,7 @@ def get_dashboard_metrics():
         'au_average': AU_AVG
     })
 
-@app.route('/share', methods=['GET', 'POST'])
+@main.route('/share', methods=['GET', 'POST'])
 @login_required
 def share():
     user_data = CarbonFootprint.query.filter_by(user_id=current_user.id).first()
@@ -577,7 +577,7 @@ def get_user_emissions(email):
         'total_emissions': total
     })
 
-@app.route('/api/emissions_summary')
+@main.route('/api/emissions_summary')
 @login_required
 def get_emissions_summary():
     emissions = Emissions.query.filter_by(user_id=current_user.id).order_by(Emissions.calculated_at.desc()).first()
