@@ -7,11 +7,11 @@
 <style>
     /* Zoom effect for news cards */
     .zoom {
-      transition: transform 0.2s;
+        transition: transform 0.2s;
     }
-  
+
     .zoom:hover {
-      transform: scale(1.01);
+        transform: scale(1.01);
     }
 </style>
 
@@ -37,7 +37,7 @@
 
                 <!-- Logout Button -->
                 <div class="mt-4">
-                    <a href="{{ url_for('logout') }}"
+                    <a href="{{ url_for('main.logout') }}"
                         class="zoom inline-flex items-center px-4 py-2 bg-primary hover:bg-green-900 text-white font-semibold rounded-md transition">
                         <img src="{{ url_for('static', filename='assets/icons/logout.svg') }}" alt="Logout"
                             class="h-5 w-5 mr-2 filter invert" />
@@ -56,7 +56,7 @@
                     <p class="text-gray-600">We'll send a confirmation link to your new email address.</p>
                 </div>
 
-                <form method="POST" action="{{ url_for('profile') }}" class="space-y-4 w-full">
+                <form method="POST" action="{{ url_for('main.profile') }}" class="space-y-4 w-full">
                     {{ email_form.hidden_tag() }}
                     <div>
                         {{ email_form.email.label(class="block font-medium mb-1") }}
@@ -79,7 +79,7 @@
                     <p class="text-gray-600">Update your first and last name.</p>
                 </div>
 
-                <form method="POST" action="{{ url_for('profile') }}" class="space-y-4 w-full">
+                <form method="POST" action="{{ url_for('main.profile') }}" class="space-y-4 w-full">
                     {{ name_form.hidden_tag() }}
                     <div>
                         {{ name_form.first_name.label(class="block font-medium mb-1") }}
@@ -104,7 +104,7 @@
                     <p class="text-gray-600">Update your password associated with your account.</p>
                 </div>
 
-                <form action="{{ url_for('change_password') }}" method="POST" class="space-y-6 w-full">
+                <form action="{{ url_for('main.change_password') }}" method="POST" class="space-y-6 w-full">
                     {{ form.hidden_tag() }}
 
                     {% from 'components/auth/password_form.html' import render_password_fields %}
@@ -124,18 +124,18 @@
                 <div>
                     <h2 class="text-xl font-semibold mb-2">Delete account</h2>
                     <p class="text-gray-600">
-                        No longer want to use our service? You can delete your account here. 
-                        This action is <span class="font-bold text-red-600">NOT REVERSIBLE</span>. 
-                        All information related to this account will be 
+                        No longer want to use our service? You can delete your account here.
+                        This action is <span class="font-bold text-red-600">NOT REVERSIBLE</span>.
+                        All information related to this account will be
                         <span class="font-bold text-red-600">DELETED PERMANENTLY</span>.
                     </p>
                 </div>
                 <div class="flex items-start justify-start">
-                    <form method="POST" action="{{ url_for('delete_account') }}" id = "delete_account_form">
+                    <form method="POST" action="{{ url_for('main.delete_account') }}" id="delete_account_form">
                         {{ delete_form.hidden_tag() }}
-                        <button type = "button"
+                        <button type="button"
                             class="zoom bg-red-600 hover:bg-red-800 text-white font-bold py-2 px-4 rounded-md cursor-pointer"
-                            onclick = "confirmDeletion()">
+                            onclick="confirmDeletion()">
                             Delete Account
                         </button>
                     </form>
@@ -167,19 +167,19 @@
     });
 
     function confirmDeletion() {
-    const confirmation = prompt("To confirm deletion, type DELETE in the box below:");
+        const confirmation = prompt("To confirm deletion, type DELETE in the box below:");
 
-    if (confirmation && confirmation.trim() === "DELETE") {
-        const feedback = document.createElement("div");
-        feedback.textContent = "DELETING YOUR ACCOUNT...";
-        feedback.className = "fixed top-6 left-1/2 transform -translate-x-1/2 bg-red-100 text-red-800 font-bold py-2 px-6 rounded-md shadow z-50";
-        document.body.appendChild(feedback);
-        setTimeout(() => {
-            document.getElementById("delete_account_form").submit();
-        }, 2000); // Remove after 2 seconds
-    } else if (confirmation !== null) {
-        alert("Incorrect confirmation. Account was not deleted.");
+        if (confirmation && confirmation.trim() === "DELETE") {
+            const feedback = document.createElement("div");
+            feedback.textContent = "DELETING YOUR ACCOUNT...";
+            feedback.className = "fixed top-6 left-1/2 transform -translate-x-1/2 bg-red-100 text-red-800 font-bold py-2 px-6 rounded-md shadow z-50";
+            document.body.appendChild(feedback);
+            setTimeout(() => {
+                document.getElementById("delete_account_form").submit();
+            }, 2000); // Remove after 2 seconds
+        } else if (confirmation !== null) {
+            alert("Incorrect confirmation. Account was not deleted.");
+        }
     }
-}
 </script>
 {% endblock %}

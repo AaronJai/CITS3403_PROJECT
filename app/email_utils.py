@@ -29,14 +29,14 @@ def send_email_update_confirmation(user, new_email):
     Sends a confirmation email to the new address during an email update.
     """
     token = user.get_email_update_token(new_email)
-    confirm_url = url_for('confirm_email', token=token, _external=True)
+    confirm_url = url_for('main.confirm_new_email', token=token, _external=True)
 
     send_email(
         'EcoTrack: Confirm your new email address',
         sender=current_app.config['MAIL_DEFAULT_SENDER'],
         recipients=[new_email],
-        text_body=render_template('email/confirm_email.txt', user=user, token=token),
-        html_body=render_template('email/confirm_email.html', user=user, token=token)
+        text_body=render_template('email/confirm_email.txt', user=user, token=token, confirm_url=confirm_url),
+        html_body=render_template('email/confirm_email.html', user=user, token=token, confirm_url=confirm_url)
     )
     
 def send_password_reset_email(user):

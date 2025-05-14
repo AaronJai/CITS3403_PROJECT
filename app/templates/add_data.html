@@ -76,7 +76,7 @@
   </div>
   <!-- End Stepper Nav -->
 
-  <form method="POST" action="{{ url_for('add_data') }}">
+  <form method="POST" action="{{ url_for('main.add_data') }}">
     {{ form.csrf_token }}
     {{ vehicle_form.csrf_token }}
     {{ public_transit_simple.csrf_token }}

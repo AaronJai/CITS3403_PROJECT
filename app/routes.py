@@ -1,4 +1,5 @@
-from app import app, db
+from app import db
+from app.blueprints import main
 from flask import redirect, render_template, request, url_for, flash, session, flash, jsonify
 import re
 from app.constants import nav_items
@@ -11,7 +12,7 @@ from flask_login import login_user, logout_user, current_user, login_required
 from app.forms import LoginForm, SignupForm, ChangePasswordForm, ShareForm, ResetPasswordRequestForm, ResetPasswordForm, DeleteAccountForm, EditNameForm, EditEMailForm
 from app.email_utils import send_confirmation_email, send_password_reset_email, send_email_update_confirmation
 
-@app.route('/')
+@main.route('/')
 @login_required
 def dashboard():
     user_data = CarbonFootprint.query.filter_by(user_id=current_user.id).first()
@@ -19,7 +20,7 @@ def dashboard():
     locked = is_new_user  # Lock the page if the user is new
 
     if locked:
-        return redirect(url_for('add_data', new_user='true'))
+        return redirect(url_for('main.add_data', new_user='true'))
 
     return render_template('dashboard.html', 
                           active_page='dashboard', 
@@ -30,7 +31,7 @@ def dashboard():
                           is_new_user=is_new_user,
                           locked=locked)
 
-@app.route('/add_data', methods=['GET', 'POST'])
+@main.route('/add_data', methods=['GET', 'POST'])
 @login_required
 def add_data():
     user = current_user
@@ -127,7 +128,7 @@ def add_data():
                 db.session.commit()
 
                 flash('Your carbon footprint has been calculated and saved!', 'success')
-                return redirect(url_for('view_data'))
+                return redirect(url_for('main.view_data'))
             else:
                 # Show form validation errors
                 for form in forms_to_validate:
@@ -241,14 +242,14 @@ def process_shopping_data(mode, simple_form:ShoppingSimpleForm, advanced_form:Sh
         shopping.transport = advanced_form.transport.data
     return shopping
 
-@app.route('/view_data')
+@main.route('/view_data')
 @login_required
 def view_data():
     user_data = CarbonFootprint.query.filter_by(user_id=current_user.id).first()
     locked = user_data is None  # Lock the page if the user is new
 
     if locked:
-        return redirect(url_for('add_data', new_user='true'))
+        return redirect(url_for('main.add_data', new_user='true'))
 
     # Leader Board
     shared_with_me_raw = []
@@ -321,7 +322,7 @@ def compare_emissions():
 
 
 
-@app.route('/api/emissions', methods=['GET'])
+@main.route('/api/emissions', methods=['GET'])
 @login_required
 def get_emissions():
     """
@@ -435,7 +436,7 @@ def share():
                 db.session.commit()
                 flash('Shared successfully!', 'success')
 
-        return redirect(url_for('share'))
+        return redirect(url_for('main.share'))
 
     # Users current_user shared to
     sharing_records = Share.query.filter_by(from_user_id=current_user.id).all()
@@ -530,7 +531,7 @@ def share():
                            is_new_user=is_new_user)
 
 
-@app.route('/api/emissions/<email>', methods=['GET'])
+@main.route('/api/emissions/<email>', methods=['GET'])
 @login_required
 def get_user_emissions(email):
     user = User.query.filter_by(email=email).first()
@@ -645,7 +646,7 @@ def get_emissions_summary():
         }
     })
 
-@app.route('/api/share', methods=['POST'])
+@main.route('/api/share', methods=['POST'])
 @login_required
 def api_share():
     data = request.get_json()
@@ -672,7 +673,7 @@ def api_share():
     
     return jsonify({'success': True}), 200
 
-@app.route('/stop_share', methods=['POST'])
+@main.route('/stop_share', methods=['POST'])
 @login_required
 def stop_share():
     receiver_email = request.form['receiver_email']
@@ -680,7 +681,7 @@ def stop_share():
 
     if not receiver:
         flash('User not found.', 'warning')
-        return redirect(url_for('share'))
+        return redirect(url_for('main.share'))
 
     share = Share.query.filter_by(from_user_id=current_user.id, to_user_id=receiver.id).first()
     if share:
@@ -690,9 +691,9 @@ def stop_share():
     else:
         flash('Sharing record not found.', 'warning')
 
-    return redirect(url_for('share'))
+    return redirect(url_for('main.share'))
 
-@app.route('/chat', methods=['POST'])
+@main.route('/chat', methods=['POST'])
 def chat():
     print("Received POST /chat request")
     print("Headers:", dict(request.headers))
@@ -728,7 +729,7 @@ def chat():
     print("Message saved successfully!")
     return jsonify(success=True)
 
-@app.route('/chat/<email>', methods=['GET'])
+@main.route('/chat/<email>', methods=['GET'])
 @login_required
 def chat_history(email):
 
@@ -752,7 +753,7 @@ def chat_history(email):
         } for msg in messages
     ])
 
-@app.route('/facts')
+@main.route('/facts')
 @login_required
 def facts():
     # Check if user is new (has no data)
@@ -767,7 +768,7 @@ def facts():
                           email=current_user.email,
                           is_new_user=is_new_user)
 
-@app.route('/profile', methods=['GET', 'POST'])
+@main.route('/profile', methods=['GET', 'POST'])
 @login_required
 def profile():
     # Check if user is new (has no data)
@@ -791,20 +792,20 @@ def profile():
             flash('Email updated. Please confirm your new email address.', 'info')
         else:
             flash("Please enter a valid Email address", "error")
-        return redirect(url_for('profile'))
+        return redirect(url_for('main.profile'))
     
     if email_form.submit_email.data and not email_form.validate():
         for field, errors in email_form.errors.items():
             for error in errors:
                 flash(f"{email_form[field].label.text}: {error}", "error")
-        return redirect(url_for('profile'))
+        return redirect(url_for('main.profile'))
     
     if name_form.submit_name.data and name_form.validate_on_submit():
         current_user.first_name = name_form.first_name.data
         current_user.last_name = name_form.last_name.data
         db.session.commit()
         flash('Name updated successfully!', 'success')
-        return redirect(url_for('profile'))
+        return redirect(url_for('main.profile'))
     
     return render_template('profile.html', 
                           nav_items=nav_items,
@@ -817,11 +818,11 @@ def profile():
                           email_form = email_form,
                           is_new_user=is_new_user)
 
-@app.route('/login', methods=['GET', 'POST'])
+@main.route('/login', methods=['GET', 'POST'])
 def login():
     # If user is already logged in, redirect to dashboard
     if current_user.is_authenticated:
-        return redirect(url_for('dashboard'))
+        return redirect(url_for('main.dashboard'))
         
     form = LoginForm()
     if form.validate_on_submit():
@@ -836,7 +837,7 @@ def login():
             # Check if user has confirmed their email
             if not user.confirmed:
                 flash('Please confirm your email address before logging in.', 'warning')
-                return redirect(url_for('inactive', email=user.email))
+                return redirect(url_for('main.inactive', email=user.email))
             
             # Login user with Flask-Login
             login_user(user, remember=form.remember_me.data if hasattr(form, 'remember_me') else False)
@@ -844,22 +845,22 @@ def login():
             # Redirect to next page if specified, otherwise dashboard
             next_page = request.args.get('next')
             if not next_page or not next_page.startswith('/'):
-                next_page = url_for('dashboard')
+                next_page = url_for('main.dashboard')
                 
             flash('Logged in successfully!', 'success')
             return redirect(next_page)
         else:
             flash('Invalid email or password', 'error')
             # Redirect to the login page instead of rendering template directly
-            return redirect(url_for('login'))
+            return redirect(url_for('main.login'))
             
     return render_template('auth/login.html', active_page='login', form=form)
 
-@app.route('/signup', methods=['GET', 'POST'])
+@main.route('/signup', methods=['GET', 'POST'])
 def signup():
     # If user is already logged in, redirect to dashboard
     if current_user.is_authenticated:
-        return redirect(url_for('dashboard'))
+        return redirect(url_for('main.dashboard'))
         
     form = SignupForm()
     if form.validate_on_submit():
@@ -867,7 +868,7 @@ def signup():
         existing_user = User.query.filter_by(email=form.email.data).first()
         if existing_user:
             flash('Email already exists', 'error')
-            return redirect(url_for('signup'))
+            return redirect(url_for('main.signup'))
         else:
             # Create new user
             new_user = User(
@@ -886,24 +887,24 @@ def signup():
             send_confirmation_email(new_user)
             
             flash('Thanks for registering! Please check your email to confirm your account.', 'success')
-            return redirect(url_for('inactive', email=new_user.email))
+            return redirect(url_for('main.inactive', email=new_user.email))
             
     # If form validation failed, redirect with errors
     if form.errors:
         for field, errors in form.errors.items():
             for error in errors:
                 flash(f"{form[field].label.text}: {error}", "error")
-        return redirect(url_for('signup'))
+        return redirect(url_for('main.signup'))
         
     return render_template('auth/signup.html', active_page='signup', form=form)
 
-@app.route('/logout')
+@main.route('/logout')
 def logout():
     logout_user()
     flash('Logged out successfully!', 'success')
-    return redirect(url_for('login'))
+    return redirect(url_for('main.login'))
 
-@app.route('/change_password', methods=['POST'])
+@main.route('/change_password', methods=['POST'])
 @login_required
 def change_password():
     form = ChangePasswordForm()
@@ -912,21 +913,21 @@ def change_password():
         # Check if current password is correct
         if not current_user.check_password(form.current_password.data):
             flash("Current password is incorrect.", "error")
-            return redirect(url_for('profile'))
+            return redirect(url_for('main.profile'))
         
         # Set new password and save to database
         current_user.set_password(form.new_password.data)
         db.session.commit()
         
         flash("Password updated successfully!", "success")
-        return redirect(url_for('profile'))
+        return redirect(url_for('main.profile'))
     else:
         # Form validation failed
         for field, errors in form.errors.items():
             for error in errors:
                 flash(f"{form[field].label.text}: {error}", "error")
         
-        return redirect(url_for('profile'))
+        return redirect(url_for('main.profile'))
 
 #helper function to delete any related data to user 
 def delete_user_and_data(user):
@@ -962,7 +963,7 @@ def delete_user_and_data(user):
     db.session.delete(user)
     db.session.commit()
 
-@app.route('/delete_account', methods=['POST'])
+@main.route('/delete_account', methods=['POST'])
 @login_required
 def delete_account():
     form = DeleteAccountForm()
@@ -971,15 +972,15 @@ def delete_account():
         logout_user()
         delete_user_and_data(user)
         flash('Your account and all related data has been deleted.', 'success')
-    return redirect(url_for('login'))
+    return redirect(url_for('main.login'))
 
 # New routes for email verification
-@app.route('/inactive')
+@main.route('/inactive')
 def inactive():
     email = request.args.get('email', '')
     return render_template('auth/inactive.html', email=email)
 
-@app.route('/resend_confirmation', methods=['POST'])
+@main.route('/resend_confirmation', methods=['POST'])
 def resend_confirmation():
     email = request.form.get('email')
     if not email:
@@ -993,27 +994,48 @@ def resend_confirmation():
         else:
             flash('Email could not be sent.', 'error')
     
-    return redirect(url_for('inactive', email=email))
+    return redirect(url_for('main.inactive', email=email))
 
-@app.route('/confirm_email/<token>')
+@main.route('/confirm_email/<token>')
 def confirm_email(token):
     user = User.verify_email_token(token)
     if not user:
         flash('The confirmation link is invalid or has expired.', 'error')
-        return redirect(url_for('login'))
+        return redirect(url_for('main.login'))
     if user.confirmed:
         flash('Account already confirmed. Please log in.', 'info')
-        return redirect(url_for('login'))
+        return redirect(url_for('main.login'))
     user.confirmed = True
     db.session.commit()
     flash('Account confirmed! Please log in.', 'success')
-    return redirect(url_for('login'))
+    return redirect(url_for('main.login'))
+
+@main.route('/confirm_new_email/<token>')
+def confirm_new_email(token):
+    data = User.verify_email_update_token(token)
+    if not data:
+        flash('The confirmation link is invalid or has expired.', 'error')
+        return redirect(url_for('main.profile'))
+    user = User.query.get(data.get('user_id'))
+    new_email = data.get('new_email')
+    if not user or not new_email:
+        flash('Invalid confirmation data.', 'error')
+        return redirect(url_for('main.profile'))
+    # Check if the new email is already taken
+    if User.query.filter_by(email=new_email).first():
+        flash('This email is already in use.', 'error')
+        return redirect(url_for('main.profile'))
+    user.email = new_email
+    user.unconfirmed_email = None
+    db.session.commit()
+    flash('Your email address has been updated and confirmed!', 'success')
+    return redirect(url_for('main.profile'))
 
 # Password reset functionality
-@app.route('/confirm_email', methods=['GET', 'POST'])
+@main.route('/confirm_email', methods=['GET', 'POST'])
 def request_password_reset():
     if current_user.is_authenticated:
-        return redirect(url_for('dashboard'))
+        return redirect(url_for('main.dashboard'))
     
     form = ResetPasswordRequestForm()
     if form.validate_on_submit():
@@ -1022,25 +1044,25 @@ def request_password_reset():
             send_password_reset_email(user)
         # Always show the same message whether the email exists or not
         flash('If the email exists, a password reset link has been sent.', 'info')
-        return redirect(url_for('login'))
+        return redirect(url_for('main.login'))
     
     return render_template('auth/confirm_email.html', form=form)
 
-@app.route('/reset_password/<token>', methods=['GET', 'POST'])
+@main.route('/reset_password/<token>', methods=['GET', 'POST'])
 def reset_password(token):
     if current_user.is_authenticated:
-        return redirect(url_for('dashboard'))
+        return redirect(url_for('main.dashboard'))
     
     user = User.verify_reset_password_token(token)
     if not user:
         flash('The reset link is invalid or has expired.', 'error')
-        return redirect(url_for('login'))
+        return redirect(url_for('main.login'))
     
     form = ResetPasswordForm()
     if form.validate_on_submit():
         user.set_password(form.new_password.data)
         db.session.commit()
         flash('Your password has been reset. Please log in.', 'success')
-        return redirect(url_for('login'))
+        return redirect(url_for('main.login'))
     
     return render_template('auth/change_password.html', form=form)

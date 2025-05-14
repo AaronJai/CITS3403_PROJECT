@@ -83,7 +83,7 @@
 
         {% if active_page == 'login' %}
         <div class="text-center mt-3">
-            <a href="{{ url_for('request_password_reset') }}" class="text-sm text-primary hover:underline">
+            <a href="{{ url_for('main.request_password_reset') }}" class="text-sm text-primary hover:underline">
                 Forgot password?
             </a>
         </div>
@@ -98,7 +98,7 @@
         <!-- Switch Forms -->
         <div class="text-center text-sm">
             {{ "Don't have an account?" if active_page == 'login' else 'Already have an account?' }}
-            <a href="{{ url_for('signup' if active_page == 'login' else 'login') }}" class="link">
+            <a href="{{ url_for('main.signup' if active_page == 'login' else 'main.login') }}" class="link">
                 {{ 'Sign Up' if active_page == 'login' else 'Log In' }}
             </a>
         </div>
