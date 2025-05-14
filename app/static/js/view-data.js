@@ -15,8 +15,8 @@ document.addEventListener('DOMContentLoaded', () => {
   function scrollToChartsIfNeeded() {
     const urlParams = new URLSearchParams(window.location.search);
     if (urlParams.has('tab')) {
-      // Find the charts section element
-      const chartsSection = document.querySelector('.bg-white.relative.rounded-2xl.w-full');
+      // Find the charts section element (fixed selector)
+      const chartsSection = document.querySelector('.bg-white.relative.rounded-2xl');
       if (chartsSection) {
         // Slight delay to ensure everything is loaded
         setTimeout(() => {
