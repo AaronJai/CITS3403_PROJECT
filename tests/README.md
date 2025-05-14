@@ -24,7 +24,7 @@ python -m unittest tests/unit.py -v
 # Run all tests in the tests directory
 python -m unittest discover tests
 
-# Run a specific test class
+# Run a specific test class e.g.,
 python -m unittest tests.unit.UserModelUnitTests
 ```
 
@@ -40,6 +40,9 @@ python -m tests.test_selenium
 
 # Run Selenium tests with verbose output
 python -m unittest tests.test_selenium -v
+
+# Run specific selenium tests e.g.,
+python -m unittest tests.test_selenium.EcoTrackSeleniumTests.test_07_delete_user
 ```
 
 **Note:**
@@ -56,28 +59,39 @@ python -m unittest unit.py
 
 ## Available Test Classes
 
-The unit tests cover the following components:
+### Unit Tests (`unit.py`)
 
-1. **UserModelUnitTests** 
+1. **UserModelUnitTests**
    - Tests user creation, password hashing, and authentication
-   - Tests email verification and password reset token generation
+   - Tests email verification and password reset token generation/validation
+   - Tests password change logic
 
 2. **CarbonFootprintModelTests**
-   - Tests relationships between the various models
-   - Verifies carbon footprint data storage and retrieval
+   - Tests relationships between User, CarbonFootprint, Travel, Home, Food, Shopping, Vehicle
+   - Verifies correct data storage and relationship navigation
 
 3. **EmissionsCalculationTests**
    - Tests the carbon footprint calculation logic
-   - Tests vehicle emissions, travel emissions, and total emissions calculation
+   - Tests vehicle emissions, travel emissions (advanced mode), and total emissions calculation
 
 4. **ShareModelTests**
    - Tests the sharing functionality between users
    - Verifies share records creation and timestamp generation
 
-The Selenium UI tests cover:
-- Homepage loading
-- Login page loading
-- Full signup, email confirmation, and login flow (bypassing email by programmatically confirming the user)
+5. **MessageModelTests**
+   - Tests sending and receiving messages between users
+   - Verifies message content, sender/receiver, and timestamp
+
+### Selenium UI Tests (`test_selenium.py`)
+
+- **EcoTrackSeleniumTests**
+  - `test_01_homepage_loads`: Homepage loads and title is correct
+  - `test_02_auth_pages`: Login and signup pages load, all fields are present
+  - `test_03_signup_and_login`: Full signup, email confirmation, and login flow
+  - `test_04_add_data_simple`: Add data using the simple mode, stepper navigation, and calculation
+  - `test_05_add_data_advanced`: Add data using advanced mode, including all advanced fields
+  - `test_06_change_details`: Change name, email, and password from the profile page, and verify changes
+  - `test_07_delete_user`: Delete account from profile, verify user cannot log in again
 
 ## Writing New Tests
 

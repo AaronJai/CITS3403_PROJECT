@@ -178,13 +178,6 @@ class CarbonFootprintModelTests(BaseTestCase):
 
 
 class EmissionsCalculationTests(BaseTestCase):
-    """
-    Tests for calculating carbon emissions using the CarbonFootprintCalculator.
-    
-    USAGE: 
-    To run just this test class from the root directory:
-    python -m unittest tests.unit.EmissionsCalculationTests
-    """
     def setUp(self):
         super().setUp()
         # Create test user
