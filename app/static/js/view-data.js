@@ -11,7 +11,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const tabParam = urlParams.get('tab');
     return tabParam ? parseInt(tabParam) : 0; // Default to first tab if not specified
   }
-  
+
   // Scroll to charts section if tab parameter is present
   function scrollToChartsIfNeeded() {
     const urlParams = new URLSearchParams(window.location.search);
@@ -28,28 +28,28 @@ document.addEventListener('DOMContentLoaded', () => {
   }
 
   function renderChart(config) {
-  const canvas = document.getElementById('myChart');
-  const existing = Chart.getChart(canvas);
-  if (existing) existing.destroy();
+    const canvas = document.getElementById('myChart');
+    const existing = Chart.getChart(canvas);
+    if (existing) existing.destroy();
 
-  const ctx = canvas.getContext('2d');
-  window.barChart = new Chart(ctx, JSON.parse(JSON.stringify(config)));
-}
+    const ctx = canvas.getContext('2d');
+    window.barChart = new Chart(ctx, JSON.parse(JSON.stringify(config)));
+  }
 
-// Helper to force chart resize and redraw
-function forceBarChartResize() {
-  // Destroy and re-create the chart with the current config to force full reflow
-  const canvas = document.getElementById('myChart');
-  if (!canvas || !window.originalConfig) return;
-  const existing = Chart.getChart(canvas);
-  if (existing) existing.destroy();
-  const ctx = canvas.getContext('2d');
-  window.barChart = new Chart(ctx, JSON.parse(JSON.stringify(window.originalConfig)));
-}
+  // Helper to force chart resize and redraw
+  function forceBarChartResize() {
+    // Destroy and re-create the chart with the current config to force full reflow
+    const canvas = document.getElementById('myChart');
+    if (!canvas || !window.originalConfig) return;
+    const existing = Chart.getChart(canvas);
+    if (existing) existing.destroy();
+    const ctx = canvas.getContext('2d');
+    window.barChart = new Chart(ctx, JSON.parse(JSON.stringify(window.originalConfig)));
+  }
 
-// Listen for resize and orientation changes
-window.addEventListener('resize', forceBarChartResize);
-window.addEventListener('orientationchange', forceBarChartResize);
+  // Listen for resize and orientation changes
+  window.addEventListener('resize', forceBarChartResize);
+  window.addEventListener('orientationchange', forceBarChartResize);
 
   const barChartConfig = {
     type: 'bar',
@@ -93,7 +93,11 @@ window.addEventListener('orientationchange', forceBarChartResize);
           stacked: true,
           ticks: {
             color: '#222222',
-            font: { size: 16, weight: 'bold' },
+            font: {
+              size: function (context) {
+                return window.innerWidth <= 659 ? 4.5 : 16;
+              }, weight: 'bold'
+            },
             padding: 10
           },
           grid: {
@@ -112,7 +116,11 @@ window.addEventListener('orientationchange', forceBarChartResize);
             display: true,
             text: 'Metric tons CO₂eq',
             color: '#222222',
-            font: { size: 16, weight: 'bold' }
+            font: {
+              size: function (context) {
+                return window.innerWidth <= 659 ? 4.5 : 16;
+              }, weight: 'bold'
+            }
           },
           ticks: {
             color: '#222222',
@@ -251,146 +259,146 @@ window.addEventListener('orientationchange', forceBarChartResize);
     emissionsData = data;
   }
 
-window.showTab = function (index) {
-  const canvasIds = ['travelPieChart', 'homePieChart', 'foodPieChart', 'shoppingPieChart'];
-  const contentIds = ['tabContent0', 'tabContent1', 'tabContent2', 'tabContent3'];
-  const buttons = document.querySelectorAll('.tab-btn');
-  const chartId = canvasIds[index];
+  window.showTab = function (index) {
+    const canvasIds = ['travelPieChart', 'homePieChart', 'foodPieChart', 'shoppingPieChart'];
+    const contentIds = ['tabContent0', 'tabContent1', 'tabContent2', 'tabContent3'];
+    const buttons = document.querySelectorAll('.tab-btn');
+    const chartId = canvasIds[index];
 
-  // Hide all canvas elements and destroy existing charts
-  canvasIds.forEach((id, i) => {
-    const canvas = document.getElementById(id);
-    if (i === index) {
-      canvas.classList.remove('hidden');
-    } else {
-      canvas.classList.add('hidden');
-      if (chartInstances[id]) {
-        chartInstances[id].destroy();
-        delete chartInstances[id];
-      }
-    }
-  });
-
-  // Show the selected content and hide others
-  contentIds.forEach((id, i) => {
-    const content = document.getElementById(id);
-    content.classList.toggle('hidden', i !== index);
-  });
-
-  // Update button styles
-  buttons.forEach((btn, i) => {
-    btn.classList.toggle('border-b-2', i === index);
-    btn.classList.toggle('text-[#16372c]', i === index);
-    btn.classList.toggle('border-[#16372c]', i === index);
-  });
-
-  // Re-create the chart
-  const config = chartConfigs.find(c => c.id === chartId);
-  const ctx = document.getElementById(chartId)?.getContext('2d');
-  if (ctx && config) {
-    const data = emissionsData
-      ? config.dataKey.map(key => emissionsData[key] || 0)
-      : new Array(config.labels.length).fill(0);
-
-    // Destroy existing
-    if (chartInstances[chartId]) {
-      chartInstances[chartId].destroy();
-      delete chartInstances[chartId];
-    }
-
-    // Create new chart
-    chartInstances[chartId] = new Chart(ctx, {
-      type: 'pie',
-      data: {
-        labels: config.labels,
-        datasets: [{
-          data: data,
-          backgroundColor: config.colors,
-          borderColor: '#ffffff',
-          borderWidth: 2
-        }]
-      },
-      plugins: [ChartDataLabels],
-      options: {
-        responsive: true,
-        plugins: {
-          legend: { display: false },
-          tooltip: {
-            backgroundColor: '#2f5c47',
-            titleColor: '#ffffff',
-            bodyColor: '#ffffff',
-            borderColor: '#497f66',
-            borderWidth: 1
-          },
-          datalabels: { display: false }
+    // Hide all canvas elements and destroy existing charts
+    canvasIds.forEach((id, i) => {
+      const canvas = document.getElementById(id);
+      if (i === index) {
+        canvas.classList.remove('hidden');
+      } else {
+        canvas.classList.add('hidden');
+        if (chartInstances[id]) {
+          chartInstances[id].destroy();
+          delete chartInstances[id];
         }
       }
     });
 
-    // Update legend
-    const legendDivIds = {
-      travelPieChart: 'travelLegend',
-      homePieChart: 'homeLegend',
-      foodPieChart: 'foodLegend',
-      shoppingPieChart: 'shoppingLegend'
-    };
-
-    // Hide all legends
-    Object.values(legendDivIds).forEach(id => {
-      const el = document.getElementById(id);
-      if (el) el.classList.add('hidden');
+    // Show the selected content and hide others
+    contentIds.forEach((id, i) => {
+      const content = document.getElementById(id);
+      content.classList.toggle('hidden', i !== index);
     });
 
-    // Show the current chart's legend
-    const legendDiv = document.getElementById(legendDivIds[chartId]);
-    if (legendDiv) {
-      legendDiv.classList.remove('hidden');
+    // Update button styles
+    buttons.forEach((btn, i) => {
+      btn.classList.toggle('border-b-2', i === index);
+      btn.classList.toggle('text-[#16372c]', i === index);
+      btn.classList.toggle('border-[#16372c]', i === index);
+    });
 
-      // Generate legend HTML
-      let legendHTML = `
+    // Re-create the chart
+    const config = chartConfigs.find(c => c.id === chartId);
+    const ctx = document.getElementById(chartId)?.getContext('2d');
+    if (ctx && config) {
+      const data = emissionsData
+        ? config.dataKey.map(key => emissionsData[key] || 0)
+        : new Array(config.labels.length).fill(0);
+
+      // Destroy existing
+      if (chartInstances[chartId]) {
+        chartInstances[chartId].destroy();
+        delete chartInstances[chartId];
+      }
+
+      // Create new chart
+      chartInstances[chartId] = new Chart(ctx, {
+        type: 'pie',
+        data: {
+          labels: config.labels,
+          datasets: [{
+            data: data,
+            backgroundColor: config.colors,
+            borderColor: '#ffffff',
+            borderWidth: 2
+          }]
+        },
+        plugins: [ChartDataLabels],
+        options: {
+          responsive: true,
+          plugins: {
+            legend: { display: false },
+            tooltip: {
+              backgroundColor: '#2f5c47',
+              titleColor: '#ffffff',
+              bodyColor: '#ffffff',
+              borderColor: '#497f66',
+              borderWidth: 1
+            },
+            datalabels: { display: false }
+          }
+        }
+      });
+
+      // Update legend
+      const legendDivIds = {
+        travelPieChart: 'travelLegend',
+        homePieChart: 'homeLegend',
+        foodPieChart: 'foodLegend',
+        shoppingPieChart: 'shoppingLegend'
+      };
+
+      // Hide all legends
+      Object.values(legendDivIds).forEach(id => {
+        const el = document.getElementById(id);
+        if (el) el.classList.add('hidden');
+      });
+
+      // Show the current chart's legend
+      const legendDiv = document.getElementById(legendDivIds[chartId]);
+      if (legendDiv) {
+        legendDiv.classList.remove('hidden');
+
+        // Generate legend HTML
+        let legendHTML = `
         <div class="flex flex-wrap justify-center gap-x-6 gap-y-1 text-sm">
           ${config.labels.map((label, i) => {
-            const value = data[i];
-            const color = config.colors[i];
-            return `
+          const value = data[i];
+          const color = config.colors[i];
+          return `
               <div class="flex items-center gap-1">
                 <span class="inline-block w-3 h-3 rounded-full" style="background:${color}"></span>
                 <span class="font-bold text-gray-800">${label}:</span>
                 <span class="font-semibold text-gray-700">${value.toFixed(2)} kg</span>
               </div>
             `;
-          }).join('')}
+        }).join('')}
         </div>
       `;
 
-      // If the chart is food or home, split into two rows
-      if (chartId === 'foodPieChart' || chartId === 'homePieChart') {
-        const firstRow = config.labels.slice(0, 3).map((label, i) => {
-          const value = data[i];
-          const color = config.colors[i];
-          return `
+        // If the chart is food or home, split into two rows
+        if (chartId === 'foodPieChart' || chartId === 'homePieChart') {
+          const firstRow = config.labels.slice(0, 3).map((label, i) => {
+            const value = data[i];
+            const color = config.colors[i];
+            return `
             <div class="flex items-center gap-1">
               <span class="inline-block w-3 h-3 rounded-full" style="background:${color}"></span>
               <span class="font-bold text-gray-800">${label}:</span>
               <span class="font-medium text-gray-900">${value.toFixed(2)} kg</span>
             </div>
           `;
-        }).join('');
+          }).join('');
 
-        const secondRow = config.labels.slice(3).map((label, i) => {
-          const realIndex = i + 3;
-          const value = data[realIndex];
-          const color = config.colors[realIndex];
-          return `
+          const secondRow = config.labels.slice(3).map((label, i) => {
+            const realIndex = i + 3;
+            const value = data[realIndex];
+            const color = config.colors[realIndex];
+            return `
             <div class="flex items-center gap-1">
               <span class="inline-block w-3 h-3 rounded-full" style="background:${color}"></span>
               <span class="font-bold text-gray-800">${label}:</span>
               <span class="font-medium text-gray-900">${value.toFixed(2)} kg</span>
             </div>
           `;
-        }).join('');
+          }).join('');
 
-        legendHTML = `
+          legendHTML = `
           <div class="flex flex-wrap justify-center gap-x-6 gap-y-1 text-sm">
             ${firstRow}
           </div>
@@ -398,13 +406,13 @@ window.showTab = function (index) {
             ${secondRow}
           </div>
         `;
-      }
+        }
 
-      // Insert legend
-      legendDiv.innerHTML = legendHTML;
+        // Insert legend
+        legendDiv.innerHTML = legendHTML;
+      }
     }
   }
-}
   window.showTab = showTab;
   // Fetch emissions and show default chart
   fetch('/api/emissions')
@@ -434,53 +442,53 @@ window.showTab = function (index) {
       scrollToChartsIfNeeded();
     });
 
-    // Initial chart configuration
-    originalConfig = {
-      type: 'bar',
-      data: {
-        labels: ['Travel', 'Home', 'Food', 'Shopping'],
-        datasets: [
-          {
-            label: 'Vehicle',
-            data: [1, 0, 0, 0],
-            backgroundColor: '#2f5c47'
-          },
-          {
-            label: 'Public Transit',
-            data: [2, 0, 0, 0],
-            backgroundColor: '#497f66'
-          },
-          {
-            label: 'Electricity',
-            data: [0, 3, 0, 0],
-            backgroundColor: '#7fc8a9'
-          },
-          {
-            label: 'Meat',
-            data: [0, 0, 4, 0],
-            backgroundColor: '#a0d9a0'
-          },
-          {
-            label: 'Furniture',
-            data: [0, 0, 0, 5],
-            backgroundColor: '#d0e7c3'
-          }
-        ]
-      },
-      options: {
-        responsive: true,
-        plugins: {
-          legend: { display: true }
+  // Initial chart configuration
+  originalConfig = {
+    type: 'bar',
+    data: {
+      labels: ['Travel', 'Home', 'Food', 'Shopping'],
+      datasets: [
+        {
+          label: 'Vehicle',
+          data: [1, 0, 0, 0],
+          backgroundColor: '#2f5c47'
         },
-        scales: {
-          y: {
-            beginAtZero: true
-          }
+        {
+          label: 'Public Transit',
+          data: [2, 0, 0, 0],
+          backgroundColor: '#497f66'
+        },
+        {
+          label: 'Electricity',
+          data: [0, 3, 0, 0],
+          backgroundColor: '#7fc8a9'
+        },
+        {
+          label: 'Meat',
+          data: [0, 0, 4, 0],
+          backgroundColor: '#a0d9a0'
+        },
+        {
+          label: 'Furniture',
+          data: [0, 0, 0, 5],
+          backgroundColor: '#d0e7c3'
+        }
+      ]
+    },
+    options: {
+      responsive: true,
+      plugins: {
+        legend: { display: true }
+      },
+      scales: {
+        y: {
+          beginAtZero: true
         }
       }
-    };
+    }
+  };
 
-    // Create Chart
+  // Create Chart
   window.restoreOriginalChart = function () {
     if (!window.originalConfig) {
       return;
@@ -578,10 +586,10 @@ window.showTab = function (index) {
       });
   };
 
-// Restore original chart on page load
-function showOriginalChart() {
-  if (window.originalConfig) {
-    renderChart(window.originalConfig);
+  // Restore original chart on page load
+  function showOriginalChart() {
+    if (window.originalConfig) {
+      renderChart(window.originalConfig);
+    }
   }
-}
 })
