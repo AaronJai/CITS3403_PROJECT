@@ -26,7 +26,7 @@ class EcoTrackSeleniumTests(unittest.TestCase):
         cls.app = create_app(TestingConfig)
         cls.db = db
         cls.User = User
-        cls.base_url = "http://127.0.0.1:5000/"
+        cls.base_url = "http://127.0.0.1:3000/"
 
         # Drop and recreate all tables for a clean test DB
         with cls.app.app_context():
@@ -36,7 +36,7 @@ class EcoTrackSeleniumTests(unittest.TestCase):
         class ServerThread(threading.Thread):
             def __init__(self, app):
                 threading.Thread.__init__(self)
-                self.srv = make_server('127.0.0.1', 5000, app)
+                self.srv = make_server('127.0.0.1', 3000, app)
                 self.ctx = app.app_context()
                 self.ctx.push()
                 self.daemon = True

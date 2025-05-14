@@ -38,6 +38,7 @@ Follow these steps to set up the EcoTrack application:
    ```
    pip install -r requirements.txt
    ```
+   - _Note: You may need to use ```pip3``` or a different command depending on how Python is installed on your system._
 
 4. **Configure Environment variables**
    
