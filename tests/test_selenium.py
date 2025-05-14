@@ -261,7 +261,7 @@ class EcoTrackSeleniumTests(unittest.TestCase):
         time.sleep(2)
         self.assertIn("view_data", driver.current_url)
 
-    def test_06_profile_full_flow(self):
+    def test_06_change_details(self):
         driver = self.driver
         # Create and sign in user
         test_email = f"selenium{int(time.time())}@test.com"
@@ -339,6 +339,59 @@ class EcoTrackSeleniumTests(unittest.TestCase):
         driver.find_element(By.CSS_SELECTOR, "form input[type='submit']").click()
         time.sleep(1)
         self.assertIn("add_data", driver.current_url)
+    
+    def test_07_delete_user(self):
+        driver = self.driver
+        # Create and sign in user
+        test_email = f"selenium{int(time.time())}@test.com"
+        password = "TestPassword1!"
+        driver.get(self.base_url + "signup")
+        driver.find_element(By.ID, "first-name").send_keys("Selenium")
+        driver.find_element(By.ID, "last-name").send_keys("Tester")
+        driver.find_element(By.ID, "email").send_keys(test_email)
+        driver.find_element(By.ID, "password").send_keys(password)
+        driver.find_element(By.ID, "confirm-password").send_keys(password)
+        driver.find_element(By.CSS_SELECTOR, "form input[type='submit']").click()
+        time.sleep(1)
+        self.assertIn("inactive", driver.current_url)
+        # Confirm user
+        with self.app.app_context():
+            user = self.User.query.filter_by(email=test_email).first()
+            token = user.get_email_verification_token()
+        driver.get(self.base_url + f"confirm_email/{token}")
+        time.sleep(1)
+        self.assertIn("login", driver.current_url)
+        # Log in
+        driver.get(self.base_url + "login")
+        driver.find_element(By.ID, "email").send_keys(test_email)
+        driver.find_element(By.ID, "password").send_keys(password)
+        driver.find_element(By.CSS_SELECTOR, "form input[type='submit']").click()
+        time.sleep(1)
+        self.assertIn("add_data", driver.current_url)
+        # Go to profile page
+        driver.get(self.base_url + "profile")
+        # Click delete account button and handle prompt
+        delete_btn = driver.find_element(By.XPATH, "//button[contains(text(), 'Delete Account')]")
+        driver.execute_script("arguments[0].click();", delete_btn)
+        time.sleep(0.5)
+        # Handle JS prompt for confirmation
+        alert = driver.switch_to.alert
+        alert.send_keys("DELETE")
+        alert.accept()
+        # Wait for redirect to login page
+        time.sleep(3)
+        self.assertIn("login", driver.current_url)
+        # Try to log in again (should fail)
+        driver.get(self.base_url + "login")
+        driver.find_element(By.ID, "email").send_keys(test_email)
+        driver.find_element(By.ID, "password").send_keys(password)
+        driver.find_element(By.CSS_SELECTOR, "form input[type='submit']").click()
+        time.sleep(1)
+        # Should remain on login page or see error
+        self.assertIn("login", driver.current_url)
+        # Optionally, check for error message
+        body_text = driver.find_element(By.TAG_NAME, "body").text
+        self.assertTrue("Invalid email or password" in body_text or "login" in driver.current_url)
 
 if __name__ == "__main__":
     unittest.main()
