@@ -341,6 +341,65 @@ class EcoTrackSeleniumTests(unittest.TestCase):
         # Should remain on login page or see error
         body_text = driver.find_element(By.TAG_NAME, "body").text
         self.assertTrue("Invalid email or password" in body_text or "login" in driver.current_url)
+    
+    def test_08_facts_page(self):
+        driver = self.driver
+        wait = self.wait
+        test_email = f"selenium{int(time.time())}@test.com"
+        password = "TestPassword1!"
+        self.signup_confirm_login(test_email, password)
+        # Go to Facts page
+        driver.get(self.base_url + "facts")
+        # Check that the page loads and contains expected content
+        self.assertIn("About EcoTrack", driver.page_source)
+        self.assertIn("Latest Environmental News", driver.page_source)
+        # Check at least one news item loaded from API
+        news_items = driver.find_elements(By.CSS_SELECTOR, "#news-feed .zoom")
+        self.assertGreaterEqual(len(news_items), 1)
+        # Check that the news item has a link and a title
+        first_news = news_items[0]
+        news_links = first_news.find_elements(By.CSS_SELECTOR, "a.text-xl.font-bold")
+        # The second <a> contains the title text
+        self.assertTrue(news_links[1].get_attribute("href").startswith("http"))
+        self.assertTrue(len(news_links[1].text.strip()) > 0)
 
+    def test_09_dashboard_page(self):
+        driver = self.driver
+        wait = self.wait
+        test_email = f"selenium{int(time.time())}@test.com"
+        password = "TestPassword1!"
+        self.signup_confirm_login(test_email, password)
+        # Step through each section using the stepper's Next button
+        for _ in range(3):
+            next_btn = driver.find_element(By.CSS_SELECTOR, '[data-stepper-next-btn]')
+            next_btn.click()
+            wait.until(lambda d: next_btn.is_enabled())
+        finish_btn = driver.find_element(By.CSS_SELECTOR, '[data-stepper-finish-btn]')
+        driver.execute_script("arguments[0].classList.remove('hidden');", finish_btn)
+        finish_btn.click()
+        wait.until(EC.url_contains("view_data"))
+        # Go to dashboard page
+        driver.get(self.base_url)
+        # Wait for dashboard to load
+        wait.until(lambda d: d.find_element(By.ID, "emission-goal-card").is_displayed())
+        # Test emission goal card click
+        emission_goal = driver.find_element(By.ID, "emission-goal-card")
+        emission_goal.click()
+        wait.until(EC.url_contains("view_data"))
+        self.assertIn("view_data", driver.current_url)
+        driver.back()
+        wait.until(lambda d: d.find_element(By.ID, "emission-goal-card").is_displayed())
+        # Test each category card click redirects to view_data with correct tab
+        categories = ["travel", "home", "food", "shopping"]
+        for idx, cat in enumerate(categories):
+            card = driver.find_element(By.CSS_SELECTOR, f".category-card[data-category='{cat}']")
+            card.click()
+            wait.until(EC.url_contains("view_data"))
+            self.assertIn("view_data", driver.current_url)
+            self.assertIn(f"tab={idx}", driver.current_url)
+            self.assertIn("#emissions-summary", driver.current_url)
+            driver.back()
+            wait.until(lambda d: d.find_element(By.CSS_SELECTOR, f".category-card[data-category='{cat}']").is_displayed())
+    
 if __name__ == "__main__":
     unittest.main()
