@@ -32,12 +32,15 @@
 
                 <!-- Logout Button -->
                 <div class="mt-4">
-                    <a href="{{ url_for('main.logout') }}"
-                        class="zoom inline-flex items-center px-4 py-2 bg-primary hover:bg-green-900 text-white font-semibold rounded-md transition">
-                        <img src="{{ url_for('static', filename='assets/icons/logout.svg') }}" alt="Logout"
-                            class="h-5 w-5 mr-2 filter invert" />
-                        <span>Logout</span>
-                    </a>
+                    <form action="{{ url_for('main.logout') }}" method="get" class="inline">
+                        <button type="submit"
+                            class="zoom inline-flex cursor-pointer items-center px-4 py-2 bg-primary hover:bg-green-900 text-white font-semibold rounded-md transition"
+                            id="logout-btn">
+                            <img src="{{ url_for('static', filename='assets/icons/logout.svg') }}" alt="Logout"
+                                class="h-5 w-5 mr-2 filter invert" />
+                            <span>Logout</span>
+                        </button>
+                    </form>
                 </div>
             </div>
 
