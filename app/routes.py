@@ -1,17 +1,26 @@
-from app import app, db
+from app import db
+from app.blueprints import main
 from flask import redirect, render_template, request, url_for, flash, session, flash, jsonify
 import re
 from app.constants import nav_items
 from app.forms import VehicleForm, PublicTransitSimpleForm, PublicTransitAdvancedForm
 from app.forms import AirTravelSimpleForm, AirTravelAdvancedForm, HomeEnergyForm
 from app.forms import FoodForm, ShoppingSimpleForm, ShoppingAdvancedForm, CarbonFootprintForm
-from app.models import User, CarbonFootprint, Travel, Vehicle, Home, Food, Shopping, Emissions, Share
+from app.models import User, CarbonFootprint, Travel, Vehicle, Home, Food, Shopping, Emissions, Share, Message
 from app.processing_layer import CarbonFootprintCalculator
 from flask_login import login_user, logout_user, current_user, login_required
 from app.forms import LoginForm, SignupForm, ChangePasswordForm, ShareForm, ResetPasswordRequestForm, ResetPasswordForm, DeleteAccountForm, EditNameForm, EditEMailForm
 from app.email_utils import send_confirmation_email, send_password_reset_email, send_email_update_confirmation
+from app.controllers import (
+    process_travel_data,
+    process_vehicles_data,
+    process_home_data,
+    process_food_data,
+    process_shopping_data,
+    delete_user_and_data
+)
 
-@app.route('/')
+@main.route('/')
 @login_required
 def dashboard():
     user_data = CarbonFootprint.query.filter_by(user_id=current_user.id).first()
@@ -19,7 +28,7 @@ def dashboard():
     locked = is_new_user  # Lock the page if the user is new
 
     if locked:
-        return redirect(url_for('add_data', new_user='true'))
+        return redirect(url_for('main.add_data', new_user='true'))
 
     return render_template('dashboard.html', 
                           active_page='dashboard', 
@@ -30,7 +39,7 @@ def dashboard():
                           is_new_user=is_new_user,
                           locked=locked)
 
-@app.route('/add_data', methods=['GET', 'POST'])
+@main.route('/add_data', methods=['GET', 'POST'])
 @login_required
 def add_data():
     user = current_user
@@ -127,7 +136,7 @@ def add_data():
                 db.session.commit()
 
                 flash('Your carbon footprint has been calculated and saved!', 'success')
-                return redirect(url_for('view_data'))
+                return redirect(url_for('main.view_data'))
             else:
                 # Show form validation errors
                 for form in forms_to_validate:
@@ -159,107 +168,84 @@ def add_data():
         is_new_user=is_new_user
     )
 
-def process_travel_data(mode, pts:PublicTransitSimpleForm, pta:PublicTransitAdvancedForm, ats:AirTravelSimpleForm, ata:AirTravelAdvancedForm):
-    travel = Travel()
-    if mode == 'simple':
-        travel.public_transit_distance = pts.distance.data
-        travel.air_travel_distance = ats.distance.data
-    else:
-        travel.bus_kms = pta.bus_kms.data
-        travel.transit_rail_kms = pta.transit_rail_kms.data
-        travel.commuter_rail_kms = pta.commuter_rail_kms.data
-        travel.intercity_rail_kms = pta.intercity_rail_kms.data
-        travel.short_flights = ata.short_flights.data
-        travel.medium_flights = ata.medium_flights.data
-        travel.long_flights = ata.long_flights.data
-        travel.extended_flights = ata.extended_flights.data
-    return travel
-
-def process_vehicles_data(travel_id):
-    """
-    Process vehicle form data and return a list of Vehicle objects.
-    """
-    vehicles = []
-    valid_fuel_types = ['gasoline', 'diesel', 'electric']
-    i = 0
-
-    while True:
-        fuel_type = request.form.get(f'vehicle-fuel_type{i}')
-        distance = request.form.get(f'vehicle-distance{i}')
-        efficiency = request.form.get(f'vehicle-fuel_efficiency{i}')
-        if not fuel_type or fuel_type not in valid_fuel_types:
-            break
-        vehicles.append(Vehicle(
-            travel_id=travel_id,
-            fuel_type=fuel_type,
-            distance=distance,
-            fuel_efficiency=efficiency
-        ))
-        i += 1
-    return vehicles
-
-def process_home_data(form:HomeEnergyForm):
-    return Home(
-        electricity=form.electricity.data,
-        electricity_unit=form.electricity_unit.data,
-        electricity_frequency=form.electricity_frequency.data,
-        clean_energy_percentage=form.clean_energy_percentage.data,
-        natural_gas=form.natural_gas.data,
-        natural_gas_unit=form.natural_gas_unit.data,
-        natural_gas_frequency=form.natural_gas_frequency.data,
-        heating_oil=form.heating_oil.data,
-        heating_oil_unit=form.heating_oil_unit.data,
-        heating_oil_frequency=form.heating_oil_frequency.data,
-        living_space=form.living_space.data,
-        water_usage=form.water_usage.data
-    )
-
-def process_food_data(form:FoodForm):
-    return Food(
-        meat_fish_eggs=form.meat_fish_eggs.data,
-        grains_baked_goods=form.grains_baked_goods.data,
-        dairy=form.dairy.data,
-        fruits_vegetables=form.fruits_vegetables.data,
-        snacks_drinks=form.snacks_drinks.data
-    )
-
-def process_shopping_data(mode, simple_form:ShoppingSimpleForm, advanced_form:ShoppingAdvancedForm):
-    shopping = Shopping()
-    if mode == 'simple':
-        shopping.goods_multiplier = simple_form.goods_multiplier.data
-        shopping.services_multiplier = simple_form.services_multiplier.data
-    else:
-        shopping.furniture_appliances = advanced_form.furniture_appliances.data
-        shopping.clothing = advanced_form.clothing.data
-        shopping.entertainment = advanced_form.entertainment.data
-        shopping.office_supplies = advanced_form.office_supplies.data
-        shopping.personal_care = advanced_form.personal_care.data
-        shopping.services_food = advanced_form.services_food.data
-        shopping.education = advanced_form.education.data
-        shopping.communication = advanced_form.communication.data
-        shopping.loan = advanced_form.loan.data
-        shopping.transport = advanced_form.transport.data
-    return shopping
-
-@app.route('/view_data')
+@main.route('/view_data')
 @login_required
 def view_data():
     user_data = CarbonFootprint.query.filter_by(user_id=current_user.id).first()
     locked = user_data is None  # Lock the page if the user is new
 
     if locked:
-        return redirect(url_for('add_data', new_user='true'))
+        return redirect(url_for('main.add_data', new_user='true'))
 
-    return render_template('view_data.html', 
-                          active_page='view_data', 
-                          nav_items=nav_items,
-                          first_name=current_user.first_name,
-                          last_name=current_user.last_name,
-                          email=current_user.email,
-                          locked=locked)
+    # Leader Board
+    shared_with_me_raw = []
 
+    # Current user's own data
+    emission = Emissions.query.filter_by(user_id=current_user.id).order_by(Emissions.calculated_at.desc()).first()
+    shared_with_me_raw.append({
+        'name': f"{current_user.first_name} {current_user.last_name}",
+        'email': current_user.email,
+        'carbon_footprint_value': float(emission.total_emissions) if emission else float('inf'),
+        'carbon_footprint': f"{emission.total_emissions:.2f} CO2eq" if emission else "N/A"
+    })
 
-@app.route('/api/emissions', methods=['GET'])
+    # Data shared by other users
+    shared_entries = Share.query.filter_by(to_user_id=current_user.id).all()
+    for entry in shared_entries:
+        sender = User.query.get(entry.from_user_id)
+        if sender:
+            sender_emission = Emissions.query.filter_by(user_id=sender.id).order_by(Emissions.calculated_at.desc()).first()
+            if sender_emission:
+                shared_with_me_raw.append({
+                    'name': f"{sender.first_name} {sender.last_name}",
+                    'email': sender.email,
+                    'carbon_footprint_value': float(sender_emission.total_emissions),
+                    'carbon_footprint': f"{sender_emission.total_emissions:.2f} CO2eq"
+                })
+
+    # Sort and rank users
+    shared_with_me_sorted = sorted(shared_with_me_raw, key=lambda x: x['carbon_footprint_value'])
+    for i, user in enumerate(shared_with_me_sorted, start=1):
+        user['rank'] = i
+
+    return render_template('view_data.html',
+                           active_page='view_data',
+                           nav_items=nav_items,
+                           first_name=current_user.first_name,
+                           last_name=current_user.last_name,
+                           email=current_user.email,
+                           locked=locked,
+                           shared_with_me=shared_with_me_sorted)
+
+@main.route('/api/compare_emissions')
+@login_required
+def compare_emissions():
+    target_email = request.args.get('email')
+    other_user = User.query.filter_by(email=target_email).first()
+    if not other_user:
+        return jsonify({'error': 'User not found'}), 404
+
+    your_emission = Emissions.query.filter_by(user_id=current_user.id).order_by(Emissions.calculated_at.desc()).first()
+    other_emission = Emissions.query.filter_by(user_id=other_user.id).order_by(Emissions.calculated_at.desc()).first()
+
+    if not your_emission or not other_emission:
+        return jsonify({'error': 'Missing emission data'}), 400
+
+    def get_grouped_data(emission):
+        return [
+            emission.car_emissions + emission.public_transit_emissions + emission.air_travel_emissions,  # Travel
+            emission.meat_emissions + emission.dairy_emissions + emission.fruits_vegetables_emissions + emission.cereals_emissions + emission.snacks_emissions,  # Food
+            emission.electricity_emissions + emission.natural_gas_emissions + emission.heating_fuels_emissions + emission.water_emissions + emission.construction_emissions,  # Home
+            emission.furniture_emissions + emission.clothing_emissions + emission.other_goods_emissions + emission.services_emissions  # Shopping
+        ]
+
+    return jsonify({
+        'your_emissions': get_grouped_data(your_emission),
+        'other_emissions': get_grouped_data(other_emission),
+        'other_name': f"{other_user.first_name} {other_user.last_name}"
+    })
+
+@main.route('/api/emissions', methods=['GET'])
 @login_required
 def get_emissions():
     """
@@ -289,30 +275,74 @@ def get_emissions():
         'other_goods_emissions': emissions.other_goods_emissions or 0.0,
         'services_emissions': emissions.services_emissions or 0.0,
         'total_emissions': emissions.total_emissions or 0.0
+    }) 
+
+@main.route('/api/dashboard_metrics', methods=['GET'])
+@login_required
+def get_dashboard_metrics():
+    """
+    Returns all dashboard metrics (percentages, saved, emitted, isBelow, etc.) for the current user.
+    """
+    emissions = Emissions.query.filter_by(user_id=current_user.id).order_by(Emissions.calculated_at.desc()).first()
+    if not emissions:
+        return jsonify({'error': 'No emissions data found'}), 404
+
+    GOALS = {
+        'total': 12.3,
+        'travel': 2.9,
+        'home': 3.5,
+        'food': 3.1,
+        'shopping': 2.8
+    }
+    AU_AVG = 15.01  # Australian average household emissions
+
+    # Calculate category totals
+    travel = (emissions.car_emissions or 0.0) + (emissions.public_transit_emissions or 0.0) + (emissions.air_travel_emissions or 0.0)
+    home = (emissions.electricity_emissions or 0.0) + (emissions.natural_gas_emissions or 0.0) + (emissions.heating_fuels_emissions or 0.0) + (emissions.water_emissions or 0.0) + (emissions.construction_emissions or 0.0)
+    food = (emissions.meat_emissions or 0.0) + (emissions.dairy_emissions or 0.0) + (emissions.fruits_vegetables_emissions or 0.0) + (emissions.cereals_emissions or 0.0) + (emissions.snacks_emissions or 0.0)
+    shopping = (emissions.furniture_emissions or 0.0) + (emissions.clothing_emissions or 0.0) + (emissions.other_goods_emissions or 0.0) + (emissions.services_emissions or 0.0)
+    total = emissions.total_emissions or 0.0
+
+    def calc_metrics(actual, goal):
+        percentage = (actual / goal) * 100 if goal else 0
+        is_below = actual <= goal
+        saved = max(AU_AVG - actual, 0)
+        return {
+            'percentage': round(percentage),
+            'saved': round(saved, 2),
+            'emitted': round(actual, 2),
+            'isBelow': is_below
+        }
+
+    return jsonify({
+        'total': calc_metrics(total, GOALS['total']),
+        'travel': calc_metrics(travel, GOALS['travel']),
+        'home': calc_metrics(home, GOALS['home']),
+        'food': calc_metrics(food, GOALS['food']),
+        'shopping': calc_metrics(shopping, GOALS['shopping']),
+        'goals': GOALS,
+        'au_average': AU_AVG
     })
 
-
-
-@app.route('/share', methods=['GET', 'POST'])
+@main.route('/share', methods=['GET', 'POST'])
 @login_required
 def share():
-    # Check if user is new (has no data)
     user_data = CarbonFootprint.query.filter_by(user_id=current_user.id).first()
     is_new_user = user_data is None
-    
+
     form = ShareForm()
     search_results = None
-    
+
     if form.validate_on_submit():
-        search_email = form.search_email.data
+        search_email = form.search_email.data.strip()
         search_results = User.query.filter_by(email=search_email).first()
         if not search_results:
             flash('No user found with that email address.', 'warning')
         else:
             flash('User found!', 'success')
-    
+
     if request.method == 'POST' and 'share_email' in request.form:
-        target_email = request.form.get('share_email')
+        target_email = request.form.get('share_email').strip()
         to_user = User.query.filter_by(email=target_email).first()
 
         if not to_user:
@@ -329,100 +359,216 @@ def share():
                 db.session.commit()
                 flash('Shared successfully!', 'success')
 
-        return redirect(url_for('share'))
+        return redirect(url_for('main.share'))
 
+    # Users current_user shared to
     sharing_records = Share.query.filter_by(from_user_id=current_user.id).all()
     sharing_with = []
-    for share in sharing_records:
-        target = User.query.get(share.to_user_id)
+    for share_record in sharing_records:
+        target = db.session.get(User, share_record.to_user_id)
+
+        # Check if message read or not
+        has_unread = Message.query.filter_by(
+            sender_id=target.email,
+            receiver_id=current_user.email,
+            is_read=False
+        ).count() > 0
+
         sharing_with.append({
             'name': f"{target.first_name} {target.last_name}",
             'email': target.email,
-            'shared_date': share.shared_date.strftime("%B %d, %Y")
+            'shared_date': share_record.shared_date.strftime("%B %d, %Y"),
+            'has_unread': has_unread
         })
+
+
+    # Users who shared with current_user
     received_records = Share.query.filter_by(to_user_id=current_user.id).all()
-    shared_with_me = []
+    shared_with_me_raw = []
     for share in received_records:
-        sender = User.query.get(share.from_user_id)
-        footprint = CarbonFootprint.query.filter_by(user_id=sender.id).first()
-        if footprint:
-            emission = Emissions.query.filter_by(carbon_footprint_id=footprint.id).first()
-        else:
-            emission = None
-        shared_with_me.append({
-        'name': f"{sender.first_name} {sender.last_name}",
-        'email': sender.email,
-        'carbon_footprint': f"{emission.total_emissions:.2f} CO2eq" if emission is not None else "N/A"
+        sender = db.session.get(User, share.from_user_id)
+        emission = Emissions.query.filter_by(user_id=sender.id).order_by(Emissions.calculated_at.desc()).first()
+        shared_with_me_raw.append({
+            'name': f"{sender.first_name} {sender.last_name}",
+            'email': sender.email,
+            'carbon_footprint_value': float(emission.total_emissions) if emission else float('inf'),
+            'carbon_footprint': f"{emission.total_emissions:.2f} CO2eq" if emission else "N/A"
+        })
+
+    # Add current user to the leaderboard
+    emission = Emissions.query.filter_by(user_id=current_user.id).order_by(Emissions.calculated_at.desc()).first()
+    shared_with_me_raw.append({
+        'name': f"{current_user.first_name} {current_user.last_name}",
+        'email': current_user.email,
+        'carbon_footprint_value': float(emission.total_emissions) if emission else float('inf'),
+        'carbon_footprint': f"{emission.total_emissions:.2f} CO2eq" if emission else "N/A"
     })
+
+    shared_with_me_sorted = sorted(shared_with_me_raw, key=lambda x: x['carbon_footprint_value'])
+    for i, user in enumerate(shared_with_me_sorted, start=1):
+        user['rank'] = i
+
+    # Viewing other user's data
     view_email = request.args.get('view_email')
+    selected_name = selected_email = None
+    travel_pct = food_pct = home_pct = shopping_pct = total_emission = 0
+
     if view_email:
         target_user = User.query.filter_by(email=view_email).first()
-        selected_footprint = CarbonFootprint.query.filter_by(user_id=target_user.id).first()
-        selected_name = f"{target_user.first_name} {target_user.last_name}"
-        selected_email = target_user.email
-    else:
-        selected_footprint = CarbonFootprint.query.filter_by(user_id=current_user.id).first()
-        selected_name = f"{current_user.first_name} {current_user.last_name}"
-        selected_email = current_user.email 
+        if target_user:
+            selected_name = f"{target_user.first_name} {target_user.last_name}"
+            selected_email = target_user.email
+            emission = Emissions.query.filter_by(user_id=target_user.id).order_by(Emissions.calculated_at.desc()).first()
 
-    emission = Emissions.query.filter_by(carbon_footprint_id=selected_footprint.id).first() if selected_footprint else None
-    if emission:
-        travel = (
-            (emission.car_emissions or 0) +
-            (emission.air_travel_emissions or 0) +
-            (emission.public_transit_emissions or 0)
-        )
-        food = (
-            (emission.meat_emissions or 0) +
-            (emission.dairy_emissions or 0) +
-            (emission.fruits_vegetables_emissions or 0) +
-            (emission.cereals_emissions or 0) +
-            (emission.snacks_emissions or 0)
-        )
-        home = (
-            (emission.electricity_emissions or 0) +
-            (emission.natural_gas_emissions or 0) +
-            (emission.heating_fuels_emissions or 0) +
-            (emission.water_emissions or 0)
-        )
-        shopping = (
-            (emission.clothing_emissions or 0) +
-            (emission.furniture_emissions or 0) +
-            (emission.other_goods_emissions or 0) +
-            (emission.services_emissions or 0)
-        )
+            if emission and emission.total_emissions:
+                total_emission = emission.total_emissions
+                travel = (emission.car_emissions or 0) + (emission.air_travel_emissions or 0) + (emission.public_transit_emissions or 0)
+                food = (emission.meat_emissions or 0) + (emission.dairy_emissions or 0) + (emission.fruits_vegetables_emissions or 0) + \
+                       (emission.cereals_emissions or 0) + (emission.snacks_emissions or 0)
+                home = (emission.electricity_emissions or 0) + (emission.natural_gas_emissions or 0) + (emission.heating_fuels_emissions or 0) + \
+                       (emission.water_emissions or 0) + (emission.construction_emissions or 0)
+                shopping = (emission.clothing_emissions or 0) + (emission.furniture_emissions or 0) + (emission.other_goods_emissions or 0) + \
+                           (emission.services_emissions or 0)
+                travel_pct = round((travel / total_emission) * 100) if total_emission else 0
+                food_pct = round((food / total_emission) * 100) if total_emission else 0
+                home_pct = round((home / total_emission) * 100) if total_emission else 0
+                shopping_pct = round((shopping / total_emission) * 100) if total_emission else 0
 
-        total = travel + food + home + shopping
-        total_emission = round(total, 2)
-        travel_pct = round((travel / total) * 100) if total else 0
-        food_pct = round((food / total) * 100) if total else 0
-        home_pct = round((home / total) * 100) if total else 0
-        shopping_pct = round((shopping / total) * 100) if total else 0
-    else:
-        travel_pct = food_pct = home_pct = shopping_pct = 0
-        total_emission = 0 
+    return render_template('share.html',
+                           active_page='share',
+                           nav_items=nav_items,
+                           first_name=current_user.first_name,
+                           last_name=current_user.last_name,
+                           email=current_user.email,
+                           form=form,
+                           search_results=search_results,
+                           shared_with_me=shared_with_me_sorted,
+                           sharing_with=sharing_with,
+                           selected_name=selected_name,
+                           selected_email=selected_email,
+                           travel_pct=travel_pct,
+                           food_pct=food_pct,
+                           home_pct=home_pct,
+                           shopping_pct=shopping_pct,
+                           total_emission=total_emission,
+                           is_new_user=is_new_user)
 
-    return render_template('share.html', 
-                          active_page='share', 
-                          nav_items=nav_items,
-                          first_name=current_user.first_name,
-                          last_name=current_user.last_name,
-                          email=current_user.email,
-                          form=form,
-                          search_results=search_results,
-                          shared_with_me=shared_with_me,
-                          sharing_with=sharing_with,
-                          selected_footprint=selected_footprint,
-                          selected_name=selected_name,  
-                          selected_email = selected_email,
-                          travel_pct=travel_pct,
-                          food_pct=food_pct,
-                          home_pct=home_pct,
-                          shopping_pct=shopping_pct,
-                          total_emission=total_emission,
-                          is_new_user=is_new_user)
+@main.route('/api/emissions/<email>', methods=['GET'])
+@login_required
+def get_user_emissions(email):
+    user = db.session.get(User, email) if isinstance(email, int) else User.query.filter_by(email=email).first()
+    if not user:
+        return jsonify({'error': 'User not found'}), 404
 
-@app.route('/api/share', methods=['POST'])
+    emissions = Emissions.query.filter_by(user_id=user.id).order_by(Emissions.calculated_at.desc()).first()
+    if not emissions:
+        return jsonify({'error': 'No emissions data'}), 404
+
+    total = emissions.total_emissions or 0.0
+
+    travel = (emissions.car_emissions or 0.0) + (emissions.public_transit_emissions or 0.0) + (emissions.air_travel_emissions or 0.0)
+    food = (emissions.meat_emissions or 0.0) + (emissions.dairy_emissions or 0.0) + \
+           (emissions.fruits_vegetables_emissions or 0.0) + (emissions.cereals_emissions or 0.0) + (emissions.snacks_emissions or 0.0)
+    home = (emissions.electricity_emissions or 0.0) + (emissions.natural_gas_emissions or 0.0) + \
+           (emissions.heating_fuels_emissions or 0.0) + (emissions.water_emissions or 0.0) + (emissions.construction_emissions or 0.0)
+    shopping = (emissions.furniture_emissions or 0.0) + (emissions.clothing_emissions or 0.0) + \
+               (emissions.other_goods_emissions or 0.0) + (emissions.services_emissions or 0.0)
+
+    GOALS = {
+        'total': 12.3,
+        'travel': 2.9,
+        'home': 3.5,
+        'food': 3.1,
+        'shopping': 2.8
+    }
+
+    # Calculate percentages based on goals rather than total emissions
+    # This ensures consistency with how the dashboard displays percentages
+    travel_pct = round((travel / GOALS['travel']) * 100) if travel else 0
+    food_pct = round((food / GOALS['food']) * 100) if food else 0
+    home_pct = round((home / GOALS['home']) * 100) if home else 0
+    shopping_pct = round((shopping / GOALS['shopping']) * 100) if shopping else 0
+
+    return jsonify({
+        'name': f'{user.first_name} {user.last_name}',
+        'email': user.email,
+        'travel_pct': travel_pct,
+        'food_pct': food_pct,
+        'home_pct': home_pct,
+        'shopping_pct': shopping_pct,
+        'total_emissions': total
+    })
+
+@main.route('/api/emissions_summary')
+@login_required
+def get_emissions_summary():
+    emissions = Emissions.query.filter_by(user_id=current_user.id).order_by(Emissions.calculated_at.desc()).first()
+    if not emissions:
+        return jsonify({'error': 'No emissions data found'}), 404
+
+    # Calculate totals for each category
+    car = emissions.car_emissions or 0
+    air = emissions.air_travel_emissions or 0
+    transit = emissions.public_transit_emissions or 0
+    travel_total = car + air + transit
+
+    electricity = emissions.electricity_emissions or 0
+    natural_gas = emissions.natural_gas_emissions or 0
+    heating_fuel = emissions.heating_fuels_emissions or 0
+    water = emissions.water_emissions or 0
+    construction = emissions.construction_emissions or 0
+    home_total = electricity + natural_gas + heating_fuel + water + construction
+
+    meat = emissions.meat_emissions or 0
+    dairy = emissions.dairy_emissions or 0
+    fruit_veg = emissions.fruits_vegetables_emissions or 0
+    cereals = emissions.cereals_emissions or 0
+    snacks = emissions.snacks_emissions or 0
+    food_total = meat + dairy + fruit_veg + cereals + snacks
+
+    furniture = emissions.furniture_emissions or 0
+    clothing = emissions.clothing_emissions or 0
+    other_goods = emissions.other_goods_emissions or 0
+    services = emissions.services_emissions or 0
+    shopping_total = furniture + clothing + other_goods + services
+
+    def safe_pct(value, total):
+        return round((value / total) * 100, 2) if total else 0
+
+    return jsonify({
+        'travelTotal': travel_total,
+        'homeTotal': home_total,
+        'foodTotal': food_total,
+        'shoppingTotal': shopping_total,
+
+        'travel': {
+            'carPct': safe_pct(car, travel_total),
+            'airPct': safe_pct(air, travel_total),
+            'transitPct': safe_pct(transit, travel_total),
+        },
+        'home': {
+            'electricityPct': safe_pct(electricity, home_total),
+            'naturalGasPct': safe_pct(natural_gas, home_total),
+            'heatingFuelPct': safe_pct(heating_fuel, home_total),
+            'waterPct': safe_pct(water, home_total),
+            'constructionPct': safe_pct(construction, home_total),
+        },
+        'food': {
+            'meatPct': safe_pct(meat, food_total),
+            'dairyPct': safe_pct(dairy, food_total),
+            'fruitVegPct': safe_pct(fruit_veg, food_total),
+            'cerealsPct': safe_pct(cereals, food_total),
+            'snacksPct': safe_pct(snacks, food_total),
+        },
+        'shopping': {
+            'furniturePct': safe_pct(furniture, shopping_total),
+            'clothingPct': safe_pct(clothing, shopping_total),
+            'otherGoodsPct': safe_pct(other_goods, shopping_total),
+            'servicesPct': safe_pct(services, shopping_total),
+        }
+    })
+
+@main.route('/api/share', methods=['POST'])
 @login_required
 def api_share():
     data = request.get_json()
@@ -449,7 +595,7 @@ def api_share():
     
     return jsonify({'success': True}), 200
 
-@app.route('/stop_share', methods=['POST'])
+@main.route('/stop_share', methods=['POST'])
 @login_required
 def stop_share():
     receiver_email = request.form['receiver_email']
@@ -457,7 +603,7 @@ def stop_share():
 
     if not receiver:
         flash('User not found.', 'warning')
-        return redirect(url_for('share'))
+        return redirect(url_for('main.share'))
 
     share = Share.query.filter_by(from_user_id=current_user.id, to_user_id=receiver.id).first()
     if share:
@@ -467,9 +613,69 @@ def stop_share():
     else:
         flash('Sharing record not found.', 'warning')
 
-    return redirect(url_for('share'))
+    return redirect(url_for('main.share'))
 
-@app.route('/facts')
+@main.route('/chat', methods=['POST'])
+def chat():
+    print("Received POST /chat request")
+    print("Headers:", dict(request.headers))
+    print("Raw body:", request.data)
+
+    try:
+        data = request.get_json(force=True)
+        print("Parsed JSON:", data)
+    except Exception as e:
+        print("Failed to parse JSON:", str(e))
+        return jsonify(success=False, error="Failed to parse JSON"), 400
+
+    # Extract recipient email and message content
+    to_email = data.get('to')
+    content = data.get('message')
+    print("To:", to_email)
+    print("Message:", content)
+
+    # Validate the presence of required fields
+    if not to_email or not content:
+        print("Incomplete data")
+        return jsonify(success=False, error="Missing data"), 400
+
+    # Save the new message to the database
+    new_msg = Message(
+        sender_id=current_user.email,
+        receiver_id=to_email,
+        content=content
+    )
+    db.session.add(new_msg)
+    db.session.commit()
+
+    print("Message saved successfully!")
+    return jsonify(success=True)
+
+@main.route('/chat/<email>', methods=['GET'])
+@login_required
+def chat_history(email):
+
+    # Load message history
+    messages = Message.query.filter(
+        ((Message.sender_id == current_user.email) & (Message.receiver_id == email)) |
+        ((Message.sender_id == email) & (Message.receiver_id == current_user.email))
+    ).order_by(Message.timestamp).all()
+
+    # mark messages sent by the other
+    unread_msgs = Message.query.filter_by(sender_id=email, receiver_id=current_user.email, is_read=False).all()
+    for msg in unread_msgs:
+        msg.is_read = True
+    db.session.commit()
+
+    return jsonify([
+        {
+            'sender': msg.sender_id,
+            'content': msg.content,
+            'timestamp': msg.timestamp.strftime('%Y-%m-%d %H:%M')
+        } for msg in messages
+    ])
+
+@main.route('/facts')
 @login_required
 def facts():
     # Check if user is new (has no data)
@@ -484,7 +690,7 @@ def facts():
                           email=current_user.email,
                           is_new_user=is_new_user)
 
-@app.route('/profile', methods=['GET', 'POST'])
+@main.route('/profile', methods=['GET', 'POST'])
 @login_required
 def profile():
     # Check if user is new (has no data)
@@ -508,20 +714,20 @@ def profile():
             flash('Email updated. Please confirm your new email address.', 'info')
         else:
             flash("Please enter a valid Email address", "error")
-        return redirect(url_for('profile'))
+        return redirect(url_for('main.profile'))
     
     if email_form.submit_email.data and not email_form.validate():
         for field, errors in email_form.errors.items():
             for error in errors:
                 flash(f"{email_form[field].label.text}: {error}", "error")
-        return redirect(url_for('profile'))
+        return redirect(url_for('main.profile'))
     
     if name_form.submit_name.data and name_form.validate_on_submit():
         current_user.first_name = name_form.first_name.data
         current_user.last_name = name_form.last_name.data
         db.session.commit()
         flash('Name updated successfully!', 'success')
-        return redirect(url_for('profile'))
+        return redirect(url_for('main.profile'))
     
     return render_template('profile.html', 
                           nav_items=nav_items,
@@ -534,11 +740,11 @@ def profile():
                           email_form = email_form,
                           is_new_user=is_new_user)
 
-@app.route('/login', methods=['GET', 'POST'])
+@main.route('/login', methods=['GET', 'POST'])
 def login():
     # If user is already logged in, redirect to dashboard
     if current_user.is_authenticated:
-        return redirect(url_for('dashboard'))
+        return redirect(url_for('main.dashboard'))
         
     form = LoginForm()
     if form.validate_on_submit():
@@ -553,7 +759,7 @@ def login():
             # Check if user has confirmed their email
             if not user.confirmed:
                 flash('Please confirm your email address before logging in.', 'warning')
-                return redirect(url_for('inactive', email=user.email))
+                return redirect(url_for('main.inactive', email=user.email))
             
             # Login user with Flask-Login
             login_user(user, remember=form.remember_me.data if hasattr(form, 'remember_me') else False)
@@ -561,22 +767,22 @@ def login():
             # Redirect to next page if specified, otherwise dashboard
             next_page = request.args.get('next')
             if not next_page or not next_page.startswith('/'):
-                next_page = url_for('dashboard')
+                next_page = url_for('main.dashboard')
                 
             flash('Logged in successfully!', 'success')
             return redirect(next_page)
         else:
             flash('Invalid email or password', 'error')
             # Redirect to the login page instead of rendering template directly
-            return redirect(url_for('login'))
+            return redirect(url_for('main.login'))
             
     return render_template('auth/login.html', active_page='login', form=form)
 
-@app.route('/signup', methods=['GET', 'POST'])
+@main.route('/signup', methods=['GET', 'POST'])
 def signup():
     # If user is already logged in, redirect to dashboard
     if current_user.is_authenticated:
-        return redirect(url_for('dashboard'))
+        return redirect(url_for('main.dashboard'))
         
     form = SignupForm()
     if form.validate_on_submit():
@@ -584,7 +790,7 @@ def signup():
         existing_user = User.query.filter_by(email=form.email.data).first()
         if existing_user:
             flash('Email already exists', 'error')
-            return redirect(url_for('signup'))
+            return redirect(url_for('main.signup'))
         else:
             # Create new user
             new_user = User(
@@ -603,24 +809,24 @@ def signup():
             send_confirmation_email(new_user)
             
             flash('Thanks for registering! Please check your email to confirm your account.', 'success')
-            return redirect(url_for('inactive', email=new_user.email))
+            return redirect(url_for('main.inactive', email=new_user.email))
             
     # If form validation failed, redirect with errors
     if form.errors:
         for field, errors in form.errors.items():
             for error in errors:
                 flash(f"{form[field].label.text}: {error}", "error")
-        return redirect(url_for('signup'))
+        return redirect(url_for('main.signup'))
         
     return render_template('auth/signup.html', active_page='signup', form=form)
 
-@app.route('/logout')
+@main.route('/logout')
 def logout():
     logout_user()
     flash('Logged out successfully!', 'success')
-    return redirect(url_for('login'))
+    return redirect(url_for('main.login'))
 
-@app.route('/change_password', methods=['POST'])
+@main.route('/change_password', methods=['POST'])
 @login_required
 def change_password():
     form = ChangePasswordForm()
@@ -629,57 +835,23 @@ def change_password():
         # Check if current password is correct
         if not current_user.check_password(form.current_password.data):
             flash("Current password is incorrect.", "error")
-            return redirect(url_for('profile'))
+            return redirect(url_for('main.profile'))
         
         # Set new password and save to database
         current_user.set_password(form.new_password.data)
         db.session.commit()
         
         flash("Password updated successfully!", "success")
-        return redirect(url_for('profile'))
+        return redirect(url_for('main.profile'))
     else:
         # Form validation failed
         for field, errors in form.errors.items():
             for error in errors:
                 flash(f"{form[field].label.text}: {error}", "error")
         
-        return redirect(url_for('profile'))
+        return redirect(url_for('main.profile'))
 
-#helper function to delete any related data to user 
-def delete_user_and_data(user):
-    # Delete emissions and footprint-related models
-    footprints = CarbonFootprint.query.filter_by(user_id=user.id).all()
-    for fp in footprints:
-        # Delete emissions first
-        Emissions.query.filter_by(carbon_footprint_id=fp.id).delete()
-
-        # Delete linked travel and vehicles
-        if fp.travel_id:
-            Vehicle.query.filter_by(travel_id=fp.travel_id).delete()
-            Travel.query.filter_by(id=fp.travel_id).delete()
-
-        # Delete other linked models
-        if fp.home_id:
-            Home.query.filter_by(id=fp.home_id).delete()
-        if fp.food_id:
-            Food.query.filter_by(id=fp.food_id).delete()
-        if fp.shopping_id:
-            Shopping.query.filter_by(id=fp.shopping_id).delete()
-
-    # Delete the footprints
-    CarbonFootprint.query.filter_by(user_id=user.id).delete()
-
-    # Delete share records (both sent and received)
-    Share.query.filter(
-        (Share.from_user_id == user.id) |
-        (Share.to_user_id == user.id)
-    ).delete()
-
-    # Finally, delete the user
-    db.session.delete(user)
-    db.session.commit()
-
-@app.route('/delete_account', methods=['POST'])
+@main.route('/delete_account', methods=['POST'])
 @login_required
 def delete_account():
     form = DeleteAccountForm()
@@ -688,15 +860,15 @@ def delete_account():
         logout_user()
         delete_user_and_data(user)
         flash('Your account and all related data has been deleted.', 'success')
-    return redirect(url_for('login'))
+    return redirect(url_for('main.login'))
 
 # New routes for email verification
-@app.route('/inactive')
+@main.route('/inactive')
 def inactive():
     email = request.args.get('email', '')
     return render_template('auth/inactive.html', email=email)
 
-@app.route('/resend_confirmation', methods=['POST'])
+@main.route('/resend_confirmation', methods=['POST'])
 def resend_confirmation():
     email = request.form.get('email')
     if not email:
@@ -710,40 +882,48 @@ def resend_confirmation():
         else:
             flash('Email could not be sent.', 'error')
     
-    return redirect(url_for('inactive', email=email))
+    return redirect(url_for('main.inactive', email=email))
 
-@app.route('/confirm_email/<token>')
+@main.route('/confirm_email/<token>')
 def confirm_email(token):
-    data = User.verify_email_update_token(token)
-    
-    if not data:
-        flash('The confirmation link is invalid or has expired.', 'error')
-        return redirect(url_for('login'))
-    
-    user = User.query.get(data.get('user_id'))
+    user = User.verify_email_token(token)
     if not user:
         flash('The confirmation link is invalid or has expired.', 'error')
-        return redirect(url_for('login'))
+        return redirect(url_for('main.login'))
+    if user.confirmed:
+        flash('Account already confirmed. Please log in.', 'info')
+        return redirect(url_for('main.login'))
+    user.confirmed = True
+    db.session.commit()
+    flash('Account confirmed! Please log in.', 'success')
+    return redirect(url_for('main.login'))
 
+@main.route('/confirm_new_email/<token>')
+def confirm_new_email(token):
+    data = User.verify_email_update_token(token)
+    if not data:
+        flash('The confirmation link is invalid or has expired.', 'error')
+        return redirect(url_for('main.profile'))
+    user = db.session.get(User, data.get('user_id'))
     new_email = data.get('new_email')
+    if not user or not new_email:
+        flash('Invalid confirmation data.', 'error')
+        return redirect(url_for('main.profile'))
+    # Check if the new email is already taken
     if User.query.filter_by(email=new_email).first():
         flash('This email is already in use.', 'error')
-        return redirect(url_for('profile'))
-    
-    if user.email != new_email:
-        user.email = new_email
-        user.unconfirmed_email = None
-        user.confirmed = True
-        db.session.commit()
-
-    flash('Account confirmed! Please log in.', 'success')
-    return redirect(url_for('login'))
+        return redirect(url_for('main.profile'))
+    user.email = new_email
+    user.unconfirmed_email = None
+    db.session.commit()
+    flash('Your email address has been updated and confirmed!', 'success')
+    return redirect(url_for('main.profile'))
 
 # Password reset functionality
-@app.route('/confirm_email', methods=['GET', 'POST'])
+@main.route('/confirm_email', methods=['GET', 'POST'])
 def request_password_reset():
     if current_user.is_authenticated:
-        return redirect(url_for('dashboard'))
+        return redirect(url_for('main.dashboard'))
     
     form = ResetPasswordRequestForm()
     if form.validate_on_submit():
@@ -752,25 +932,25 @@ def request_password_reset():
             send_password_reset_email(user)
         # Always show the same message whether the email exists or not
         flash('If the email exists, a password reset link has been sent.', 'info')
-        return redirect(url_for('login'))
+        return redirect(url_for('main.login'))
     
     return render_template('auth/confirm_email.html', form=form)
 
-@app.route('/reset_password/<token>', methods=['GET', 'POST'])
+@main.route('/reset_password/<token>', methods=['GET', 'POST'])
 def reset_password(token):
     if current_user.is_authenticated:
-        return redirect(url_for('dashboard'))
+        return redirect(url_for('main.dashboard'))
     
     user = User.verify_reset_password_token(token)
     if not user:
         flash('The reset link is invalid or has expired.', 'error')
-        return redirect(url_for('login'))
+        return redirect(url_for('main.login'))
     
     form = ResetPasswordForm()
     if form.validate_on_submit():
         user.set_password(form.new_password.data)
         db.session.commit()
         flash('Your password has been reset. Please log in.', 'success')
-        return redirect(url_for('login'))
+        return redirect(url_for('main.login'))
     
     return render_template('auth/change_password.html', form=form)

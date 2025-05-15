@@ -1,36 +1,40 @@
 document.addEventListener('DOMContentLoaded', () => {
+    // Tooltip logic
+    // Ensure the tooltip container exists or fallback to the trigger's parent
     const tooltipTrigger = document.getElementById('tooltip-trigger');
     const tooltipText = document.getElementById('tooltip-text');
+    const tooltipContainer = document.getElementById('tooltip-container') || tooltipTrigger.parentElement;
 
-    if (tooltipTrigger && tooltipText) {
-        tooltipTrigger.addEventListener('mouseenter', () => {
-            tooltipText.classList.remove('hidden');
+    if (tooltipTrigger && tooltipText && tooltipContainer) {
+        // Toggle tooltip on click
+        tooltipTrigger.addEventListener('click', function (event) {
+            event.stopPropagation();  // Prevent click bubbling
+            tooltipText.classList.toggle('hidden');
         });
-        tooltipTrigger.addEventListener('mouseleave', () => {
-            tooltipText.classList.add('hidden');
+
+        document.addEventListener('click', function (event) {
+            if (!tooltipContainer.contains(event.target)) {
+                tooltipText.classList.add('hidden');
+            }
         });
     }
 
-    const GOALS = {
-        total: 12.3,
-        travel: 2.9,
-        home: 3.5,
-        food: 3.1,
-        shopping: 2.8
-    };
-
-    // Calculate the percentage of emissions saved and emitted
-    function calculateMetrics(actual, goal) {
-        const percentage = (actual / goal) * 100;
-        const isBelow = actual <= goal;
-        const saved = Math.max(15.01 - actual, 0); // Assuming 15.01tons is the average emissions for Australian households
-        return {
-            percentage: percentage.toFixed(0),
-            saved: saved.toFixed(2),
-            emitted: actual.toFixed(2),
-            isBelow
-        };
+    // Click handler for emission goal card
+    const emissionGoalCard = document.getElementById('emission-goal-card');
+    if (emissionGoalCard) {
+        emissionGoalCard.addEventListener('click', function () {
+            window.location.href = emissionGoalCard.dataset.url || "view_data";
+        });
     }
+
+    // Click handler for category cards
+    const categoryCards = document.querySelectorAll('.category-card');
+    categoryCards.forEach(card => {
+        card.addEventListener('click', function () {
+            const tabIndex = this.dataset.tab;
+            window.location.href = (card.dataset.url || "view_data") + "?tab=" + tabIndex + "#emissions-summary";
+        });
+    });
 
     // Update the progress circle and text
     function updateProgressCircle(percentage) {
@@ -79,33 +83,8 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     }
 
-    // Update the dashboard with the fetched data
-    function updateDashboard(data) {
-        const travelEmissions = data.car_emissions + data.public_transit_emissions + data.air_travel_emissions;
-        const homeEmissions = data.electricity_emissions + data.natural_gas_emissions + data.heating_fuels_emissions +
-            data.water_emissions + data.construction_emissions;
-        const foodEmissions = data.meat_emissions + data.dairy_emissions + data.fruits_vegetables_emissions +
-            data.cereals_emissions + data.snacks_emissions;
-        const shoppingEmissions = data.furniture_emissions + data.clothing_emissions + data.other_goods_emissions +
-            data.services_emissions;
-
-        const totalMetrics = calculateMetrics(data.total_emissions, GOALS.total);
-        const travelMetrics = calculateMetrics(travelEmissions, GOALS.travel);
-        const homeMetrics = calculateMetrics(homeEmissions, GOALS.home);
-        const foodMetrics = calculateMetrics(foodEmissions, GOALS.food);
-        const shoppingMetrics = calculateMetrics(shoppingEmissions, GOALS.shopping);
-
-        updateProgressCircle(totalMetrics.percentage);
-        document.getElementById('emitted-total').textContent = `${totalMetrics.emitted} metric tons CO₂eq emitted in total`;
-        document.getElementById('saved-total').textContent = `${totalMetrics.saved} metric tons CO₂eq saved compared to Australian average households`;
-
-        updateCategory('travel', travelMetrics, GOALS.travel);
-        updateCategory('home', homeMetrics, GOALS.home);
-        updateCategory('food', foodMetrics, GOALS.food);
-        updateCategory('shopping', shoppingMetrics, GOALS.shopping);
-    }
-
-    fetch('/api/emissions', {
+    // Fetch and update dashboard metrics from backend
+    fetch('/api/dashboard_metrics', {
         method: 'GET',
         headers: { 'Content-Type': 'application/json' }
     })
@@ -115,7 +94,18 @@ document.addEventListener('DOMContentLoaded', () => {
             }
             return response.json();
         })
-        .then(data => updateDashboard(data))
+        .then(data => {
+            if (data.error) throw new Error(data.error);
+            // Use backend-calculated metrics
+            const { total, travel, home, food, shopping, goals, au_average } = data;
+            updateProgressCircle(total.percentage);
+            document.getElementById('emitted-total').textContent = `${total.emitted} metric tons CO₂eq emitted in total`;
+            document.getElementById('saved-total').textContent = `${total.saved} metric tons CO₂eq saved compared to Australian average households`;
+            updateCategory('travel', travel, goals.travel);
+            updateCategory('home', home, goals.home);
+            updateCategory('food', food, goals.food);
+            updateCategory('shopping', shopping, goals.shopping);
+        })
         .catch(error => {
             document.getElementById('progress-text').textContent = 'N/A';
             document.getElementById('emitted-total').textContent = 'Error loading data';

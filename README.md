@@ -43,17 +43,17 @@ Follow these steps to set up the EcoTrack application:
    
    Set up a new file named ```.env``` in the root directory of the project and add the following content:
    ```bash
-   FLASK_SECRET_KEY=<your_key>
+   FLASK_SECRET_KEY=<your_key> # important
 
-   MAIL_SERVER=smtp.example.com
+   MAIL_SERVER=smtp.example.com # important
    MAIL_PORT=587
    MAIL_USE_TLS=true
-   MAIL_USERNAME=<your_email>
-   MAIL_PASSWORD=<your_app_password>
+   MAIL_USERNAME=<your_email> # important
+   MAIL_PASSWORD=<your_app_password> # important
    MAIL_DEFAULT_SENDER=EcoTrack <noreply@ecotrack.com>
    ```
    
-   For security, you can create an "App Password" with your mail provider rather than your real password.
+   For security, you can create an "App Password" with your mail provider rather than using your real password.
 
    After succesful setup, your ```.env``` file may look like:
    ```bash
@@ -88,6 +88,17 @@ Follow these steps to set up the EcoTrack application:
 
 7. **Access the application:**
    Open a web browser and go to `http://127.0.0.1:5000/`
+
+## Testing (from root directory)
+```bash
+# Unittest
+python -m unittest tests/unit.py
+
+# Selenium
+python -m unittest tests.test_selenium
+```
+- You can add '-v' to the end for verbose outputs.
+- For more detail on testing please see the ```README.md``` in the ```tests``` folder 
 
 ## Database Management
 
