@@ -61,7 +61,8 @@
     <!-- Shared with Me Section -->
     <section class="mb-8">
         <div class="bg-white p-6 rounded-xl shadow-md">
-            <h2 class="text-xl font-semibold mb-4">Shared Footprints Leaderboard</h2>
+            <h2 class="text-xl font-semibold mb-1">Shared Footprints Leaderboard</h2>
+            <p class="text-gray-600 mb-4">People sharing with you go here!</p>
 
             {% if shared_with_me %}
             <div class="overflow-x-auto">
@@ -188,7 +189,8 @@
         <div class="bg-white p-6 rounded-xl shadow-md">
             <!-- Title bar -->
             <div class="mb-4">
-                <h2 class="text-xl font-semibold">Currently Shared With</h2>
+                <h2 class="text-xl font-semibold mb-1">People You're Sharing With</h2>
+                <p class="text-gray-600">Share your results to begin chatting!</p>
                 <div class="mt-2 h-[1px] bg-gray-300 w-full"></div>
             </div>
 
@@ -262,7 +264,7 @@
         <!-- Top title bar -->
         <div class="bg-primary text-white font-semibold px-4 py-2 flex justify-between items-center text-sm">
             <span id="chatTitle">Chat</span>
-            <button onclick="closeChat()" class="hover:text-gray-300 text-base">×</button>
+            <button onclick="closeChat()" class="cursor-pointer hover:text-gray-300 text-base">×</button>
         </div>
 
         <!-- Message content area -->
@@ -275,7 +277,7 @@
             <textarea id="chatInput" rows="1"
                 class="flex-1 border border-gray-300 rounded-lg px-3 py-2 text-sm resize-none focus:outline-none focus:ring-0 focus:border-gray-400"
                 placeholder="Type a message..." required></textarea>
-            <button type="submit" class="bg-primary hover:bg-primary/90 text-white px-4 py-1 rounded-lg text-sm">
+            <button type="submit" class="bg-primary cursor-pointer hover:bg-primary/90 text-white px-4 py-1 rounded-lg text-sm">
                 Send
             </button>
         </form>
