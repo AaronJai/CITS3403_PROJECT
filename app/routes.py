@@ -333,7 +333,7 @@ def share():
     sharing_records = Share.query.filter_by(from_user_id=current_user.id).all()
     sharing_with = []
     for share_record in sharing_records:
-        target = User.query.get(share_record.to_user_id)
+        target = db.session.get(User, share_record.to_user_id)
 
         # Check if message read or not
         has_unread = Message.query.filter_by(
@@ -354,7 +354,7 @@ def share():
     received_records = Share.query.filter_by(to_user_id=current_user.id).all()
     shared_with_me_raw = []
     for share in received_records:
-        sender = User.query.get(share.from_user_id)
+        sender = db.session.get(User, share.from_user_id)
         emission = Emissions.query.filter_by(user_id=sender.id).order_by(Emissions.calculated_at.desc()).first()
         shared_with_me_raw.append({
             'name': f"{sender.first_name} {sender.last_name}",
@@ -425,7 +425,7 @@ def share():
 @main.route('/api/emissions/<email>', methods=['GET'])
 @login_required
 def get_user_emissions(email):
-    user = User.query.filter_by(email=email).first()
+    user = db.session.get(User, email) if isinstance(email, int) else User.query.filter_by(email=email).first()
     if not user:
         return jsonify({'error': 'User not found'}), 404
 
@@ -839,7 +839,7 @@ def confirm_new_email(token):
     if not data:
         flash('The confirmation link is invalid or has expired.', 'error')
         return redirect(url_for('main.profile'))
-    user = User.query.get(data.get('user_id'))
+    user = db.session.get(User, data.get('user_id'))
     new_email = data.get('new_email')
     if not user or not new_email:
         flash('Invalid confirmation data.', 'error')
