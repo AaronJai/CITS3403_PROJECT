@@ -4,16 +4,19 @@ from selenium.webdriver.common.by import By
 from selenium.webdriver.common.keys import Keys
 import unittest
 import time
+import threading
+from werkzeug.serving import make_server
 
 class EcoTrackSeleniumTests(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
-        # You can use Chrome, Firefox, or Edge. Make sure the driver is installed and in PATH.
-        cls.driver = webdriver.Chrome()
-        cls.driver.implicitly_wait(10)
-        cls.base_url = "http://127.0.0.1:5000/"
-        # Set up app context and imports for programmatic confirmation
+        # Start Flask app server in a background thread
         import sys, os
+        import logging
+        log = logging.getLogger('werkzeug')
+        log.setLevel(logging.ERROR)
+        # Optionally, also silence Flask's own logger
+        logging.getLogger('flask.app').setLevel(logging.ERROR)
         sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
         from app import create_app, db
         from app.models import User
@@ -21,10 +24,32 @@ class EcoTrackSeleniumTests(unittest.TestCase):
         cls.app = create_app(Config)
         cls.db = db
         cls.User = User
+        cls.base_url = "http://127.0.0.1:5000/"
+
+        class ServerThread(threading.Thread):
+            def __init__(self, app):
+                threading.Thread.__init__(self)
+                self.srv = make_server('127.0.0.1', 5000, app)
+                self.ctx = app.app_context()
+                self.ctx.push()
+                self.daemon = True
+            def run(self):
+                self.srv.serve_forever()
+            def shutdown(self):
+                self.srv.shutdown()
+
+        cls.server_thread = ServerThread(cls.app)
+        cls.server_thread.start()
+        time.sleep(0.5)  # Give server time to start
+
+        # Selenium driver
+        cls.driver = webdriver.Chrome()
+        cls.driver.implicitly_wait(10)
 
     @classmethod
     def tearDownClass(cls):
         cls.driver.quit()
+        cls.server_thread.shutdown()
 
     def setUp(self):
         self.driver.delete_all_cookies()

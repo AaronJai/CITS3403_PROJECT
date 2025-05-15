@@ -47,7 +47,6 @@ python -m unittest tests.test_selenium.EcoTrackSeleniumTests.test_07_delete_user
 
 **Note:**
 - Always run Selenium tests from the project root, not from inside the tests folder.
-- Selenium tests require the web server to be running and accessible at the base URL (default: http://127.0.0.1:5000/). i.e., open the application in another terminal before attempting.
 - If you get import errors, use the `python -m unittest ...` form from the project root.
 
 ### From within the tests folder (unit tests only):
