@@ -298,6 +298,14 @@
   }
 }
 
+  .zoom {
+    transition: transform 0.2s;
+  }
+
+  .zoom:hover {
+    transform: scale(1.01);
+  }
+  
 /* Stepper*/
 .stepper-active {
   background-color: var(--color-primary) !important;

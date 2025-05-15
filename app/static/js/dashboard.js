@@ -1,15 +1,40 @@
 document.addEventListener('DOMContentLoaded', () => {
+    // Tooltip logic
+    // Ensure the tooltip container exists or fallback to the trigger's parent
     const tooltipTrigger = document.getElementById('tooltip-trigger');
     const tooltipText = document.getElementById('tooltip-text');
+    const tooltipContainer = document.getElementById('tooltip-container') || tooltipTrigger.parentElement;
 
-    if (tooltipTrigger && tooltipText) {
-        tooltipTrigger.addEventListener('mouseenter', () => {
-            tooltipText.classList.remove('hidden');
+    if (tooltipTrigger && tooltipText && tooltipContainer) {
+        // Toggle tooltip on click
+        tooltipTrigger.addEventListener('click', function (event) {
+            event.stopPropagation();  // Prevent click bubbling
+            tooltipText.classList.toggle('hidden');
         });
-        tooltipTrigger.addEventListener('mouseleave', () => {
-            tooltipText.classList.add('hidden');
+
+        document.addEventListener('click', function (event) {
+            if (!tooltipContainer.contains(event.target)) {
+                tooltipText.classList.add('hidden');
+            }
         });
     }
+
+    // Click handler for emission goal card
+    const emissionGoalCard = document.getElementById('emission-goal-card');
+    if (emissionGoalCard) {
+        emissionGoalCard.addEventListener('click', function () {
+            window.location.href = emissionGoalCard.dataset.url || "view_data";
+        });
+    }
+
+    // Click handler for category cards
+    const categoryCards = document.querySelectorAll('.category-card');
+    categoryCards.forEach(card => {
+        card.addEventListener('click', function () {
+            const tabIndex = this.dataset.tab;
+            window.location.href = (card.dataset.url || "view_data") + "?tab=" + tabIndex + "#emissions-summary";
+        });
+    });
 
     // Update the progress circle and text
     function updateProgressCircle(percentage) {

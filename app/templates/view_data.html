@@ -2,6 +2,14 @@
 
 {% block title %}View Data | EcoTrack{% endblock %}
 
+{% block head %}
+<script src="https://cdn.jsdelivr.net/npm/chart.js" defer></script>
+<script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels" defer></script>
+<script src="{{ url_for('static', filename='js/view-data.js') }}" defer></script>
+<script src="{{ url_for('static', filename='js/view-data_sum.js') }}" defer></script> 
+<script defer>const currentUserEmail = "{{ current_user.email }}";</script>
+{% endblock %}
+
 {% block content %}
 <section class="px-4">
 <!-- Background Section -->
@@ -84,7 +92,7 @@
          style="background: linear-gradient(to bottom,#d3f6f4, #faedda);">
 
   <!-- Header -->
-  <div class="w-full text-center mb-4 mt-4">
+  <div class="w-full text-center mb-4 mt-4" id="emissions-summary">
     <h2 class="text-2xl font-bold text-gray-800">Emissions Summary</h2>
   </div>
 
@@ -150,10 +158,4 @@
 
 </div>
 
-<!-- Scripts -->
-<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels"></script>
-<script src="{{ url_for('static', filename='js/view-data.js') }}"></script>
-<script src="{{ url_for('static', filename='js/viewdata-sum.js') }}"></script> 
-<script>const currentUserEmail = "{{ current_user.email }}";</script>
 {% endblock %}
