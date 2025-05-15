@@ -110,7 +110,7 @@ window.addEventListener('orientationchange', forceBarChartResize);
           beginAtZero: true,
           title: {
             display: true,
-            text: 'Metric tons CO₂/year',
+            text: 'Metric tons CO₂eq',
             color: '#222222',
             font: { size: 16, weight: 'bold' }
           },
@@ -543,7 +543,7 @@ window.showTab = function (index) {
                 beginAtZero: true,
                 title: {
                   display: true,
-                  text: 'Metric tons CO₂/year',
+                  text: 'Metric tons CO₂eq',
                   color: '#222222',
                   font: { size: 16, weight: 'bold' }
                 },
