@@ -36,6 +36,21 @@ document.addEventListener('DOMContentLoaded', () => {
   window.barChart = new Chart(ctx, JSON.parse(JSON.stringify(config)));
 }
 
+// Helper to force chart resize and redraw
+function forceBarChartResize() {
+  // Destroy and re-create the chart with the current config to force full reflow
+  const canvas = document.getElementById('myChart');
+  if (!canvas || !window.originalConfig) return;
+  const existing = Chart.getChart(canvas);
+  if (existing) existing.destroy();
+  const ctx = canvas.getContext('2d');
+  window.barChart = new Chart(ctx, JSON.parse(JSON.stringify(window.originalConfig)));
+}
+
+// Listen for resize and orientation changes
+window.addEventListener('resize', forceBarChartResize);
+window.addEventListener('orientationchange', forceBarChartResize);
+
   const barChartConfig = {
     type: 'bar',
     data: {
