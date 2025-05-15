@@ -525,14 +525,33 @@ window.showTab = function (index) {
             },
             scales: {
               y: {
-                beginAtZero: true
+                beginAtZero: true,
+                title: {
+                  display: true,
+                  text: 'Metric tons CO₂/year',
+                  color: '#222222',
+                  font: { size: 16, weight: 'bold' }
+                },
+                ticks: {
+                  color: '#222222',
+                  font: { size: 14 },
+                  padding: 10
+                },
+                border: {
+                  color: '#222222',
+                  width: 2
+                },
               },
               x: {
                 ticks: {
                   color: '#222222',
-                  font: { size: 16, weight: 'bold' },
+                  font: { size: 14, weight: 'bold' },
                   padding: 10
-                }
+                },
+                border: {
+                  color: '#222222',
+                  width: 2
+                },
               }
             }
           }
