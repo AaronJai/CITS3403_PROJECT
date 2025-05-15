@@ -20,11 +20,15 @@ class EcoTrackSeleniumTests(unittest.TestCase):
         sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
         from app import create_app, db
         from app.models import User
-        from app.config import Config
-        cls.app = create_app(Config)
+        from app.config import TestingConfig
+        cls.app = create_app(TestingConfig)
         cls.db = db
         cls.User = User
         cls.base_url = "http://127.0.0.1:5000/"
+
+        # Ensure the test database and all tables are created before starting the server
+        with cls.app.app_context():
+            cls.db.create_all()
 
         class ServerThread(threading.Thread):
             def __init__(self, app):
