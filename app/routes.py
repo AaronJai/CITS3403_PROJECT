@@ -251,13 +251,75 @@ def view_data():
     if locked:
         return redirect(url_for('main.add_data', new_user='true'))
 
-    return render_template('view_data.html', 
-                          active_page='view_data', 
-                          nav_items=nav_items,
-                          first_name=current_user.first_name,
-                          last_name=current_user.last_name,
-                          email=current_user.email,
-                          locked=locked)
+    # Leader Board
+    shared_with_me_raw = []
+
+    # Current user's own data
+    emission = Emissions.query.filter_by(user_id=current_user.id).order_by(Emissions.calculated_at.desc()).first()
+    shared_with_me_raw.append({
+        'name': f"{current_user.first_name} {current_user.last_name}",
+        'email': current_user.email,
+        'carbon_footprint_value': float(emission.total_emissions) if emission else float('inf'),
+        'carbon_footprint': f"{emission.total_emissions:.2f} CO2eq" if emission else "N/A"
+    })
+
+    # Data shared by other users
+    shared_entries = Share.query.filter_by(to_user_id=current_user.id).all()
+    for entry in shared_entries:
+        sender = User.query.get(entry.from_user_id)
+        if sender:
+            sender_emission = Emissions.query.filter_by(user_id=sender.id).order_by(Emissions.calculated_at.desc()).first()
+            if sender_emission:
+                shared_with_me_raw.append({
+                    'name': f"{sender.first_name} {sender.last_name}",
+                    'email': sender.email,
+                    'carbon_footprint_value': float(sender_emission.total_emissions),
+                    'carbon_footprint': f"{sender_emission.total_emissions:.2f} CO2eq"
+                })
+
+    # Sort and rank users
+    shared_with_me_sorted = sorted(shared_with_me_raw, key=lambda x: x['carbon_footprint_value'])
+    for i, user in enumerate(shared_with_me_sorted, start=1):
+        user['rank'] = i
+
+    return render_template('view_data.html',
+                           active_page='view_data',
+                           nav_items=nav_items,
+                           first_name=current_user.first_name,
+                           last_name=current_user.last_name,
+                           email=current_user.email,
+                           locked=locked,
+                           shared_with_me=shared_with_me_sorted)
+
+
+@main.route('/api/compare_emissions')
+@login_required
+def compare_emissions():
+    target_email = request.args.get('email')
+    other_user = User.query.filter_by(email=target_email).first()
+    if not other_user:
+        return jsonify({'error': 'User not found'}), 404
+
+    your_emission = Emissions.query.filter_by(user_id=current_user.id).order_by(Emissions.calculated_at.desc()).first()
+    other_emission = Emissions.query.filter_by(user_id=other_user.id).order_by(Emissions.calculated_at.desc()).first()
+
+    if not your_emission or not other_emission:
+        return jsonify({'error': 'Missing emission data'}), 400
+
+    def get_grouped_data(emission):
+        return [
+            emission.car_emissions + emission.public_transit_emissions + emission.air_travel_emissions,  # Travel
+            emission.meat_emissions + emission.dairy_emissions + emission.fruits_vegetables_emissions + emission.cereals_emissions + emission.snacks_emissions,  # Food
+            emission.electricity_emissions + emission.natural_gas_emissions + emission.heating_fuels_emissions + emission.water_emissions + emission.construction_emissions,  # Home
+            emission.furniture_emissions + emission.clothing_emissions + emission.other_goods_emissions + emission.services_emissions  # Shopping
+        ]
+
+    return jsonify({
+        'your_emissions': get_grouped_data(your_emission),
+        'other_emissions': get_grouped_data(other_emission),
+        'other_name': f"{other_user.first_name} {other_user.last_name}"
+    })
+
 
 
 @main.route('/api/emissions', methods=['GET'])
@@ -291,6 +353,53 @@ def get_emissions():
         'services_emissions': emissions.services_emissions or 0.0,
         'total_emissions': emissions.total_emissions or 0.0
     }) 
+
+@main.route('/api/dashboard_metrics', methods=['GET'])
+@login_required
+def get_dashboard_metrics():
+    """
+    Returns all dashboard metrics (percentages, saved, emitted, isBelow, etc.) for the current user.
+    """
+    emissions = Emissions.query.filter_by(user_id=current_user.id).order_by(Emissions.calculated_at.desc()).first()
+    if not emissions:
+        return jsonify({'error': 'No emissions data found'}), 404
+
+    GOALS = {
+        'total': 12.3,
+        'travel': 2.9,
+        'home': 3.5,
+        'food': 3.1,
+        'shopping': 2.8
+    }
+    AU_AVG = 15.01  # Australian average household emissions
+
+    # Calculate category totals
+    travel = (emissions.car_emissions or 0.0) + (emissions.public_transit_emissions or 0.0) + (emissions.air_travel_emissions or 0.0)
+    home = (emissions.electricity_emissions or 0.0) + (emissions.natural_gas_emissions or 0.0) + (emissions.heating_fuels_emissions or 0.0) + (emissions.water_emissions or 0.0) + (emissions.construction_emissions or 0.0)
+    food = (emissions.meat_emissions or 0.0) + (emissions.dairy_emissions or 0.0) + (emissions.fruits_vegetables_emissions or 0.0) + (emissions.cereals_emissions or 0.0) + (emissions.snacks_emissions or 0.0)
+    shopping = (emissions.furniture_emissions or 0.0) + (emissions.clothing_emissions or 0.0) + (emissions.other_goods_emissions or 0.0) + (emissions.services_emissions or 0.0)
+    total = emissions.total_emissions or 0.0
+
+    def calc_metrics(actual, goal):
+        percentage = (actual / goal) * 100 if goal else 0
+        is_below = actual <= goal
+        saved = max(AU_AVG - actual, 0)
+        return {
+            'percentage': round(percentage),
+            'saved': round(saved, 2),
+            'emitted': round(actual, 2),
+            'isBelow': is_below
+        }
+
+    return jsonify({
+        'total': calc_metrics(total, GOALS['total']),
+        'travel': calc_metrics(travel, GOALS['travel']),
+        'home': calc_metrics(home, GOALS['home']),
+        'food': calc_metrics(food, GOALS['food']),
+        'shopping': calc_metrics(shopping, GOALS['shopping']),
+        'goals': GOALS,
+        'au_average': AU_AVG
+    })
 
 @main.route('/share', methods=['GET', 'POST'])
 @login_required
@@ -468,6 +577,74 @@ def get_user_emissions(email):
         'total_emissions': total
     })
 
+@main.route('/api/emissions_summary')
+@login_required
+def get_emissions_summary():
+    emissions = Emissions.query.filter_by(user_id=current_user.id).order_by(Emissions.calculated_at.desc()).first()
+    if not emissions:
+        return jsonify({'error': 'No emissions data found'}), 404
+
+    # Calculate totals for each category
+    car = emissions.car_emissions or 0
+    air = emissions.air_travel_emissions or 0
+    transit = emissions.public_transit_emissions or 0
+    travel_total = car + air + transit
+
+    electricity = emissions.electricity_emissions or 0
+    natural_gas = emissions.natural_gas_emissions or 0
+    heating_fuel = emissions.heating_fuels_emissions or 0
+    water = emissions.water_emissions or 0
+    construction = emissions.construction_emissions or 0
+    home_total = electricity + natural_gas + heating_fuel + water + construction
+
+    meat = emissions.meat_emissions or 0
+    dairy = emissions.dairy_emissions or 0
+    fruit_veg = emissions.fruits_vegetables_emissions or 0
+    cereals = emissions.cereals_emissions or 0
+    snacks = emissions.snacks_emissions or 0
+    food_total = meat + dairy + fruit_veg + cereals + snacks
+
+    furniture = emissions.furniture_emissions or 0
+    clothing = emissions.clothing_emissions or 0
+    other_goods = emissions.other_goods_emissions or 0
+    services = emissions.services_emissions or 0
+    shopping_total = furniture + clothing + other_goods + services
+
+    def safe_pct(value, total):
+        return round((value / total) * 100, 2) if total else 0
+
+    return jsonify({
+        'travelTotal': travel_total,
+        'homeTotal': home_total,
+        'foodTotal': food_total,
+        'shoppingTotal': shopping_total,
+
+        'travel': {
+            'carPct': safe_pct(car, travel_total),
+            'airPct': safe_pct(air, travel_total),
+            'transitPct': safe_pct(transit, travel_total),
+        },
+        'home': {
+            'electricityPct': safe_pct(electricity, home_total),
+            'naturalGasPct': safe_pct(natural_gas, home_total),
+            'heatingFuelPct': safe_pct(heating_fuel, home_total),
+            'waterPct': safe_pct(water, home_total),
+            'constructionPct': safe_pct(construction, home_total),
+        },
+        'food': {
+            'meatPct': safe_pct(meat, food_total),
+            'dairyPct': safe_pct(dairy, food_total),
+            'fruitVegPct': safe_pct(fruit_veg, food_total),
+            'cerealsPct': safe_pct(cereals, food_total),
+            'snacksPct': safe_pct(snacks, food_total),
+        },
+        'shopping': {
+            'furniturePct': safe_pct(furniture, shopping_total),
+            'clothingPct': safe_pct(clothing, shopping_total),
+            'otherGoodsPct': safe_pct(other_goods, shopping_total),
+            'servicesPct': safe_pct(services, shopping_total),
+        }
+    })
 
 @main.route('/api/share', methods=['POST'])
 @login_required

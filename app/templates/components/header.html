@@ -8,12 +8,13 @@
 
   <div class="header-bottom">
     {% for item in nav_items %}
-    {% set is_locked = (is_new_user and item.endpoint in ['dashboard', 'view_data']) %}
+    {% set endpoint_name = item.endpoint.split('.')[-1] %}
+    {% set is_locked = (is_new_user and endpoint_name in ['dashboard', 'view_data']) %}
     <a href="{{ url_for(item.endpoint) }}"
-      class="mobile-nav-item {% if active_page == item.endpoint %}shad-active{% endif %} {% if is_locked %}locked{% endif %}"
+      class="mobile-nav-item {% if active_page == endpoint_name %}shad-active{% endif %} {% if is_locked %}locked{% endif %}"
       {% if is_locked %}title="Please add data to unlock this feature" {% endif %}>
       <img src="{{ url_for('static', filename='assets/icons/' + item.icon) }}" alt="{{ item.name }}"
-        class="{% if active_page == item.endpoint %}mobile-icon-active{% else %}mobile-icon{% endif %}" />
+        class="{% if active_page == endpoint_name %}mobile-icon-active{% else %}mobile-icon{% endif %}" />
       {% if is_locked %}<span class="text-gray-400 text-xs absolute top-0 right-0">🔒</span>{% endif %}
     </a>
     {% endfor %}
