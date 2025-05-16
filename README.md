@@ -2,7 +2,17 @@
 
 ## Description
 
-The Environmental Impact Tracker allows users to log their daily activities and track their carbon footprint. By inputting various activities such as energy use, transportation choices, and shopping habits, the system calculates the environmental impact and provides personalized suggestions for reducing it.
+EcoTrack is an environmental impact tracker that allows users to monitor, analyse, and reduce their carbon footprint. Users can log their activities across categories such as energy consumption, transportation, food, and shopping. The app calculates a personalised snapshot of their emissions, compares them to national averages, and visualises progress toward sustainability goals. EcoTrack provides actionable insights, tailored suggestions, and live environmental news to help users make informed, eco-friendly choices and track their journey toward a lower-impact lifestyle.
+
+## Tech Stack
+- HTML
+- CSS
+- JavaScript
+- TailwindCSS
+- JQuery
+- Flask
+- AJAX/Websockets
+- SQLite interfaced to via the SQLAlchemy package
 
 ## Members
 
@@ -38,6 +48,7 @@ Follow these steps to set up the EcoTrack application:
    ```
    pip install -r requirements.txt
    ```
+   - _Note: You may need to use ```pip3``` or a different command depending on how Python is installed on your system._
 
 4. **Configure Environment variables**
    

@@ -100,7 +100,11 @@ document.addEventListener('DOMContentLoaded', () => {
             const { total, travel, home, food, shopping, goals, au_average } = data;
             updateProgressCircle(total.percentage);
             document.getElementById('emitted-total').textContent = `${total.emitted} metric tons CO₂eq emitted in total`;
-            document.getElementById('saved-total').textContent = `${total.saved} metric tons CO₂eq saved compared to Australian average households`;
+            if (total.saved > 0) {
+                document.getElementById('saved-total').textContent = `${total.saved} metric tons CO₂eq saved compared to Australian average households`;
+            } else {
+                document.getElementById('saved-total').textContent = `${(total.emitted - au_average).toFixed(1)} metric tons CO₂eq worse compared to Australian average households`;
+            }
             updateCategory('travel', travel, goals.travel);
             updateCategory('home', home, goals.home);
             updateCategory('food', food, goals.food);

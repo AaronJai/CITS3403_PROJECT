@@ -16,7 +16,7 @@ function validatePassword() {
   if (password.length < 8) errors.push("at least 8 characters");
   if (!/[A-Z]/.test(password)) errors.push("one uppercase letter");
   if (!/\d/.test(password)) errors.push("one number");
-  if (!/[@$!%*?&]/.test(password)) errors.push("one special character");
+  if (!/[ !"#$%&'()*+,\-./:;<=>?@[\\\]^_`{|}~]/.test(password)) errors.push("one special character");
 
   // If there are password format errors
   if (errors.length > 0) {

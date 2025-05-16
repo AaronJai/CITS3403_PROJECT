@@ -47,7 +47,7 @@ python -m unittest tests.test_selenium.EcoTrackSeleniumTests.test_07_delete_user
 
 **Note:**
 - Always run Selenium tests from the project root, not from inside the tests folder.
-- If you get import errors, use the `python -m unittest ...` form from the project root.
+- The Selenium tests run on port 3000 to prevent accidental clashes if the app is open (Flask defaults port 5000). Therefore, ensure port 3000 is not already in use otherwise you can edit ```test_selenium.py``` or close any existing applications using port 3000.
 
 ### From within the tests folder (unit tests only):
 

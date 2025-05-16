@@ -94,23 +94,41 @@ function loadSharedUserEmissions(email) {
 }
 
 let chattingWith = null;
+let chatPollingInterval = null;
 
+function startPolling() {
+    stopPolling(); 
+    chatPollingInterval = setInterval(() => {
+        if (chattingWith) {
+            loadMessages();
+        }
+    }, 1000); // refresh every 1 seconds
+}
+
+function stopPolling() {
+    if (chatPollingInterval) {
+        clearInterval(chatPollingInterval);
+        chatPollingInterval = null;
+    }
+}
 // Start a chat with a user
 function startChat(email) {
     chattingWith = email;
     document.getElementById('chatTitle').innerText = "Chat with " + email;
     document.getElementById('chatBox').classList.remove('hidden');
     loadMessages();
+    startPolling(); //periodic refresh`
     const dot = document.getElementById(`dot-${email}`);
-  if (dot) {
-    dot.remove();
-  }
+    if (dot) {
+        dot.remove();
+    }
 }
 
 // Close the chat
 function closeChat() {
     document.getElementById('chatBox').classList.add('hidden');
     chattingWith = null;
+    stopPolling();
 }
 
 // Send a chat message
@@ -154,7 +172,12 @@ function appendMessage(sender, message) {
     messageWrapper.className = `flex ${isSelf ? 'justify-end' : 'justify-start'}`;
 
     const bubble = document.createElement('div');
-    bubble.className = 'max-w-[75%] px-4 py-2 rounded-xl text-sm bg-gray-200 text-gray-800 shadow';
+    bubble.className = `
+        max-w-[75%] px-4 py-2 rounded-2xl text-sm shadow 
+        ${isSelf 
+            ? 'bg-green-200 text-right text-black rounded-br-none' 
+            : 'bg-gray-200 text-left text-black rounded-bl-none'}
+    `;
 
     bubble.innerText = message; // Do not display the sender's name
 

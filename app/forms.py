@@ -15,8 +15,8 @@ def password_check(form, field):
     if not re.search(r"\d", password):
         raise ValidationError("Password must contain at least one number")
     
-    if not re.search(r"[@$!%*?&]", password):
-        raise ValidationError("Password must contain at least one special character (@$!%*?&)")
+    if not re.search(r"""[ !"#$%&'()*+,\-./:;<=>?@[\\\]^_`{|}~]""", password):
+        raise ValidationError("Password must contain at least one special character")
 
 class LoginForm(FlaskForm):
     """Form for user login"""
