@@ -94,23 +94,41 @@ function loadSharedUserEmissions(email) {
 }
 
 let chattingWith = null;
+let chatPollingInterval = null;
 
+function startPolling() {
+    stopPolling(); 
+    chatPollingInterval = setInterval(() => {
+        if (chattingWith) {
+            loadMessages();
+        }
+    }, 1000); // refresh every 1 seconds
+}
+
+function stopPolling() {
+    if (chatPollingInterval) {
+        clearInterval(chatPollingInterval);
+        chatPollingInterval = null;
+    }
+}
 // Start a chat with a user
 function startChat(email) {
     chattingWith = email;
     document.getElementById('chatTitle').innerText = "Chat with " + email;
     document.getElementById('chatBox').classList.remove('hidden');
     loadMessages();
+    startPolling(); //periodic refresh`
     const dot = document.getElementById(`dot-${email}`);
-  if (dot) {
-    dot.remove();
-  }
+    if (dot) {
+        dot.remove();
+    }
 }
 
 // Close the chat
 function closeChat() {
     document.getElementById('chatBox').classList.add('hidden');
     chattingWith = null;
+    stopPolling();
 }
 
 // Send a chat message
