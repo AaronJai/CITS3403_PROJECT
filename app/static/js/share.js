@@ -154,7 +154,12 @@ function appendMessage(sender, message) {
     messageWrapper.className = `flex ${isSelf ? 'justify-end' : 'justify-start'}`;
 
     const bubble = document.createElement('div');
-    bubble.className = 'max-w-[75%] px-4 py-2 rounded-xl text-sm bg-gray-200 text-gray-800 shadow';
+    bubble.className = `
+        max-w-[75%] px-4 py-2 rounded-2xl text-sm shadow 
+        ${isSelf 
+            ? 'bg-green-200 text-right text-black rounded-br-none' 
+            : 'bg-gray-200 text-left text-black rounded-bl-none'}
+    `;
 
     bubble.innerText = message; // Do not display the sender's name
 
