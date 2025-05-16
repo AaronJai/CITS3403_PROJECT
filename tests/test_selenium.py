@@ -374,7 +374,7 @@ class EcoTrackSeleniumTests(unittest.TestCase):
             driver.back()
             wait.until(EC.presence_of_element_located((By.CSS_SELECTOR, f".category-card[data-category='{cat}']")))
 
-    def test_10_messaging(self):
+    def test_10_share_page(self):
         driver = self.driver
         wait = self.wait
         # --- User 1 signup and logout ---

@@ -91,6 +91,9 @@ python -m unittest unit.py
   - `test_05_add_data_advanced`: Add data using advanced mode, including all advanced fields
   - `test_06_change_details`: Change name, email, and password from the profile page, and verify changes
   - `test_07_delete_user`: Delete account from profile, verify user cannot log in again
+  - `test_08_facts_page`: Check if links work from BBC news API
+  - `test_09_dashboard_page`: Check if clicking on dashboard cards redirect to view data page appropriately
+  - `test_10_share_page`: Create two accounts to test sharing and messaging functionality
 
 ## Writing New Tests
 
@@ -121,4 +124,3 @@ def test_dashboard_loads(self):
 ## Troubleshooting
 - If you get `ModuleNotFoundError: No module named 'app'`, make sure you are running tests from the project root and using the `python -m unittest ...` form.
 - If Selenium cannot find elements, check your form field IDs and selectors in the templates.
-- If you get database errors in Selenium tests, ensure your Flask server is running and using the same database as your test code for direct DB access.

@@ -109,7 +109,7 @@ python -m unittest tests/unit.py
 python -m unittest tests.test_selenium
 ```
 - You can add '-v' to the end for verbose outputs.
-- For more detail on testing please see the ```README.md``` in the ```tests``` folder 
+- For more detail on testing please see the ```README.md``` in the ```tests``` folder. Link [here](tests/README.md)
 
 ## Database Management
 
