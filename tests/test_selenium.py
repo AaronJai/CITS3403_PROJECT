@@ -15,10 +15,16 @@ class EcoTrackSeleniumTests(unittest.TestCase):
         # Start Flask app server in a background thread
         import sys, os
         import logging
+        import io
         log = logging.getLogger('werkzeug')
         log.setLevel(logging.ERROR)
         # Optionally, also silence Flask's own logger
         logging.getLogger('flask.app').setLevel(logging.ERROR)
+        # Redirect stdout/stderr to suppress server print output during tests
+        cls._original_stdout = sys.stdout
+        cls._original_stderr = sys.stderr
+        sys.stdout = io.StringIO()
+        sys.stderr = io.StringIO()
         sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
         from app import create_app, db
         from app.models import User
@@ -70,6 +76,10 @@ class EcoTrackSeleniumTests(unittest.TestCase):
     def tearDownClass(cls):
         cls.driver.quit()
         cls.server_thread.shutdown()
+        # Restore stdout/stderr
+        import sys
+        sys.stdout = cls._original_stdout
+        sys.stderr = cls._original_stderr
         # Drop all tables after tests
         with cls.app.app_context():
             cls.db.drop_all()
